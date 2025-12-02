@@ -1,0 +1,95 @@
+
+There are no discarded input sections
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+*default*        0x0000000000000000 0xffffffffffffffff
+
+Linker script and memory map
+
+                0x0000000040000000                . = 0x40000000
+
+.text           0x0000000040000000      0x100
+ *(.text.boot)
+ .text.boot     0x0000000040000000       0x30 bin/obj/boot/boot.o
+                0x0000000040000000                _start
+ *(.text*)
+ .text          0x0000000040000030        0xc bin/obj/lib/kernel_utils.o
+                0x0000000040000030                _currentEL
+ .text          0x000000004000003c        0x0 bin/obj/boot/boot.o
+ .text          0x000000004000003c       0x64 bin/obj/kernel/kernel_entry.o
+                0x000000004000003c                kernel_entry
+ .text          0x00000000400000a0       0x60 bin/obj/drivers/uart/uart.o
+                0x00000000400000c4                UART_putc
+                0x0000000040000100                . = ALIGN (0x10)
+
+.iplt           0x0000000040000100        0x0
+ .iplt          0x0000000040000100        0x0 bin/obj/boot/boot.o
+
+.rodata         0x0000000040000100       0x20
+ *(.rodata*)
+ .rodata        0x0000000040000100       0x20 bin/obj/drivers/uart/uart.o
+                0x0000000040000120                . = ALIGN (0x10)
+
+.rela.dyn       0x0000000040000120        0x0
+ .rela.iplt     0x0000000040000120        0x0 bin/obj/boot/boot.o
+ .rela.text.boot
+                0x0000000040000120        0x0 bin/obj/boot/boot.o
+
+.data           0x0000000040000120        0x0
+ *(.data*)
+ .data          0x0000000040000120        0x0 bin/obj/lib/kernel_utils.o
+ .data          0x0000000040000120        0x0 bin/obj/boot/boot.o
+ .data          0x0000000040000120        0x0 bin/obj/kernel/kernel_entry.o
+ .data          0x0000000040000120        0x0 bin/obj/drivers/uart/uart.o
+                0x0000000040000120                . = ALIGN (0x10)
+
+.igot.plt       0x0000000040000120        0x0
+ .igot.plt      0x0000000040000120        0x0 bin/obj/boot/boot.o
+
+.bss            0x0000000040000120        0x0
+                0x0000000040000120                __bss_start = .
+ *(.bss*)
+ .bss           0x0000000040000120        0x0 bin/obj/lib/kernel_utils.o
+ .bss           0x0000000040000120        0x0 bin/obj/boot/boot.o
+ .bss           0x0000000040000120        0x0 bin/obj/kernel/kernel_entry.o
+ .bss           0x0000000040000120        0x0 bin/obj/drivers/uart/uart.o
+ *(COMMON)
+                0x0000000040000120                __bss_end = .
+                0x0000000040000120                . = ALIGN (0x10)
+
+.stacks         0x0000000040001000   0xf00000
+                0x0000000040001000                __stack_el0_bottom = .
+                0x0000000040501000                . = (. + 0x500000)
+ *fill*         0x0000000040001000   0x500000 
+                0x0000000040501000                __stack_el0_top = .
+                0x0000000040501000                . = ALIGN (0x10)
+                0x0000000040501000                __stack_el1_bottom = .
+                0x0000000040a01000                . = (. + 0x500000)
+ *fill*         0x0000000040501000   0x500000 
+                0x0000000040a01000                __stack_el1_top = .
+                0x0000000040a01000                . = ALIGN (0x10)
+                0x0000000040a01000                __stack_el2_bottom = .
+                0x0000000040f01000                . = (. + 0x500000)
+ *fill*         0x0000000040a01000   0x500000 
+                0x0000000040f01000                __stack_el2_top = .
+                [!provide]                        PROVIDE (_bss_start = __bss_start)
+                [!provide]                        PROVIDE (_bss_end = __bss_end)
+                [!provide]                        PROVIDE (_stack_el0_top = __stack_el0_top)
+                [!provide]                        PROVIDE (_stack_el0_bottom = __stack_el0_bottom)
+                [!provide]                        PROVIDE (_stack_el1_top = __stack_el1_top)
+                [!provide]                        PROVIDE (_stack_el1_bottom = __stack_el1_bottom)
+                [!provide]                        PROVIDE (_stack_el2_top = __stack_el2_top)
+                [!provide]                        PROVIDE (_stack_el2_bottom = __stack_el2_bottom)
+LOAD bin/obj/lib/kernel_utils.o
+LOAD bin/obj/boot/boot.o
+LOAD bin/obj/kernel/kernel_entry.o
+LOAD bin/obj/drivers/uart/uart.o
+OUTPUT(bin/kernel.elf elf64-littleaarch64)
+LOAD linker stubs
+
+.comment        0x0000000000000000       0x45
+ .comment       0x0000000000000000       0x45 bin/obj/kernel/kernel_entry.o
+                                         0x46 (size before relaxing)
+ .comment       0x0000000000000045       0x46 bin/obj/drivers/uart/uart.o

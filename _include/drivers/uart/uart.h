@@ -1,0 +1,13 @@
+#pragma once
+#include <lib/stdint.h>
+
+typedef enum {
+	UART_ID_1 = 0,
+	UART_ID_2,
+	UART_ID_3,
+	UART_ID_4,
+} UART_ID;
+
+void UART_putc(UART_ID id, uint8 c);
+
+void UART_puts(UART_ID id, char *s);
