@@ -61,7 +61,7 @@ void panic()
 							  STDINT_UINT32, buf, 200, STDINT_REPR_DEC));
 
 	if (PANIC_COL != 0) {
-		UART_puts(PANIC_UART_OUTPUT, " at column ");
+		UART_puts(PANIC_UART_OUTPUT, ":");
 		UART_puts(PANIC_UART_OUTPUT,
 				  stdint_to_ascii((STDINT_UNION){.uint32 = PANIC_COL},
 								  STDINT_UINT32, buf, 200, STDINT_REPR_DEC));
@@ -71,7 +71,7 @@ void panic()
 	UART_puts(PANIC_UART_OUTPUT, (char *)PANIC_MESSAGE_PTR);
 	UART_puts(PANIC_UART_OUTPUT, "\n\r");
 
-	FOREVER {}
+	FOREVER {}	// TODO: TUI with options
 }
 
 void set_panic(PanicInfo panic_info)

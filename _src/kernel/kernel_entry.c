@@ -5,6 +5,8 @@
 #include <lib/stdmacros.h>
 #include <lib/string.h>
 
+extern void rust_test_panic();
+
 void kernel_entry()
 {
 	init_panic();
@@ -16,6 +18,8 @@ void kernel_entry()
 	int64 test_v = -0x0;
 
 	test_stdint_to_ascii(test_v, 67);
+
+	rust_test_panic();
 
 	PANIC(":)");
 

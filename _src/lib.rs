@@ -24,6 +24,11 @@ unsafe extern "C" {
 
 }
 
+#[unsafe(no_mangle)]
+extern "C" fn rust_test_panic() -> ! {
+    panic!("Test working :)")
+}
+
 #[panic_handler]
 fn rust_panic(info: &PanicInfo) -> ! {
     UART_put_str(UART_ID::UART_ID_2, "\n\r[Rust panic!]\n\r");
@@ -63,4 +68,3 @@ fn rust_panic(info: &PanicInfo) -> ! {
 
     unsafe { panic() };
 }
-
