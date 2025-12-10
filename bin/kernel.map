@@ -10,7 +10,7 @@ Linker script and memory map
 
                 0x0000000040000000                . = 0x40000000
 
-.text           0x0000000040000000     0x1780
+.text           0x0000000040000000     0x16c0
  *(.text.boot)
  .text.boot     0x0000000040000000       0x38 bin/obj/__boot/boot.o
                 0x0000000040000000                _start
@@ -18,116 +18,114 @@ Linker script and memory map
  .text          0x0000000040000038        0xc bin/obj/__lib/kernel_utils.o
                 0x0000000040000038                _currentEL
  *fill*         0x0000000040000044        0xc 
- .text          0x0000000040000050      0x240 bin/obj/__lib/memcpy/memcpy.o
+ .text          0x0000000040000050      0x250 bin/obj/__lib/memcpy/memcpy.o
                 0x0000000040000050                _memcpy
-                0x0000000040000150                _memcpy64
-                0x0000000040000180                _memcpy32
-                0x00000000400001b0                _memcpy16
-                0x00000000400001e0                _memcpy8
-                0x0000000040000210                _memcpy4
-                0x0000000040000240                _memcpy2
-                0x0000000040000270                _memcpy1
- .text          0x0000000040000290       0x58 bin/obj/__boot/clean_bss.o
-                0x0000000040000290                _clean_bss
- .text          0x00000000400002e8        0x0 bin/obj/__boot/boot.o
- .text          0x00000000400002e8      0x27c bin/obj/kernel/panic.o
-                0x00000000400002e8                init_panic
-                0x000000004000039c                panic
-                0x00000000400004b0                set_panic
-                0x0000000040000520                set_and_throw_panic
- .text          0x0000000040000564        0x0 bin/obj/kernel/malloc/buddy_allocator.o
- .text          0x0000000040000564      0x108 bin/obj/kernel/kernel_entry.o
-                0x0000000040000584                kernel_entry
- .text          0x000000004000066c      0x7d4 bin/obj/lib/string.o
-                0x000000004000066c                strcopy
-                0x0000000040000700                uint8_to_ascii_char
-                0x0000000040000770                stdint_to_ascii
- .text          0x0000000040000e40      0x1d0 bin/obj/lib/memcpy/memcpy.o
-                0x0000000040000e40                memcpy64_aligned
-                0x0000000040000f7c                memcpy64
- .text          0x0000000040001010      0x768 bin/obj/drivers/uart/uart.o
-                0x00000000400014dc                UART_putc
-                0x0000000040001544                UART_puts
-                0x0000000040001594                UART_reset
-                0x000000004000162c                UART_init
-                0x0000000040001780                . = ALIGN (0x10)
- *fill*         0x0000000040001778        0x8 
+                0x0000000040000160                _memcpy64
+                0x0000000040000190                _memcpy32
+                0x00000000400001c0                _memcpy16
+                0x00000000400001f0                _memcpy8
+                0x0000000040000220                _memcpy4
+                0x0000000040000250                _memcpy2
+                0x0000000040000280                _memcpy1
+ .text          0x00000000400002a0       0x58 bin/obj/__boot/clean_bss.o
+                0x00000000400002a0                _clean_bss
+ .text          0x00000000400002f8        0x0 bin/obj/__boot/boot.o
+ .text          0x00000000400002f8      0x27c bin/obj/kernel/panic.o
+                0x00000000400002f8                init_panic
+                0x00000000400003ac                panic
+                0x00000000400004c0                set_panic
+                0x0000000040000530                set_and_throw_panic
+ .text          0x0000000040000574        0x0 bin/obj/kernel/malloc/buddy_allocator.o
+ .text          0x0000000040000574       0x34 bin/obj/kernel/kernel_entry.o
+                0x0000000040000594                kernel_entry
+ .text          0x00000000400005a8      0x7d4 bin/obj/lib/string.o
+                0x00000000400005a8                strcopy
+                0x000000004000063c                uint8_to_ascii_char
+                0x00000000400006ac                stdint_to_ascii
+ .text          0x0000000040000d7c      0x1d0 bin/obj/lib/memcpy/memcpy.o
+                0x0000000040000d7c                memcpy64_aligned
+                0x0000000040000eb8                memcpy64
+ .text          0x0000000040000f4c      0x768 bin/obj/drivers/uart/uart.o
+                0x0000000040001418                UART_putc
+                0x0000000040001480                UART_puts
+                0x00000000400014d0                UART_reset
+                0x0000000040001568                UART_init
+                0x00000000400016c0                . = ALIGN (0x10)
+ *fill*         0x00000000400016b4        0xc 
 
-.iplt           0x0000000040001780        0x0
- .iplt          0x0000000040001780        0x0 bin/obj/__boot/clean_bss.o
+.iplt           0x00000000400016c0        0x0
+ .iplt          0x00000000400016c0        0x0 bin/obj/__boot/clean_bss.o
 
-.rodata         0x0000000040001780      0x2f0
+.rodata         0x00000000400016c0      0x2e0
  *(.rodata*)
- .rodata        0x0000000040001780       0xc3 bin/obj/kernel/panic.o
- *fill*         0x0000000040001843        0x5 
- .rodata        0x0000000040001848        0xe bin/obj/kernel/kernel_entry.o
- *fill*         0x0000000040001856        0x2 
- .rodata        0x0000000040001858      0x115 bin/obj/lib/string.o
- *fill*         0x000000004000196d        0x3 
- .rodata        0x0000000040001970       0xd7 bin/obj/lib/memcpy/memcpy.o
- *fill*         0x0000000040001a47        0x1 
- .rodata        0x0000000040001a48       0x20 bin/obj/drivers/uart/uart.o
-                0x0000000040001a70                . = ALIGN (0x10)
- *fill*         0x0000000040001a68        0x8 
+ .rodata        0x00000000400016c0       0xc3 bin/obj/kernel/panic.o
+ *fill*         0x0000000040001783        0x5 
+ .rodata        0x0000000040001788      0x115 bin/obj/lib/string.o
+ *fill*         0x000000004000189d        0x3 
+ .rodata        0x00000000400018a0       0xd7 bin/obj/lib/memcpy/memcpy.o
+ *fill*         0x0000000040001977        0x1 
+ .rodata        0x0000000040001978       0x20 bin/obj/drivers/uart/uart.o
+                0x00000000400019a0                . = ALIGN (0x10)
+ *fill*         0x0000000040001998        0x8 
 
-.rela.dyn       0x0000000040001a70        0x0
- .rela.iplt     0x0000000040001a70        0x0 bin/obj/__boot/clean_bss.o
- .rela.text     0x0000000040001a70        0x0 bin/obj/__boot/clean_bss.o
+.rela.dyn       0x00000000400019a0        0x0
+ .rela.iplt     0x00000000400019a0        0x0 bin/obj/__boot/clean_bss.o
+ .rela.text     0x00000000400019a0        0x0 bin/obj/__boot/clean_bss.o
  .rela.text.boot
-                0x0000000040001a70        0x0 bin/obj/__boot/clean_bss.o
+                0x00000000400019a0        0x0 bin/obj/__boot/clean_bss.o
 
-.data           0x0000000040001a70        0x0
+.data           0x00000000400019a0        0x0
  *(.data*)
- .data          0x0000000040001a70        0x0 bin/obj/__lib/kernel_utils.o
- .data          0x0000000040001a70        0x0 bin/obj/__lib/memcpy/memcpy.o
- .data          0x0000000040001a70        0x0 bin/obj/__boot/clean_bss.o
- .data          0x0000000040001a70        0x0 bin/obj/__boot/boot.o
- .data          0x0000000040001a70        0x0 bin/obj/kernel/panic.o
- .data          0x0000000040001a70        0x0 bin/obj/kernel/malloc/buddy_allocator.o
- .data          0x0000000040001a70        0x0 bin/obj/kernel/kernel_entry.o
- .data          0x0000000040001a70        0x0 bin/obj/lib/string.o
- .data          0x0000000040001a70        0x0 bin/obj/lib/memcpy/memcpy.o
- .data          0x0000000040001a70        0x0 bin/obj/drivers/uart/uart.o
-                0x0000000040001a70                . = ALIGN (0x10)
+ .data          0x00000000400019a0        0x0 bin/obj/__lib/kernel_utils.o
+ .data          0x00000000400019a0        0x0 bin/obj/__lib/memcpy/memcpy.o
+ .data          0x00000000400019a0        0x0 bin/obj/__boot/clean_bss.o
+ .data          0x00000000400019a0        0x0 bin/obj/__boot/boot.o
+ .data          0x00000000400019a0        0x0 bin/obj/kernel/panic.o
+ .data          0x00000000400019a0        0x0 bin/obj/kernel/malloc/buddy_allocator.o
+ .data          0x00000000400019a0        0x0 bin/obj/kernel/kernel_entry.o
+ .data          0x00000000400019a0        0x0 bin/obj/lib/string.o
+ .data          0x00000000400019a0        0x0 bin/obj/lib/memcpy/memcpy.o
+ .data          0x00000000400019a0        0x0 bin/obj/drivers/uart/uart.o
+                0x00000000400019a0                . = ALIGN (0x10)
 
-.igot.plt       0x0000000040001a70        0x0
- .igot.plt      0x0000000040001a70        0x0 bin/obj/__boot/clean_bss.o
+.igot.plt       0x00000000400019a0        0x0
+ .igot.plt      0x00000000400019a0        0x0 bin/obj/__boot/clean_bss.o
 
-.bss            0x0000000040001a80     0x1940
-                0x0000000040001a80                __bss_start = .
+.bss            0x00000000400019c0     0x1440
+                0x00000000400019c0                __bss_start = .
  *(.bss*)
- .bss           0x0000000040001a80        0x0 bin/obj/__lib/kernel_utils.o
- .bss           0x0000000040001a80        0x0 bin/obj/__lib/memcpy/memcpy.o
- .bss           0x0000000040001a80        0x0 bin/obj/__boot/clean_bss.o
- .bss           0x0000000040001a80        0x0 bin/obj/__boot/boot.o
- .bss           0x0000000040001a80     0x1428 bin/obj/kernel/panic.o
-                0x0000000040001a80                PANIC_MESSAGE_LEN
-                0x0000000040001a88                PANIC_FILE_LEN
-                0x0000000040001a90                PANIC_MESSAGE_PTR
-                0x0000000040001a98                PANIC_FILE_PTR
-                0x0000000040001aa0                PANIC_LINE
-                0x0000000040001aa4                PANIC_COL
- .bss           0x0000000040002ea8        0x0 bin/obj/kernel/malloc/buddy_allocator.o
- *fill*         0x0000000040002ea8       0x18 
- .bss           0x0000000040002ec0      0x500 bin/obj/kernel/kernel_entry.o
- .bss           0x00000000400033c0        0x0 bin/obj/lib/string.o
- .bss           0x00000000400033c0        0x0 bin/obj/lib/memcpy/memcpy.o
- .bss           0x00000000400033c0        0x0 bin/obj/drivers/uart/uart.o
+ .bss           0x00000000400019c0        0x0 bin/obj/__lib/kernel_utils.o
+ .bss           0x00000000400019c0        0x0 bin/obj/__lib/memcpy/memcpy.o
+ .bss           0x00000000400019c0        0x0 bin/obj/__boot/clean_bss.o
+ .bss           0x00000000400019c0        0x0 bin/obj/__boot/boot.o
+ .bss           0x00000000400019c0     0x1428 bin/obj/kernel/panic.o
+                0x00000000400019c0                PANIC_MESSAGE_LEN
+                0x00000000400019c8                PANIC_FILE_LEN
+                0x00000000400019d0                PANIC_MESSAGE_PTR
+                0x00000000400019d8                PANIC_FILE_PTR
+                0x00000000400019e0                PANIC_LINE
+                0x00000000400019e4                PANIC_COL
+ .bss           0x0000000040002de8        0x0 bin/obj/kernel/malloc/buddy_allocator.o
+ .bss           0x0000000040002de8        0x0 bin/obj/kernel/kernel_entry.o
+ .bss           0x0000000040002de8        0x0 bin/obj/lib/string.o
+ .bss           0x0000000040002de8        0x0 bin/obj/lib/memcpy/memcpy.o
+ .bss           0x0000000040002de8        0x0 bin/obj/drivers/uart/uart.o
  *(COMMON)
-                0x00000000400033c0                . = ALIGN (0x40)
-                0x00000000400033c0                __bss_end = .
+                0x0000000040002e00                . = ALIGN (0x40)
+ *fill*         0x0000000040002de8       0x18 
+                0x0000000040002e00                __bss_end = .
 
-.stacks         0x0000000040004000   0xa00000
-                0x0000000040004000                . = ALIGN (0x10)
-                0x0000000040004000                __stack_el1_bottom = .
-                0x0000000040504000                . = (. + 0x500000)
- *fill*         0x0000000040004000   0x500000 
-                0x0000000040504000                __stack_el1_top = .
-                0x0000000040504000                . = ALIGN (0x10)
-                0x0000000040504000                __stack_el2_bottom = .
-                0x0000000040a04000                . = (. + 0x500000)
- *fill*         0x0000000040504000   0x500000 
-                0x0000000040a04000                __stack_el2_top = .
+.stacks         0x0000000040003000   0xa00000
+                0x0000000040003000                . = ALIGN (0x10)
+                0x0000000040003000                __stack_el1_bottom = .
+                0x0000000040503000                . = (. + 0x500000)
+ *fill*         0x0000000040003000   0x500000 
+                0x0000000040503000                __stack_el1_top = .
+                0x0000000040503000                . = ALIGN (0x10)
+                0x0000000040503000                __stack_el2_bottom = .
+                0x0000000040a03000                . = (. + 0x500000)
+ *fill*         0x0000000040503000   0x500000 
+                0x0000000040a03000                __stack_el2_top = .
 LOAD bin/obj/__lib/kernel_utils.o
 LOAD bin/obj/__lib/memcpy/memcpy.o
 LOAD bin/obj/__boot/clean_bss.o

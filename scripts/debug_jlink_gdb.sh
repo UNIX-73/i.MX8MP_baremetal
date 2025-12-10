@@ -9,7 +9,7 @@ GDB="gdb"
 _start=0x40000000 
 
 
-sleep 1
+sleep 2
 
 JLinkGDBServer -if $IFACE -device $DEVICE -speed $SPEED &
 

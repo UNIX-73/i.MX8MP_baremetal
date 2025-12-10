@@ -40,12 +40,15 @@ typedef unsigned long long uint64;
 
 #if __SIZEOF_POINTER__ == 4
 typedef int intptr;
-typedef unsigned int uintptr;
-
+typedef int isize_t typedef unsigned int uintptr;
+typedef unsigned int size_t
 #elif __SIZEOF_POINTER__ == 8
 #if __SIZEOF_LONG__ == 8
 typedef long intptr;
+typedef long isize_t;
+
 typedef unsigned long uintptr;
+typedef unsigned long size_t;
 #else
 typedef long long intptr;
 typedef unsigned long long uintptr;
@@ -112,7 +115,7 @@ typedef unsigned long long uintptr;
 #define INTMAX_MAX INT64_MAX
 #define UINTMAX_MAX UINT64_MAX
 
-typedef union {
+	typedef union {
 	int8 int8;
 	uint8 uint8;
 

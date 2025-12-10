@@ -1,7 +1,8 @@
 #include <kernel/panic.h>
 #include <lib/memcpy.h>
+#include <lib/stdint.h>
 
-#include "lib/stdint.h"
+#include "lib/string.h"
 
 extern void *_memcpy64(void *dst, void *src, uint64 size);
 extern void *_memcpy32(void *dst, void *src, uint64 size);
@@ -45,3 +46,50 @@ void *memcpy(void *dst, void *src, uint64 size)
 	return dst;
 }
 */
+
+#ifdef TEST
+
+#include "drivers/uart/uart.h"
+#include "lib/stdmacros.h"
+
+#define MEMCPY_TEST_SIZE 1048576 * 4
+
+uint8 src[MEMCPY_TEST_SIZE] __attribute__((aligned(64)));
+uint8 dst[MEMCPY_TEST_SIZE] __attribute__((aligned(64)));
+uint8 ref[MEMCPY_TEST_SIZE] __attribute__((aligned(64)));
+
+void test_memcpy(size_t size_start)
+{
+	char buf[100];
+
+	for (size_t i = 0; i < sizeof(src); i++) {
+		src[i] = (uint8)(i * 37 + 13);
+	}
+
+	for (size_t i = size_start; i < sizeof(src); i++) {
+		for (size_t j = 0; j < sizeof(src); j++) {
+			dst[j] = (uint8)(0xFF);
+		}
+
+		memcpy(&dst[sizeof(dst) - 1 - i], &src[sizeof(src) - 1 - i], i);
+
+		for (size_t j = 0; j < i; j++) {
+			if (dst[(sizeof(dst) - 1 - i) + j] !=
+				src[(sizeof(src) - 1 - i) + j]) {
+				UART_puts(UART_ID_2, "Something went wrong");
+				FOREVER {}
+			}
+		}
+
+		if (i % 10000 == 0) {
+			UART_puts(UART_ID_2, "i: ");
+			UART_puts(UART_ID_2,
+					  stdint_to_ascii((STDINT_UNION){.int64 = i}, STDINT_UINT64,
+									  buf, 100, STDINT_REPR_DEC));
+			UART_puts(UART_ID_2, " ok\n\r");
+		}
+	}
+
+	UART_puts(UART_ID_2, "FINISHED without hang");
+}
+#endif
