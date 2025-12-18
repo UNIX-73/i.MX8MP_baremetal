@@ -8,6 +8,11 @@
 		uint32 val;                                         \
 	} RegValueStructName;
 
+#define MMIO_DECLARE_REG64_VALUE_STRUCT(RegValueStructName) \
+	typedef struct {                                        \
+		uint64 val;                                         \
+	} RegValueStructName;
+
 // Register getters
 
 #define MMIO_DECLARE_REG32_GETTER(periph_name, reg_name, RegValueStruct, addr) \
@@ -23,6 +28,53 @@
 	{                                                                        \
 		return (RegValueStruct){.val =                                       \
 									*((reg32_ptr)(periph_base + (offset)))}; \
+	}
+
+#define MMIO_DECLARE_REG32_GETTER_N_OFFSET(periph_name, reg_name,              \
+										   RegValueStruct, base, offset_macro) \
+	static inline RegValueStruct periph_name##_##reg_name##_read(size_t n)     \
+	{                                                                          \
+		return (RegValueStruct){                                               \
+			.val = *((reg32_ptr)(base + ((uintptr)offset_macro(n))))};         \
+	}
+
+#define MMIO_DECLARE_REG32_GETTER_N_BASE(periph_name, reg_name,              \
+										 RegValueStruct, base_macro, offset) \
+	static inline RegValueStruct periph_name##_##reg_name##_read(size_t n)   \
+	{                                                                        \
+		return (RegValueStruct){                                             \
+			.val = *((reg32_ptr)((uintptr)base_macro(n) + (offset)))};       \
+	}
+
+#define MMIO_DECLARE_REG64_GETTER(periph_name, reg_name, RegValueStruct, addr) \
+	static inline RegValueStruct periph_name##_##reg_name##_read()             \
+	{                                                                          \
+		return (RegValueStruct){.val = *((reg64_ptr)(addr))};                  \
+	}
+
+#define MMIO_DECLARE_REG64_GETTER_WITH_BASE(periph_name, reg_name,           \
+											RegValueStruct, offset)          \
+	static inline RegValueStruct periph_name##_##reg_name##_read(            \
+		uintptr periph_base)                                                 \
+	{                                                                        \
+		return (RegValueStruct){.val =                                       \
+									*((reg64_ptr)(periph_base + (offset)))}; \
+	}
+
+#define MMIO_DECLARE_REG64_GETTER_N_OFFSET(periph_name, reg_name,              \
+										   RegValueStruct, base, offset_macro) \
+	static inline RegValueStruct periph_name##_##reg_name##_read(size_t n)     \
+	{                                                                          \
+		return (RegValueStruct){                                               \
+			.val = *((reg64_ptr)(base + ((uintptr)offset_macro(n))))};         \
+	}
+
+#define MMIO_DECLARE_REG64_GETTER_N_BASE(periph_name, reg_name,              \
+										 RegValueStruct, base_macro, offset) \
+	static inline RegValueStruct periph_name##_##reg_name##_read(size_t n)   \
+	{                                                                        \
+		return (RegValueStruct){                                             \
+			.val = *((reg64_ptr)((uintptr)base_macro(n) + (offset)))};       \
 	}
 
 // Register setters
@@ -41,24 +93,79 @@
 		*((reg32_ptr)(periph_base + (offset))) = v.val;                      \
 	}
 
-// Bit field getters
-
-#define MMIO_DECLARE_BIT_FIELD_GETTER(periph_name, reg_name, bf_name, \
-									  RegValueStruct, T, SHIFT, MASK) \
-	static inline T periph_name##_##reg_name##_BF_get_##bf_name(      \
-		const RegValueStruct r)                                       \
-	{                                                                 \
-		_Static_assert((MASK >> SHIFT) << SHIFT == MASK,              \
-					   "MASK/SHIFT mismatch");                        \
-		return (T)((r.val & MASK) >> SHIFT);                          \
+#define MMIO_DECLARE_REG32_SETTER_N_OFFSET(periph_name, reg_name,              \
+										   RegValueStruct, base, offset_macro) \
+	static inline void periph_name##_##reg_name##_write(size_t n,              \
+														RegValueStruct v)      \
+	{                                                                          \
+		*((reg32_ptr)(base + (uintptr)offset_macro(n))) = v.val;               \
 	}
 
-#define MMIO_DECLARE_BIT_FIELD_SETTER(periph_name, reg_name, bf_name, \
-									  RegValueStruct, T, SHIFT, MASK) \
-	static inline void periph_name##_##reg_name##_BF_set_##bf_name(   \
-		RegValueStruct *r, T v)                                       \
-	{                                                                 \
-		_Static_assert((MASK >> SHIFT) << SHIFT == MASK,              \
-					   "MASK/SHIFT mismatch");                        \
-		r->val = (r->val & ~MASK) | (((uint32)v << SHIFT) & MASK);    \
+#define MMIO_DECLARE_REG32_SETTER_N_BASE(periph_name, reg_name,              \
+										 RegValueStruct, base_macro, offset) \
+	static inline void periph_name##_##reg_name##_write(size_t n,            \
+														RegValueStruct v)    \
+	{                                                                        \
+		*((reg32_ptr)((uintptr)base_macro(n) + (offset))) = v.val;           \
+	}
+
+#define MMIO_DECLARE_REG64_SETTER(periph_name, reg_name, RegValueStruct, addr) \
+	static inline void periph_name##_##reg_name##_write(RegValueStruct v)      \
+	{                                                                          \
+		*((reg64_ptr)(addr)) = v.val;                                          \
+	}
+
+#define MMIO_DECLARE_REG64_SETTER_WITH_BASE(periph_name, reg_name,           \
+											RegValueStruct, offset)          \
+	static inline void periph_name##_##reg_name##_write(uintptr periph_base, \
+														RegValueStruct v)    \
+	{                                                                        \
+		*((reg64_ptr)(periph_base + (offset))) = v.val;                      \
+	}
+
+#define MMIO_DECLARE_REG64_SETTER_N_OFFSET(periph_name, reg_name,              \
+										   RegValueStruct, base, offset_macro) \
+	static inline void periph_name##_##reg_name##_write(size_t n,              \
+														RegValueStruct v)      \
+	{                                                                          \
+		*((reg64_ptr)(base + (uintptr)offset_macro(n))) = v.val;               \
+	}
+
+#define MMIO_DECLARE_REG64_SETTER_N_BASE(periph_name, reg_name,              \
+										 RegValueStruct, base_macro, offset) \
+	static inline void periph_name##_##reg_name##_write(size_t n,            \
+														RegValueStruct v)    \
+	{                                                                        \
+		*((reg64_ptr)((uintptr)base_macro(n) + (offset))) = v.val;           \
+	}
+
+// Bit field getters
+
+#define MMIO_DECLARE_BIT_FIELD_GETTER(periph_name, reg_name, bf_name,          \
+									  RegValueStruct, T, SHIFT, MASK)          \
+	static inline T periph_name##_##reg_name##_BF_get_##bf_name(               \
+		const RegValueStruct r)                                                \
+	{                                                                          \
+		typedef typeof(r.val) reg_t;                                           \
+		_Static_assert((MASK >> SHIFT) << SHIFT == MASK,                       \
+					   "MASK/SHIFT mismatch");                                 \
+		_Static_assert(__builtin_constant_p(MASK), "MASK must be constant");   \
+		_Static_assert(__builtin_constant_p(SHIFT), "SHIFT must be constant"); \
+                                                                               \
+		return (T)((r.val & (reg_t)(MASK)) >> (reg_t)(SHIFT));                 \
+	}
+
+#define MMIO_DECLARE_BIT_FIELD_SETTER(periph_name, reg_name, bf_name,          \
+									  RegValueStruct, T, SHIFT, MASK)          \
+	static inline void periph_name##_##reg_name##_BF_set_##bf_name(            \
+		RegValueStruct *r, T v)                                                \
+	{                                                                          \
+		typedef typeof(r->val) reg_t;                                          \
+		_Static_assert((MASK >> SHIFT) << SHIFT == MASK,                       \
+					   "MASK/SHIFT mismatch");                                 \
+		_Static_assert(__builtin_constant_p(MASK), "MASK must be constant");   \
+		_Static_assert(__builtin_constant_p(SHIFT), "SHIFT must be constant"); \
+                                                                               \
+		r->val = (r->val & ~((reg_t)(MASK))) |                                 \
+				 (((reg_t)(v) << (reg_t)(SHIFT)) & (reg_t)(MASK));             \
 	}

@@ -1,0 +1,47 @@
+#pragma once
+
+#ifndef DRIVERS
+#error "This header should only be imported by a driver"
+#endif
+
+#include <kernel/panic.h>
+#include <lib/mmio/mmio_macros.h>
+#include <lib/stdbool.h>
+#include <lib/stdint.h>
+
+#include "gicv3_map.h"
+
+#define GICD_ICFGR_OFFSET(n) (0xC00 + (4UL * n))
+
+#define GICD_ICFGR_VALUE_STRUCT_NAME GicdIcfgr
+
+MMIO_DECLARE_REG32_VALUE_STRUCT(GICD_ICFGR_VALUE_STRUCT_NAME);
+
+MMIO_DECLARE_REG32_GETTER_N_OFFSET(GICV3, GICD_ICFGR,
+								   GICD_ICFGR_VALUE_STRUCT_NAME,
+								   GICV3_DISTRIBUTOR_BASE, GICD_ICFGR_OFFSET);
+
+MMIO_DECLARE_REG32_SETTER_N_OFFSET(GICV3, GICD_ICFGR,
+								   GICD_ICFGR_VALUE_STRUCT_NAME,
+								   GICV3_DISTRIBUTOR_BASE, GICD_ICFGR_OFFSET);
+
+static inline uint8 GICV3_GICD_ICFGR_BF_get(
+	const GICD_ICFGR_VALUE_STRUCT_NAME r, size_t slot)
+{
+	if (slot > 15) PANIC("GICD_ICFGR: slot must be <= 15");
+
+	uint32 shift = (slot * 2);
+
+	return (uint8)((r.val >> shift) & 0x3UL);
+}
+
+static inline void GICV3_GICD_ICFGR_BF_set(GICD_ICFGR_VALUE_STRUCT_NAME *r,
+										   size_t slot, uint8 v)
+{
+	if (slot > 15) PANIC("GICD_ICFGR: slot must be <= 15");
+	if (v != 0b10 && v != 0b00) PANIC("GICD_ICFGR: value must be 0b10 or 0b00");
+
+	uint32 shift = (slot * 2);
+
+	r->val = (r->val & ~(0x3UL << shift)) | (((uint32)v & 0x3UL) << shift);
+};

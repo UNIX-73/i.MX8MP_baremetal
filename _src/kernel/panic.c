@@ -1,3 +1,4 @@
+#include <arm/exceptions/exceptions.h>
 #include <drivers/uart/uart.h>
 #include <kernel/panic.h>
 #include <lib/stdint.h>
@@ -5,6 +6,7 @@
 #include <lib/string.h>
 
 #define PANIC_UART_OUTPUT UART_ID_2
+#define PANIC_puts(str) UART_puts(PANIC_UART_OUTPUT, str)
 
 #define PANIC_MESSAGE_LEN_INIT_VALUE 4096
 #define PANIC_FILE_LEN_INIT_VALUE 1024
@@ -47,29 +49,32 @@ void init_panic()
 			PANIC_FILE_LEN_INIT_VALUE);
 }
 
+static void log_system_info();
+
+// TODO: use panic via exceptions
 _Noreturn void panic()
 {
 	char buf[200];
-	UART_puts(PANIC_UART_OUTPUT, "\n\r[PANIC!]");
+	PANIC_puts("\n\r[PANIC!]");
 
-	UART_puts(PANIC_UART_OUTPUT, "\n\rPanic message:\t");
-	UART_puts(PANIC_UART_OUTPUT, (char *)PANIC_MESSAGE_BUF_PTR);
+	PANIC_puts("\n\rPanic message:\t");
+	PANIC_puts((char *)PANIC_MESSAGE_BUF_PTR);
 
-	UART_puts(PANIC_UART_OUTPUT, "\n\rPanic file:\t");
-	UART_puts(PANIC_UART_OUTPUT, (char *)PANIC_FILE_BUF_PTR);
-	UART_puts(PANIC_UART_OUTPUT, " at line ");
+	PANIC_puts("\n\rPanic file:\t");
+	PANIC_puts((char *)PANIC_FILE_BUF_PTR);
+	PANIC_puts(" at line ");
 
-	UART_puts(PANIC_UART_OUTPUT,
-			  stdint_to_ascii((STDINT_UNION){.uint32 = PANIC_LINE},
-							  STDINT_UINT32, buf, 200, STDINT_BASE_REPR_DEC));
+	PANIC_puts(stdint_to_ascii((STDINT_UNION){.uint32 = PANIC_LINE},
+							   STDINT_UINT32, buf, 200, STDINT_BASE_REPR_DEC));
 
 	if (PANIC_COL != 0) {
-		UART_puts(PANIC_UART_OUTPUT, ":");
-		UART_puts(
-			PANIC_UART_OUTPUT,
-			stdint_to_ascii((STDINT_UNION){.uint32 = PANIC_COL}, STDINT_UINT32,
-							buf, 200, STDINT_BASE_REPR_DEC));
+		PANIC_puts(":");
+		PANIC_puts(stdint_to_ascii((STDINT_UNION){.uint32 = PANIC_COL},
+								   STDINT_UINT32, buf, 200,
+								   STDINT_BASE_REPR_DEC));
 	}
+
+	log_system_info();
 
 	loop {}	 // TODO: TUI with options
 }
@@ -90,4 +95,30 @@ _Noreturn void set_and_throw_panic(PanicInfo panic_info)
 {
 	set_panic(panic_info);
 	panic();
+}
+
+// System info
+
+static void log_system_info()
+{
+	EXCEPTION_STATUS status = exceptions_get_status();
+
+	PANIC_puts("\n\rExceptions state:\n\r");
+
+	char *enabled = "enabled\n\r";
+	char *disabled = "disabled\n\r";
+
+	PANIC_puts("\tFIQ:    ");
+	PANIC_puts(status.fiq ? enabled : disabled);
+
+	PANIC_puts("\tIRQ:    ");
+	PANIC_puts(status.irq ? enabled : disabled);
+
+	PANIC_puts("\tSError: ");
+	PANIC_puts(status.serror ? enabled : disabled);
+
+	PANIC_puts("\tDebug:  ");
+	PANIC_puts(status.debug ? enabled : disabled);
+
+	// TODO: log registers
 }

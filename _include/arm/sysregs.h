@@ -2,6 +2,6 @@
 
 #include <lib/stdint.h>
 
-uint64 _currentEL();
+uint64 _ARM_currentEL();
 
-#define currentEL() _currentEL()
+uint64 _ARM_MPIDR_EL1();

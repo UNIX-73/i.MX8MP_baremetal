@@ -19,10 +19,10 @@ EXCEPTION_STATUS exceptions_get_status()
 {
 	uint64 daif = _exceptions_get_DAIF();
 
-	return (EXCEPTION_STATUS){.fiq = !((daif >> 6) & 0b1),
-							  .irq = !((daif >> 7) & 0b1),
-							  .serror = !((daif >> 8) & 0b1),
-							  .debug = !((daif >> 9) & 0b1)};
+	return (EXCEPTION_STATUS){.fiq = !((daif >> 6) & 1UL),
+							  .irq = !((daif >> 7) & 1UL),
+							  .serror = !((daif >> 8) & 1UL),
+							  .debug = !((daif >> 9) & 1UL)};
 }
 
 void exceptions_set_status(EXCEPTION_STATUS status)
