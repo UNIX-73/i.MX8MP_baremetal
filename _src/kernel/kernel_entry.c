@@ -63,11 +63,7 @@ _Noreturn void kernel_entry()
 			  stdint_to_ascii((STDINT_UNION){.uint64 = el}, STDINT_UINT64, buf,
 							  200, STDINT_BASE_REPR_DEC));
 
-	UART_puts(UART_ID_2, "\n\rSCTLR_EL2: ");
-	UART_puts(UART_ID_2,
-			  stdint_to_ascii((STDINT_UNION){.uint64 = _ARM_SCTLR_EL2()},
-							  STDINT_UINT64, buf, 200, STDINT_BASE_REPR_BIN));
-
+	
 	UART_puts(UART_ID_2, "\n\rSCTLR_EL1: ");
 	UART_puts(UART_ID_2,
 			  stdint_to_ascii((STDINT_UNION){.uint64 = _ARM_SCTLR_EL1()},

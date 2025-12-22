@@ -76,6 +76,13 @@ static void log_system_info();
 // TODO: use panic via exceptions
 _Noreturn void panic()
 {
+#ifdef DEBUG
+	__attribute__((unused)) volatile uint64 GDB_esr = _ARM_ESR_EL1();
+	__attribute__((unused)) volatile uint64 GDB_elr = _ARM_ELR_EL1();
+	__attribute__((unused)) volatile uint64 GDB_far = _ARM_FAR_EL1();
+	__attribute__((unused)) volatile uint64 GDB_spsr = _ARM_SPSR_EL1();
+#endif
+
 	char buf[200];
 	PANIC_puts("\n\r[PANIC!]");
 
@@ -203,7 +210,7 @@ static void log_exception_info()
 		"FAR",
 		"SPSR",
 	};
-	
+
 	char *el_names[4] = {
 		"EL0",
 		"EL1",

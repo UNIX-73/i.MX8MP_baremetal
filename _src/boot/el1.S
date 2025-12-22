@@ -28,12 +28,12 @@ _switch_to_el1:
     msr ELR_EL2, x0
 
     adr x0, __text_start
-    adr x1, __text_end
+    ldr x1, =__bss_end
     bl _cache_flush_d_range
 
-    adr x0, __vectors_start
-    adr x1, __vectors_end
-    bl _cache_flush_d_range
+    // Enable simd instructions for EL1
+    mov  x0, #(3 << 20)    // FPEN = 0b11
+    msr  CPACR_EL1, x0
 
 
     dsb sy
@@ -47,7 +47,6 @@ hang:
     b hang
 
 
-
 .align 4
 .global _el1_entry
 _el1_entry:
@@ -55,16 +54,13 @@ _el1_entry:
     mov x0, #1
     msr spsel, x0
 
-    // 1. MAIR_EL1: define Device
-    mov x0, #0x00            // Attr0 = Device-nGnRnE
+    mov x0, #0x00            
     msr MAIR_EL1, x0
 
-    // 2. TCR_EL1: válido
-    mov x0, #(16)            // T0SZ razonable
+    mov x0, #(16)            
     msr TCR_EL1, x0
 
-    // 3. SCTLR_EL1: saneado
-    mov x0, #(1 << 11)       // EO bit recomendado
+    mov x0, #(1 << 11)      
     msr SCTLR_EL1, x0
     isb
 

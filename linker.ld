@@ -56,5 +56,5 @@ SECTIONS {
         . += 0x500000;
         __stack_el0_top = .;
     }
-
+    
 }
