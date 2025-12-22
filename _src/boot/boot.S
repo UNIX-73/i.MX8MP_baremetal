@@ -4,7 +4,7 @@
 _start:
     nop
     //  disable DAIF exceptions
-   // msr daifset, #0xf
+    // msr daifset, #0xf
 
 #ifdef TEST
     mrs x0, CurrentEL
@@ -31,3 +31,6 @@ _start:
 hang:
     wfe
     b hang
+
+
+

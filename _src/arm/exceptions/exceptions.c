@@ -1,5 +1,6 @@
 #include <arm/exceptions/exceptions.h>
-#include <kernel/panic.h>
+#include <arm/sysregs.h>
+#include <boot/panic.h>
 #include <lib/stdint.h>
 
 extern uint64 _exceptions_get_DAIF();
@@ -15,17 +16,17 @@ extern void _serror_exceptions_disable();
 extern void _debug_exceptions_disable();
 
 // https://developer.arm.com/documentation/111107/2025-09/AArch64-Registers/DAIF--Interrupt-Mask-Bits
-EXCEPTION_STATUS exceptions_get_status()
+ARM_exception_status ARM_exceptions_get_status()
 {
 	uint64 daif = _exceptions_get_DAIF();
 
-	return (EXCEPTION_STATUS){.fiq = !((daif >> 6) & 1UL),
-							  .irq = !((daif >> 7) & 1UL),
-							  .serror = !((daif >> 8) & 1UL),
-							  .debug = !((daif >> 9) & 1UL)};
+	return (ARM_exception_status){.fiq = !((daif >> 6) & 1UL),
+								  .irq = !((daif >> 7) & 1UL),
+								  .serror = !((daif >> 8) & 1UL),
+								  .debug = !((daif >> 9) & 1UL)};
 }
 
-void exceptions_set_status(EXCEPTION_STATUS status)
+void ARM_exceptions_set_status(ARM_exception_status status)
 {
 	if (status.fiq)
 		_fiq_exceptions_enable();
@@ -48,7 +49,7 @@ void exceptions_set_status(EXCEPTION_STATUS status)
 		_debug_exceptions_disable();
 
 #ifdef TEST
-	EXCEPTION_STATUS current = exceptions_get_status();
+	ARM_exception_status current = ARM_exceptions_get_status();
 
 	if (current.fiq != status.fiq || current.irq != status.irq ||
 		current.serror != status.serror || current.debug != status.debug)
@@ -56,7 +57,7 @@ void exceptions_set_status(EXCEPTION_STATUS status)
 #endif
 }
 
-void exceptions_enable(bool fiq, bool irq, bool serror, bool debug)
+void ARM_exceptions_enable(bool fiq, bool irq, bool serror, bool debug)
 {
 	if (fiq) _fiq_exceptions_enable();
 
@@ -67,7 +68,7 @@ void exceptions_enable(bool fiq, bool irq, bool serror, bool debug)
 	if (debug) _debug_exceptions_enable();
 }
 
-void exceptions_disable(bool fiq, bool irq, bool serror, bool debug)
+void ARM_exceptions_disable(bool fiq, bool irq, bool serror, bool debug)
 {
 	if (fiq) _fiq_exceptions_disable();
 
@@ -77,3 +78,5 @@ void exceptions_disable(bool fiq, bool irq, bool serror, bool debug)
 
 	if (debug) _debug_exceptions_disable();
 }
+
+size_t ARM_get_exception_level() { return (size_t)_ARM_currentEL(); }

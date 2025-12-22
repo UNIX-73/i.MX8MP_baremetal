@@ -4,14 +4,19 @@ ENTRY(_start)
 SECTIONS {
     . = 0x40000000;
 
-    .text : ALIGN(16) {
+    .text : ALIGN(64) {
+        __text_start = .;
         KEEP(*(.text.boot))
         *(.text*)
-        . = ALIGN(16);
+        . = ALIGN(64);
+        __text_end = .;
     }
     
     .vectors ALIGN(2048) : {
+        __vectors_start = .;
         KEEP(*(.vectors))
+        . = ALIGN(64);
+        __vectors_end = .;
     }
 
     .rodata : ALIGN(16) {
@@ -33,17 +38,23 @@ SECTIONS {
     }
 
     .stacks (NOLOAD) : ALIGN(4096) {
-        /* EL1 */
-        . = ALIGN(16);
-        __stack_el1_bottom = .;
-        . += 0x500000;
-        __stack_el1_top = .;
-
         /* EL2 */
         . = ALIGN(16);
         __stack_el2_bottom = .;
         . += 0x500000;
         __stack_el2_top = .;
+
+         /* EL1 */
+        . = ALIGN(16);
+        __stack_el1_bottom = .;
+        . += 0x500000;
+        __stack_el1_top = .;
+         
+         /* EL0 */
+        . = ALIGN(16);
+        __stack_el0_bottom = .;
+        . += 0x500000;
+        __stack_el0_top = .;
     }
 
 }

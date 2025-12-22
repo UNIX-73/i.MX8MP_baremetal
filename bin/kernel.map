@@ -10,289 +10,455 @@ Linker script and memory map
 
                 0x0000000040000000                . = 0x40000000
 
-.text           0x0000000040000000     0x3820
+.text           0x0000000040000000     0x6b40
+                0x0000000040000000                __text_start = .
  *(.text.boot)
  .text.boot     0x0000000040000000       0x48 bin/obj/__boot/boot.o
                 0x0000000040000000                _start
  *(.text*)
- .text          0x0000000040000048       0x24 bin/obj/__arm/sysregs.o
-                0x0000000040000048                _ARM_currentEL
-                0x0000000040000054                _ARM_MPIDR_EL1
-                0x000000004000005c                _ARM_ICC_SRE_EL2
-                0x0000000040000064                _ARM_HCR_EL2
- *fill*         0x000000004000006c        0x4 
- .text          0x0000000040000070      0x910 bin/obj/__arm/exceptions/el2_vectors.o
-                0x0000000040000070                _el2_init_vector
- .text          0x0000000040000980       0x68 bin/obj/__arm/exceptions/exceptions.o
-                0x0000000040000980                _exceptions_get_DAIF
-                0x0000000040000988                _fiq_exceptions_enable
-                0x0000000040000994                _irq_exceptions_enable
-                0x00000000400009a0                _serror_exceptions_enable
-                0x00000000400009ac                _debug_exceptions_enable
-                0x00000000400009b8                _fiq_exceptions_disable
-                0x00000000400009c4                _irq_exceptions_disable
-                0x00000000400009d0                _serror_exceptions_disable
-                0x00000000400009dc                _debug_exceptions_disable
- *fill*         0x00000000400009e8        0x8 
- .text          0x00000000400009f0      0x250 bin/obj/__lib/memcpy/memcpy.o
-                0x00000000400009f0                _memcpy
-                0x0000000040000b00                _memcpy64
-                0x0000000040000b30                _memcpy32
-                0x0000000040000b60                _memcpy16
-                0x0000000040000b90                _memcpy8
-                0x0000000040000bc0                _memcpy4
-                0x0000000040000bf0                _memcpy2
-                0x0000000040000c20                _memcpy1
- .text          0x0000000040000c40       0x58 bin/obj/__boot/clean_bss.o
-                0x0000000040000c40                _clean_bss
- .text          0x0000000040000c98        0x0 bin/obj/__boot/boot.o
- .text          0x0000000040000c98      0x394 bin/obj/kernel/panic.o
-                0x0000000040000c98                init_panic
-                0x0000000040000d4c                panic
-                0x0000000040000e64                set_panic
-                0x0000000040000ed4                set_and_throw_panic
- .text          0x000000004000102c        0x0 bin/obj/kernel/malloc/buddy_allocator.o
- .text          0x000000004000102c      0x230 bin/obj/kernel/kernel_entry.o
-                0x0000000040001100                kernel_entry
- .text          0x000000004000125c       0x58 bin/obj/arm/cpu.o
-                0x000000004000125c                ARM_get_cpu_affinity
- .text          0x00000000400012b4       0x4c bin/obj/arm/exceptions/handlers/el2/el2_low_a32_serror.o
-                0x00000000400012b4                el2_low_a32_serror_handler
- .text          0x0000000040001300       0x4c bin/obj/arm/exceptions/handlers/el2/el2_cur_spx_serror.o
-                0x0000000040001300                el2_cur_spx_serror_handler
- .text          0x000000004000134c       0x4c bin/obj/arm/exceptions/handlers/el2/el2_low_a64_serror.o
-                0x000000004000134c                el2_low_a64_serror_handler
- .text          0x0000000040001398       0x4c bin/obj/arm/exceptions/handlers/el2/el2_low_a64_sync.o
-                0x0000000040001398                el2_low_a64_sync_handler
- .text          0x00000000400013e4       0x4c bin/obj/arm/exceptions/handlers/el2/el2_cur_sp0_irq.o
-                0x00000000400013e4                el2_cur_sp0_irq_handler
- .text          0x0000000040001430       0x4c bin/obj/arm/exceptions/handlers/el2/el2_cur_sp0_serror.o
-                0x0000000040001430                el2_cur_sp0_serror_handler
- .text          0x000000004000147c       0x4c bin/obj/arm/exceptions/handlers/el2/el2_low_a64_irq.o
-                0x000000004000147c                el2_low_a64_irq_handler
- .text          0x00000000400014c8       0x4c bin/obj/arm/exceptions/handlers/el2/el2_low_a64_fiq.o
-                0x00000000400014c8                el2_low_a64_fiq_handler
- .text          0x0000000040001514       0x4c bin/obj/arm/exceptions/handlers/el2/el2_cur_spx_fiq.o
-                0x0000000040001514                el2_cur_spx_fiq_handler
- .text          0x0000000040001560       0x4c bin/obj/arm/exceptions/handlers/el2/el2_low_a32_irq.o
-                0x0000000040001560                el2_low_a32_irq_handler
- .text          0x00000000400015ac       0x4c bin/obj/arm/exceptions/handlers/el2/el2_cur_sp0_fiq.o
-                0x00000000400015ac                el2_cur_sp0_fiq_handler
- .text          0x00000000400015f8       0x4c bin/obj/arm/exceptions/handlers/el2/el2_low_a32_fiq.o
-                0x00000000400015f8                el2_low_a32_fiq_handler
- .text          0x0000000040001644       0x4c bin/obj/arm/exceptions/handlers/el2/el2_cur_spx_sync.o
-                0x0000000040001644                el2_cur_spx_sync_handler
- .text          0x0000000040001690       0x4c bin/obj/arm/exceptions/handlers/el2/el2_low_a32_sync.o
-                0x0000000040001690                el2_low_a32_sync_handler
- .text          0x00000000400016dc       0x4c bin/obj/arm/exceptions/handlers/el2/el2_cur_sp0_sync.o
-                0x00000000400016dc                el2_cur_sp0_sync_handler
- .text          0x0000000040001728       0x4c bin/obj/arm/exceptions/handlers/el2/el2_cur_spx_irq.o
-                0x0000000040001728                el2_cur_spx_irq_handler
- .text          0x0000000040001774      0x290 bin/obj/arm/exceptions/exceptions.o
-                0x0000000040001774                exceptions_get_status
-                0x0000000040001808                exceptions_set_status
-                0x000000004000191c                exceptions_enable
-                0x0000000040001990                exceptions_disable
- .text          0x0000000040001a04      0x7cc bin/obj/lib/string.o
-                0x0000000040001a04                strcopy
-                0x0000000040001a98                uint8_to_ascii_char
-                0x0000000040001b08                stdint_to_ascii
- .text          0x00000000400021d0      0x3f8 bin/obj/lib/memcpy/memcpy.o
-                0x00000000400021d0                memcpy64_aligned
-                0x000000004000230c                memcpy64
-                0x00000000400023a0                test_memcpy
- .text          0x00000000400025c8      0xa20 bin/obj/drivers/interrupts/gicv3/gicv3.o
-                0x0000000040002ca0                GICV3_set_spi_group1ns
-                0x0000000040002d10                GICV3_route_spi_to_cpu
-                0x0000000040002d8c                GICV3_route_spi_to_self
-                0x0000000040002db4                GICV3_enable_spi
-                0x0000000040002e04                GICV3_set_priority
-                0x0000000040002e74                GICV3_set_edge_triggered
-                0x0000000040002ee0                GICV3_set_level_sensitive
-                0x0000000040002f4c                GICV3_wake_redistributor
- .text          0x0000000040002fe8        0x0 bin/obj/drivers/interrupts/irq.o
- .text          0x0000000040002fe8      0x830 bin/obj/drivers/uart/uart.o
-                0x0000000040003508                UART_putc
-                0x0000000040003570                UART_puts
-                0x00000000400035c0                UART_reset
-                0x0000000040003658                UART_init
-                0x00000000400037a4                UART_read
-                0x0000000040003820                . = ALIGN (0x10)
- *fill*         0x0000000040003818        0x8 
+ .text          0x0000000040000048       0x40 bin/obj/__arm/cache/cache_d.o
+                0x0000000040000048                _cache_flush_d_range
+ .text          0x0000000040000088       0x74 bin/obj/__arm/sysregs.o
+                0x0000000040000088                _ARM_currentEL
+                0x0000000040000094                _ARM_MPIDR_EL1
+                0x000000004000009c                _ARM_ICC_SRE_EL2
+                0x00000000400000a4                _ARM_HCR_EL2
+                0x00000000400000ac                _ARM_ESR_EL2
+                0x00000000400000b4                _ARM_ELR_EL2
+                0x00000000400000bc                _ARM_FAR_EL2
+                0x00000000400000c4                _ARM_SPSR_EL2
+                0x00000000400000cc                _ARM_ESR_EL1
+                0x00000000400000d4                _ARM_ELR_EL1
+                0x00000000400000dc                _ARM_FAR_EL1
+                0x00000000400000e4                _ARM_SPSR_EL1
+                0x00000000400000ec                _ARM_SCTLR_EL1
+                0x00000000400000f4                _ARM_SCTLR_EL2
+ *fill*         0x00000000400000fc      0x704 
+ .text          0x0000000040000800     0x1100 bin/obj/__arm/exceptions/el2_vectors.o
+                0x0000000040000800                _el2_init_vector
+ .text          0x0000000040001900       0x68 bin/obj/__arm/exceptions/exceptions.o
+                0x0000000040001900                _exceptions_get_DAIF
+                0x0000000040001908                _fiq_exceptions_enable
+                0x0000000040001914                _irq_exceptions_enable
+                0x0000000040001920                _serror_exceptions_enable
+                0x000000004000192c                _debug_exceptions_enable
+                0x0000000040001938                _fiq_exceptions_disable
+                0x0000000040001944                _irq_exceptions_disable
+                0x0000000040001950                _serror_exceptions_disable
+                0x000000004000195c                _debug_exceptions_disable
+ *fill*         0x0000000040001968      0x698 
+ .text          0x0000000040002000     0x1100 bin/obj/__arm/exceptions/el1_vectors.o
+                0x0000000040002000                _el1_init_vector
+ .text          0x0000000040003100      0x250 bin/obj/__lib/memcpy/memcpy.o
+                0x0000000040003100                _memcpy
+                0x0000000040003210                _memcpy64
+                0x0000000040003240                _memcpy32
+                0x0000000040003270                _memcpy16
+                0x00000000400032a0                _memcpy8
+                0x00000000400032d0                _memcpy4
+                0x0000000040003300                _memcpy2
+                0x0000000040003330                _memcpy1
+ .text          0x0000000040003350       0x58 bin/obj/__boot/clean_bss.o
+                0x0000000040003350                _clean_bss
+ .text          0x00000000400033a8        0x0 bin/obj/__boot/boot.o
+ *fill*         0x00000000400033a8        0x8 
+ .text          0x00000000400033b0       0xb0 bin/obj/__boot/el1.o
+                0x00000000400033b0                _switch_to_el1
+                0x0000000040003420                _el1_entry
+ .text          0x0000000040003460       0x68 bin/obj/__boot/panic/panic.o
+                0x0000000040003460                _panic_exception_save_gpr
+ *fill*         0x00000000400034c8        0x8 
+ .text          0x00000000400034d0       0xa0 bin/obj/__boot/el1_cpy.o
+                0x00000000400034d0                __switch_to_el1
+                0x0000000040003550                __el1_entry
+ .text          0x0000000040003570        0x0 bin/obj/kernel/malloc/buddy_allocator.o
+ .text          0x0000000040003570      0x2d0 bin/obj/kernel/kernel_entry.o
+                0x0000000040003644                kernel_entry
+ .text          0x0000000040003840       0x58 bin/obj/arm/cpu.o
+                0x0000000040003840                ARM_get_cpu_affinity
+ .text          0x0000000040003898       0x54 bin/obj/arm/exceptions/handlers/el1/el1_cur_sp0_fiq.o
+                0x0000000040003898                el1_cur_sp0_fiq_handler
+ .text          0x00000000400038ec       0x54 bin/obj/arm/exceptions/handlers/el1/el1_low_a32_serror.o
+                0x00000000400038ec                el1_low_a32_serror_handler
+ .text          0x0000000040003940       0x54 bin/obj/arm/exceptions/handlers/el1/el1_low_a32_fiq.o
+                0x0000000040003940                el1_low_a32_fiq_handler
+ .text          0x0000000040003994       0x54 bin/obj/arm/exceptions/handlers/el1/el1_low_a64_sync.o
+                0x0000000040003994                el1_low_a64_sync_handler
+ .text          0x00000000400039e8       0x54 bin/obj/arm/exceptions/handlers/el1/el1_cur_spx_sync.o
+                0x00000000400039e8                el1_cur_spx_sync_handler
+ .text          0x0000000040003a3c       0x54 bin/obj/arm/exceptions/handlers/el1/el1_cur_spx_fiq.o
+                0x0000000040003a3c                el1_cur_spx_fiq_handler
+ .text          0x0000000040003a90       0x54 bin/obj/arm/exceptions/handlers/el1/el1_cur_spx_irq.o
+                0x0000000040003a90                el1_cur_spx_irq_handler
+ .text          0x0000000040003ae4       0x54 bin/obj/arm/exceptions/handlers/el1/el1_cur_spx_serror.o
+                0x0000000040003ae4                el1_cur_spx_serror_handler
+ .text          0x0000000040003b38       0x54 bin/obj/arm/exceptions/handlers/el1/el1_low_a32_irq.o
+                0x0000000040003b38                el1_low_a32_irq_handler
+ .text          0x0000000040003b8c       0x54 bin/obj/arm/exceptions/handlers/el1/el1_low_a64_fiq.o
+                0x0000000040003b8c                el1_low_a64_fiq_handler
+ .text          0x0000000040003be0       0x54 bin/obj/arm/exceptions/handlers/el1/el1_low_a64_irq.o
+                0x0000000040003be0                el1_low_a64_irq_handler
+ .text          0x0000000040003c34       0x54 bin/obj/arm/exceptions/handlers/el1/el1_cur_sp0_sync.o
+                0x0000000040003c34                el1_cur_sp0_sync_handler
+ .text          0x0000000040003c88       0x54 bin/obj/arm/exceptions/handlers/el1/el1_cur_sp0_irq.o
+                0x0000000040003c88                el1_cur_sp0_irq_handler
+ .text          0x0000000040003cdc       0x54 bin/obj/arm/exceptions/handlers/el1/el1_low_a64_serror.o
+                0x0000000040003cdc                el1_low_a64_serror_handler
+ .text          0x0000000040003d30       0x54 bin/obj/arm/exceptions/handlers/el1/el1_low_a32_sync.o
+                0x0000000040003d30                el1_low_a32_sync_handler
+ .text          0x0000000040003d84       0x54 bin/obj/arm/exceptions/handlers/el1/el1_cur_sp0_serror.o
+                0x0000000040003d84                el1_cur_sp0_serror_handler
+ .text          0x0000000040003dd8       0x54 bin/obj/arm/exceptions/handlers/el2/el2_low_a32_serror.o
+                0x0000000040003dd8                el2_low_a32_serror_handler
+ .text          0x0000000040003e2c       0x54 bin/obj/arm/exceptions/handlers/el2/el2_cur_spx_serror.o
+                0x0000000040003e2c                el2_cur_spx_serror_handler
+ .text          0x0000000040003e80       0x54 bin/obj/arm/exceptions/handlers/el2/el2_low_a64_serror.o
+                0x0000000040003e80                el2_low_a64_serror_handler
+ .text          0x0000000040003ed4       0x54 bin/obj/arm/exceptions/handlers/el2/el2_low_a64_sync.o
+                0x0000000040003ed4                el2_low_a64_sync_handler
+ .text          0x0000000040003f28       0x54 bin/obj/arm/exceptions/handlers/el2/el2_cur_sp0_irq.o
+                0x0000000040003f28                el2_cur_sp0_irq_handler
+ .text          0x0000000040003f7c       0x54 bin/obj/arm/exceptions/handlers/el2/el2_cur_sp0_serror.o
+                0x0000000040003f7c                el2_cur_sp0_serror_handler
+ .text          0x0000000040003fd0       0x54 bin/obj/arm/exceptions/handlers/el2/el2_low_a64_irq.o
+                0x0000000040003fd0                el2_low_a64_irq_handler
+ .text          0x0000000040004024       0x54 bin/obj/arm/exceptions/handlers/el2/el2_low_a64_fiq.o
+                0x0000000040004024                el2_low_a64_fiq_handler
+ .text          0x0000000040004078       0x54 bin/obj/arm/exceptions/handlers/el2/el2_cur_spx_fiq.o
+                0x0000000040004078                el2_cur_spx_fiq_handler
+ .text          0x00000000400040cc       0x54 bin/obj/arm/exceptions/handlers/el2/el2_low_a32_irq.o
+                0x00000000400040cc                el2_low_a32_irq_handler
+ .text          0x0000000040004120       0x54 bin/obj/arm/exceptions/handlers/el2/el2_cur_sp0_fiq.o
+                0x0000000040004120                el2_cur_sp0_fiq_handler
+ .text          0x0000000040004174       0x54 bin/obj/arm/exceptions/handlers/el2/el2_low_a32_fiq.o
+                0x0000000040004174                el2_low_a32_fiq_handler
+ .text          0x00000000400041c8       0x54 bin/obj/arm/exceptions/handlers/el2/el2_cur_spx_sync.o
+                0x00000000400041c8                el2_cur_spx_sync_handler
+ .text          0x000000004000421c       0x54 bin/obj/arm/exceptions/handlers/el2/el2_low_a32_sync.o
+                0x000000004000421c                el2_low_a32_sync_handler
+ .text          0x0000000040004270       0x54 bin/obj/arm/exceptions/handlers/el2/el2_cur_sp0_sync.o
+                0x0000000040004270                el2_cur_sp0_sync_handler
+ .text          0x00000000400042c4       0x54 bin/obj/arm/exceptions/handlers/el2/el2_cur_spx_irq.o
+                0x00000000400042c4                el2_cur_spx_irq_handler
+ .text          0x0000000040004318      0x2ac bin/obj/arm/exceptions/exceptions.o
+                0x0000000040004318                ARM_exceptions_get_status
+                0x00000000400043ac                ARM_exceptions_set_status
+                0x00000000400044c8                ARM_exceptions_enable
+                0x000000004000453c                ARM_exceptions_disable
+                0x00000000400045b0                ARM_get_exception_level
+ .text          0x00000000400045c4      0x7ec bin/obj/lib/string.o
+                0x00000000400045c4                strcopy
+                0x0000000040004658                uint8_to_ascii_char
+                0x00000000400046d0                stdint_to_ascii
+ .text          0x0000000040004db0      0x418 bin/obj/lib/memcpy/memcpy.o
+                0x0000000040004db0                memcpy64_aligned
+                0x0000000040004f04                memcpy64
+                0x0000000040004fa0                test_memcpy
+ .text          0x00000000400051c8      0x6cc bin/obj/boot/panic/panic.o
+                0x00000000400051c8                init_panic
+                0x0000000040005288                set_panic
+                0x0000000040005308                panic
+                0x00000000400054c8                set_and_throw_panic
+ .text          0x0000000040005894      0xa50 bin/obj/drivers/interrupts/gicv3/gicv3.o
+                0x0000000040005f9c                GICV3_set_spi_group1ns
+                0x000000004000600c                GICV3_route_spi_to_cpu
+                0x0000000040006088                GICV3_route_spi_to_self
+                0x00000000400060b0                GICV3_enable_spi
+                0x0000000040006100                GICV3_set_priority
+                0x0000000040006170                GICV3_set_edge_triggered
+                0x00000000400061dc                GICV3_set_level_sensitive
+                0x0000000040006248                GICV3_wake_redistributor
+ .text          0x00000000400062e4        0x0 bin/obj/drivers/interrupts/irq.o
+ .text          0x00000000400062e4      0x830 bin/obj/drivers/uart/uart.o
+                0x0000000040006804                UART_putc
+                0x000000004000686c                UART_puts
+                0x00000000400068bc                UART_reset
+                0x0000000040006954                UART_init
+                0x0000000040006aa0                UART_read
+                0x0000000040006b40                . = ALIGN (0x40)
+ *fill*         0x0000000040006b14       0x2c 
+                0x0000000040006b40                __text_end = .
 
-.iplt           0x0000000040003820        0x0
- .iplt          0x0000000040003820        0x0 bin/obj/__arm/exceptions/el2_vectors.o
+.iplt           0x0000000040006b40        0x0
+ .iplt          0x0000000040006b40        0x0 bin/obj/__arm/exceptions/el2_vectors.o
 
-.vectors        0x0000000040004000      0x784
+.vectors        0x0000000040007000      0xfc0
+                0x0000000040007000                __vectors_start = .
  *(.vectors)
- .vectors       0x0000000040004000      0x784 bin/obj/__arm/exceptions/el2_vectors.o
-                0x0000000040004000                _el2_vector_table
+ .vectors       0x0000000040007000      0x784 bin/obj/__arm/exceptions/el2_vectors.o
+                0x0000000040007000                _el2_vector_table
+ *fill*         0x0000000040007784       0x7c 
+ .vectors       0x0000000040007800      0x784 bin/obj/__arm/exceptions/el1_vectors.o
+                0x0000000040007800                _el1_vector_table
+                0x0000000040007fc0                . = ALIGN (0x40)
+ *fill*         0x0000000040007f84       0x3c 
+                0x0000000040007fc0                __vectors_end = .
 
-.rodata         0x0000000040004790      0xb80
+.rodata         0x0000000040007fc0     0x12c0
  *(.rodata*)
- .rodata        0x0000000040004790      0x132 bin/obj/kernel/panic.o
- *fill*         0x00000000400048c2        0x6 
- .rodata        0x00000000400048c8       0x1b bin/obj/kernel/kernel_entry.o
- *fill*         0x00000000400048e3        0x5 
- .rodata        0x00000000400048e8       0x56 bin/obj/arm/exceptions/handlers/el2/el2_low_a32_serror.o
- *fill*         0x000000004000493e        0x2 
- .rodata        0x0000000040004940       0x56 bin/obj/arm/exceptions/handlers/el2/el2_cur_spx_serror.o
- *fill*         0x0000000040004996        0x2 
- .rodata        0x0000000040004998       0x56 bin/obj/arm/exceptions/handlers/el2/el2_low_a64_serror.o
- *fill*         0x00000000400049ee        0x2 
- .rodata        0x00000000400049f0       0x54 bin/obj/arm/exceptions/handlers/el2/el2_low_a64_sync.o
- *fill*         0x0000000040004a44        0x4 
- .rodata        0x0000000040004a48       0x53 bin/obj/arm/exceptions/handlers/el2/el2_cur_sp0_irq.o
- *fill*         0x0000000040004a9b        0x5 
- .rodata        0x0000000040004aa0       0x56 bin/obj/arm/exceptions/handlers/el2/el2_cur_sp0_serror.o
- *fill*         0x0000000040004af6        0x2 
- .rodata        0x0000000040004af8       0x53 bin/obj/arm/exceptions/handlers/el2/el2_low_a64_irq.o
- *fill*         0x0000000040004b4b        0x5 
- .rodata        0x0000000040004b50       0x53 bin/obj/arm/exceptions/handlers/el2/el2_low_a64_fiq.o
- *fill*         0x0000000040004ba3        0x5 
- .rodata        0x0000000040004ba8       0x53 bin/obj/arm/exceptions/handlers/el2/el2_cur_spx_fiq.o
- *fill*         0x0000000040004bfb        0x5 
- .rodata        0x0000000040004c00       0x53 bin/obj/arm/exceptions/handlers/el2/el2_low_a32_irq.o
- *fill*         0x0000000040004c53        0x5 
- .rodata        0x0000000040004c58       0x53 bin/obj/arm/exceptions/handlers/el2/el2_cur_sp0_fiq.o
- *fill*         0x0000000040004cab        0x5 
- .rodata        0x0000000040004cb0       0x53 bin/obj/arm/exceptions/handlers/el2/el2_low_a32_fiq.o
- *fill*         0x0000000040004d03        0x5 
- .rodata        0x0000000040004d08       0x54 bin/obj/arm/exceptions/handlers/el2/el2_cur_spx_sync.o
- *fill*         0x0000000040004d5c        0x4 
- .rodata        0x0000000040004d60       0x54 bin/obj/arm/exceptions/handlers/el2/el2_low_a32_sync.o
- *fill*         0x0000000040004db4        0x4 
- .rodata        0x0000000040004db8       0x54 bin/obj/arm/exceptions/handlers/el2/el2_cur_sp0_sync.o
- *fill*         0x0000000040004e0c        0x4 
- .rodata        0x0000000040004e10       0x53 bin/obj/arm/exceptions/handlers/el2/el2_cur_spx_irq.o
- *fill*         0x0000000040004e63        0x5 
- .rodata        0x0000000040004e68       0x41 bin/obj/arm/exceptions/exceptions.o
- *fill*         0x0000000040004ea9        0x7 
- .rodata        0x0000000040004eb0      0x115 bin/obj/lib/string.o
- *fill*         0x0000000040004fc5        0x3 
- .rodata        0x0000000040004fc8      0x116 bin/obj/lib/memcpy/memcpy.o
- *fill*         0x00000000400050de        0x2 
- .rodata        0x00000000400050e0      0x206 bin/obj/drivers/interrupts/gicv3/gicv3.o
- *fill*         0x00000000400052e6        0x2 
- .rodata        0x00000000400052e8       0x20 bin/obj/drivers/uart/uart.o
-                0x0000000040005310                . = ALIGN (0x10)
- *fill*         0x0000000040005308        0x8 
+ .rodata        0x0000000040007fc0       0x3e bin/obj/kernel/kernel_entry.o
+ *fill*         0x0000000040007ffe        0x2 
+ .rodata        0x0000000040008000       0x53 bin/obj/arm/exceptions/handlers/el1/el1_cur_sp0_fiq.o
+ *fill*         0x0000000040008053        0x5 
+ .rodata        0x0000000040008058       0x56 bin/obj/arm/exceptions/handlers/el1/el1_low_a32_serror.o
+ *fill*         0x00000000400080ae        0x2 
+ .rodata        0x00000000400080b0       0x53 bin/obj/arm/exceptions/handlers/el1/el1_low_a32_fiq.o
+ *fill*         0x0000000040008103        0x5 
+ .rodata        0x0000000040008108       0x54 bin/obj/arm/exceptions/handlers/el1/el1_low_a64_sync.o
+ *fill*         0x000000004000815c        0x4 
+ .rodata        0x0000000040008160       0x54 bin/obj/arm/exceptions/handlers/el1/el1_cur_spx_sync.o
+ *fill*         0x00000000400081b4        0x4 
+ .rodata        0x00000000400081b8       0x53 bin/obj/arm/exceptions/handlers/el1/el1_cur_spx_fiq.o
+ *fill*         0x000000004000820b        0x5 
+ .rodata        0x0000000040008210       0x53 bin/obj/arm/exceptions/handlers/el1/el1_cur_spx_irq.o
+ *fill*         0x0000000040008263        0x5 
+ .rodata        0x0000000040008268       0x56 bin/obj/arm/exceptions/handlers/el1/el1_cur_spx_serror.o
+ *fill*         0x00000000400082be        0x2 
+ .rodata        0x00000000400082c0       0x53 bin/obj/arm/exceptions/handlers/el1/el1_low_a32_irq.o
+ *fill*         0x0000000040008313        0x5 
+ .rodata        0x0000000040008318       0x53 bin/obj/arm/exceptions/handlers/el1/el1_low_a64_fiq.o
+ *fill*         0x000000004000836b        0x5 
+ .rodata        0x0000000040008370       0x53 bin/obj/arm/exceptions/handlers/el1/el1_low_a64_irq.o
+ *fill*         0x00000000400083c3        0x5 
+ .rodata        0x00000000400083c8       0x54 bin/obj/arm/exceptions/handlers/el1/el1_cur_sp0_sync.o
+ *fill*         0x000000004000841c        0x4 
+ .rodata        0x0000000040008420       0x53 bin/obj/arm/exceptions/handlers/el1/el1_cur_sp0_irq.o
+ *fill*         0x0000000040008473        0x5 
+ .rodata        0x0000000040008478       0x56 bin/obj/arm/exceptions/handlers/el1/el1_low_a64_serror.o
+ *fill*         0x00000000400084ce        0x2 
+ .rodata        0x00000000400084d0       0x54 bin/obj/arm/exceptions/handlers/el1/el1_low_a32_sync.o
+ *fill*         0x0000000040008524        0x4 
+ .rodata        0x0000000040008528       0x56 bin/obj/arm/exceptions/handlers/el1/el1_cur_sp0_serror.o
+ *fill*         0x000000004000857e        0x2 
+ .rodata        0x0000000040008580       0x56 bin/obj/arm/exceptions/handlers/el2/el2_low_a32_serror.o
+ *fill*         0x00000000400085d6        0x2 
+ .rodata        0x00000000400085d8       0x56 bin/obj/arm/exceptions/handlers/el2/el2_cur_spx_serror.o
+ *fill*         0x000000004000862e        0x2 
+ .rodata        0x0000000040008630       0x56 bin/obj/arm/exceptions/handlers/el2/el2_low_a64_serror.o
+ *fill*         0x0000000040008686        0x2 
+ .rodata        0x0000000040008688       0x54 bin/obj/arm/exceptions/handlers/el2/el2_low_a64_sync.o
+ *fill*         0x00000000400086dc        0x4 
+ .rodata        0x00000000400086e0       0x53 bin/obj/arm/exceptions/handlers/el2/el2_cur_sp0_irq.o
+ *fill*         0x0000000040008733        0x5 
+ .rodata        0x0000000040008738       0x56 bin/obj/arm/exceptions/handlers/el2/el2_cur_sp0_serror.o
+ *fill*         0x000000004000878e        0x2 
+ .rodata        0x0000000040008790       0x53 bin/obj/arm/exceptions/handlers/el2/el2_low_a64_irq.o
+ *fill*         0x00000000400087e3        0x5 
+ .rodata        0x00000000400087e8       0x53 bin/obj/arm/exceptions/handlers/el2/el2_low_a64_fiq.o
+ *fill*         0x000000004000883b        0x5 
+ .rodata        0x0000000040008840       0x53 bin/obj/arm/exceptions/handlers/el2/el2_cur_spx_fiq.o
+ *fill*         0x0000000040008893        0x5 
+ .rodata        0x0000000040008898       0x53 bin/obj/arm/exceptions/handlers/el2/el2_low_a32_irq.o
+ *fill*         0x00000000400088eb        0x5 
+ .rodata        0x00000000400088f0       0x53 bin/obj/arm/exceptions/handlers/el2/el2_cur_sp0_fiq.o
+ *fill*         0x0000000040008943        0x5 
+ .rodata        0x0000000040008948       0x53 bin/obj/arm/exceptions/handlers/el2/el2_low_a32_fiq.o
+ *fill*         0x000000004000899b        0x5 
+ .rodata        0x00000000400089a0       0x54 bin/obj/arm/exceptions/handlers/el2/el2_cur_spx_sync.o
+ *fill*         0x00000000400089f4        0x4 
+ .rodata        0x00000000400089f8       0x54 bin/obj/arm/exceptions/handlers/el2/el2_low_a32_sync.o
+ *fill*         0x0000000040008a4c        0x4 
+ .rodata        0x0000000040008a50       0x54 bin/obj/arm/exceptions/handlers/el2/el2_cur_sp0_sync.o
+ *fill*         0x0000000040008aa4        0x4 
+ .rodata        0x0000000040008aa8       0x53 bin/obj/arm/exceptions/handlers/el2/el2_cur_spx_irq.o
+ *fill*         0x0000000040008afb        0x5 
+ .rodata        0x0000000040008b00       0x41 bin/obj/arm/exceptions/exceptions.o
+ *fill*         0x0000000040008b41        0x7 
+ .rodata        0x0000000040008b48      0x115 bin/obj/lib/string.o
+ *fill*         0x0000000040008c5d        0x3 
+ .rodata        0x0000000040008c60      0x116 bin/obj/lib/memcpy/memcpy.o
+ *fill*         0x0000000040008d76        0x2 
+ .rodata        0x0000000040008d78      0x2d8 bin/obj/boot/panic/panic.o
+ .rodata        0x0000000040009050      0x206 bin/obj/drivers/interrupts/gicv3/gicv3.o
+ *fill*         0x0000000040009256        0x2 
+ .rodata        0x0000000040009258       0x20 bin/obj/drivers/uart/uart.o
+                0x0000000040009280                . = ALIGN (0x10)
+ *fill*         0x0000000040009278        0x8 
 
-.rela.dyn       0x0000000040005310        0x0
- .rela.iplt     0x0000000040005310        0x0 bin/obj/__arm/exceptions/el2_vectors.o
- .rela.text     0x0000000040005310        0x0 bin/obj/__arm/exceptions/el2_vectors.o
+.rela.dyn       0x0000000040009280        0x0
+ .rela.iplt     0x0000000040009280        0x0 bin/obj/__arm/exceptions/el2_vectors.o
+ .rela.text     0x0000000040009280        0x0 bin/obj/__arm/exceptions/el2_vectors.o
  .rela.text.boot
-                0x0000000040005310        0x0 bin/obj/__arm/exceptions/el2_vectors.o
+                0x0000000040009280        0x0 bin/obj/__arm/exceptions/el2_vectors.o
 
-.data           0x0000000040005310        0x0
+.data           0x0000000040009280        0x0
  *(.data*)
- .data          0x0000000040005310        0x0 bin/obj/__arm/sysregs.o
- .data          0x0000000040005310        0x0 bin/obj/__arm/exceptions/el2_vectors.o
- .data          0x0000000040005310        0x0 bin/obj/__arm/exceptions/exceptions.o
- .data          0x0000000040005310        0x0 bin/obj/__lib/memcpy/memcpy.o
- .data          0x0000000040005310        0x0 bin/obj/__boot/clean_bss.o
- .data          0x0000000040005310        0x0 bin/obj/__boot/boot.o
- .data          0x0000000040005310        0x0 bin/obj/kernel/panic.o
- .data          0x0000000040005310        0x0 bin/obj/kernel/malloc/buddy_allocator.o
- .data          0x0000000040005310        0x0 bin/obj/kernel/kernel_entry.o
- .data          0x0000000040005310        0x0 bin/obj/arm/cpu.o
- .data          0x0000000040005310        0x0 bin/obj/arm/exceptions/handlers/el2/el2_low_a32_serror.o
- .data          0x0000000040005310        0x0 bin/obj/arm/exceptions/handlers/el2/el2_cur_spx_serror.o
- .data          0x0000000040005310        0x0 bin/obj/arm/exceptions/handlers/el2/el2_low_a64_serror.o
- .data          0x0000000040005310        0x0 bin/obj/arm/exceptions/handlers/el2/el2_low_a64_sync.o
- .data          0x0000000040005310        0x0 bin/obj/arm/exceptions/handlers/el2/el2_cur_sp0_irq.o
- .data          0x0000000040005310        0x0 bin/obj/arm/exceptions/handlers/el2/el2_cur_sp0_serror.o
- .data          0x0000000040005310        0x0 bin/obj/arm/exceptions/handlers/el2/el2_low_a64_irq.o
- .data          0x0000000040005310        0x0 bin/obj/arm/exceptions/handlers/el2/el2_low_a64_fiq.o
- .data          0x0000000040005310        0x0 bin/obj/arm/exceptions/handlers/el2/el2_cur_spx_fiq.o
- .data          0x0000000040005310        0x0 bin/obj/arm/exceptions/handlers/el2/el2_low_a32_irq.o
- .data          0x0000000040005310        0x0 bin/obj/arm/exceptions/handlers/el2/el2_cur_sp0_fiq.o
- .data          0x0000000040005310        0x0 bin/obj/arm/exceptions/handlers/el2/el2_low_a32_fiq.o
- .data          0x0000000040005310        0x0 bin/obj/arm/exceptions/handlers/el2/el2_cur_spx_sync.o
- .data          0x0000000040005310        0x0 bin/obj/arm/exceptions/handlers/el2/el2_low_a32_sync.o
- .data          0x0000000040005310        0x0 bin/obj/arm/exceptions/handlers/el2/el2_cur_sp0_sync.o
- .data          0x0000000040005310        0x0 bin/obj/arm/exceptions/handlers/el2/el2_cur_spx_irq.o
- .data          0x0000000040005310        0x0 bin/obj/arm/exceptions/exceptions.o
- .data          0x0000000040005310        0x0 bin/obj/lib/string.o
- .data          0x0000000040005310        0x0 bin/obj/lib/memcpy/memcpy.o
- .data          0x0000000040005310        0x0 bin/obj/drivers/interrupts/gicv3/gicv3.o
- .data          0x0000000040005310        0x0 bin/obj/drivers/interrupts/irq.o
- .data          0x0000000040005310        0x0 bin/obj/drivers/uart/uart.o
-                0x0000000040005310                . = ALIGN (0x10)
+ .data          0x0000000040009280        0x0 bin/obj/__arm/cache/cache_d.o
+ .data          0x0000000040009280        0x0 bin/obj/__arm/sysregs.o
+ .data          0x0000000040009280        0x0 bin/obj/__arm/exceptions/el2_vectors.o
+ .data          0x0000000040009280        0x0 bin/obj/__arm/exceptions/exceptions.o
+ .data          0x0000000040009280        0x0 bin/obj/__arm/exceptions/el1_vectors.o
+ .data          0x0000000040009280        0x0 bin/obj/__lib/memcpy/memcpy.o
+ .data          0x0000000040009280        0x0 bin/obj/__boot/clean_bss.o
+ .data          0x0000000040009280        0x0 bin/obj/__boot/boot.o
+ .data          0x0000000040009280        0x0 bin/obj/__boot/el1.o
+ .data          0x0000000040009280        0x0 bin/obj/__boot/panic/panic.o
+ .data          0x0000000040009280        0x0 bin/obj/__boot/el1_cpy.o
+ .data          0x0000000040009280        0x0 bin/obj/kernel/malloc/buddy_allocator.o
+ .data          0x0000000040009280        0x0 bin/obj/kernel/kernel_entry.o
+ .data          0x0000000040009280        0x0 bin/obj/arm/cpu.o
+ .data          0x0000000040009280        0x0 bin/obj/arm/exceptions/handlers/el1/el1_cur_sp0_fiq.o
+ .data          0x0000000040009280        0x0 bin/obj/arm/exceptions/handlers/el1/el1_low_a32_serror.o
+ .data          0x0000000040009280        0x0 bin/obj/arm/exceptions/handlers/el1/el1_low_a32_fiq.o
+ .data          0x0000000040009280        0x0 bin/obj/arm/exceptions/handlers/el1/el1_low_a64_sync.o
+ .data          0x0000000040009280        0x0 bin/obj/arm/exceptions/handlers/el1/el1_cur_spx_sync.o
+ .data          0x0000000040009280        0x0 bin/obj/arm/exceptions/handlers/el1/el1_cur_spx_fiq.o
+ .data          0x0000000040009280        0x0 bin/obj/arm/exceptions/handlers/el1/el1_cur_spx_irq.o
+ .data          0x0000000040009280        0x0 bin/obj/arm/exceptions/handlers/el1/el1_cur_spx_serror.o
+ .data          0x0000000040009280        0x0 bin/obj/arm/exceptions/handlers/el1/el1_low_a32_irq.o
+ .data          0x0000000040009280        0x0 bin/obj/arm/exceptions/handlers/el1/el1_low_a64_fiq.o
+ .data          0x0000000040009280        0x0 bin/obj/arm/exceptions/handlers/el1/el1_low_a64_irq.o
+ .data          0x0000000040009280        0x0 bin/obj/arm/exceptions/handlers/el1/el1_cur_sp0_sync.o
+ .data          0x0000000040009280        0x0 bin/obj/arm/exceptions/handlers/el1/el1_cur_sp0_irq.o
+ .data          0x0000000040009280        0x0 bin/obj/arm/exceptions/handlers/el1/el1_low_a64_serror.o
+ .data          0x0000000040009280        0x0 bin/obj/arm/exceptions/handlers/el1/el1_low_a32_sync.o
+ .data          0x0000000040009280        0x0 bin/obj/arm/exceptions/handlers/el1/el1_cur_sp0_serror.o
+ .data          0x0000000040009280        0x0 bin/obj/arm/exceptions/handlers/el2/el2_low_a32_serror.o
+ .data          0x0000000040009280        0x0 bin/obj/arm/exceptions/handlers/el2/el2_cur_spx_serror.o
+ .data          0x0000000040009280        0x0 bin/obj/arm/exceptions/handlers/el2/el2_low_a64_serror.o
+ .data          0x0000000040009280        0x0 bin/obj/arm/exceptions/handlers/el2/el2_low_a64_sync.o
+ .data          0x0000000040009280        0x0 bin/obj/arm/exceptions/handlers/el2/el2_cur_sp0_irq.o
+ .data          0x0000000040009280        0x0 bin/obj/arm/exceptions/handlers/el2/el2_cur_sp0_serror.o
+ .data          0x0000000040009280        0x0 bin/obj/arm/exceptions/handlers/el2/el2_low_a64_irq.o
+ .data          0x0000000040009280        0x0 bin/obj/arm/exceptions/handlers/el2/el2_low_a64_fiq.o
+ .data          0x0000000040009280        0x0 bin/obj/arm/exceptions/handlers/el2/el2_cur_spx_fiq.o
+ .data          0x0000000040009280        0x0 bin/obj/arm/exceptions/handlers/el2/el2_low_a32_irq.o
+ .data          0x0000000040009280        0x0 bin/obj/arm/exceptions/handlers/el2/el2_cur_sp0_fiq.o
+ .data          0x0000000040009280        0x0 bin/obj/arm/exceptions/handlers/el2/el2_low_a32_fiq.o
+ .data          0x0000000040009280        0x0 bin/obj/arm/exceptions/handlers/el2/el2_cur_spx_sync.o
+ .data          0x0000000040009280        0x0 bin/obj/arm/exceptions/handlers/el2/el2_low_a32_sync.o
+ .data          0x0000000040009280        0x0 bin/obj/arm/exceptions/handlers/el2/el2_cur_sp0_sync.o
+ .data          0x0000000040009280        0x0 bin/obj/arm/exceptions/handlers/el2/el2_cur_spx_irq.o
+ .data          0x0000000040009280        0x0 bin/obj/arm/exceptions/exceptions.o
+ .data          0x0000000040009280        0x0 bin/obj/lib/string.o
+ .data          0x0000000040009280        0x0 bin/obj/lib/memcpy/memcpy.o
+ .data          0x0000000040009280        0x0 bin/obj/boot/panic/panic.o
+ .data          0x0000000040009280        0x0 bin/obj/drivers/interrupts/gicv3/gicv3.o
+ .data          0x0000000040009280        0x0 bin/obj/drivers/interrupts/irq.o
+ .data          0x0000000040009280        0x0 bin/obj/drivers/uart/uart.o
+                0x0000000040009280                . = ALIGN (0x10)
 
-.igot.plt       0x0000000040005310        0x0
- .igot.plt      0x0000000040005310        0x0 bin/obj/__arm/exceptions/el2_vectors.o
+.igot.plt       0x0000000040009280        0x0
+ .igot.plt      0x0000000040009280        0x0 bin/obj/__arm/exceptions/el2_vectors.o
 
-.bss            0x0000000040005340   0xc01440
-                0x0000000040005340                __bss_start = .
+.bss            0x0000000040009280   0xc01540
+                0x0000000040009280                __bss_start = .
  *(.bss*)
- .bss           0x0000000040005340        0x0 bin/obj/__arm/sysregs.o
- .bss           0x0000000040005340        0x0 bin/obj/__arm/exceptions/el2_vectors.o
- .bss           0x0000000040005340        0x0 bin/obj/__arm/exceptions/exceptions.o
- .bss           0x0000000040005340        0x0 bin/obj/__lib/memcpy/memcpy.o
- .bss           0x0000000040005340        0x0 bin/obj/__boot/clean_bss.o
- .bss           0x0000000040005340        0x0 bin/obj/__boot/boot.o
- .bss           0x0000000040005340     0x1430 bin/obj/kernel/panic.o
-                0x0000000040005340                PANIC_MESSAGE_BUF_SIZE
-                0x0000000040005348                PANIC_FILE_BUF_SIZE
-                0x0000000040005350                PANIC_MESSAGE_BUF_PTR
-                0x0000000040005358                PANIC_FILE_BUF_PTR
-                0x0000000040005360                PANIC_LINE
-                0x0000000040005364                PANIC_COL
- .bss           0x0000000040006770        0x0 bin/obj/kernel/malloc/buddy_allocator.o
- .bss           0x0000000040006770        0x0 bin/obj/kernel/kernel_entry.o
- .bss           0x0000000040006770        0x0 bin/obj/arm/cpu.o
- .bss           0x0000000040006770        0x0 bin/obj/arm/exceptions/handlers/el2/el2_low_a32_serror.o
- .bss           0x0000000040006770        0x0 bin/obj/arm/exceptions/handlers/el2/el2_cur_spx_serror.o
- .bss           0x0000000040006770        0x0 bin/obj/arm/exceptions/handlers/el2/el2_low_a64_serror.o
- .bss           0x0000000040006770        0x0 bin/obj/arm/exceptions/handlers/el2/el2_low_a64_sync.o
- .bss           0x0000000040006770        0x0 bin/obj/arm/exceptions/handlers/el2/el2_cur_sp0_irq.o
- .bss           0x0000000040006770        0x0 bin/obj/arm/exceptions/handlers/el2/el2_cur_sp0_serror.o
- .bss           0x0000000040006770        0x0 bin/obj/arm/exceptions/handlers/el2/el2_low_a64_irq.o
- .bss           0x0000000040006770        0x0 bin/obj/arm/exceptions/handlers/el2/el2_low_a64_fiq.o
- .bss           0x0000000040006770        0x0 bin/obj/arm/exceptions/handlers/el2/el2_cur_spx_fiq.o
- .bss           0x0000000040006770        0x0 bin/obj/arm/exceptions/handlers/el2/el2_low_a32_irq.o
- .bss           0x0000000040006770        0x0 bin/obj/arm/exceptions/handlers/el2/el2_cur_sp0_fiq.o
- .bss           0x0000000040006770        0x0 bin/obj/arm/exceptions/handlers/el2/el2_low_a32_fiq.o
- .bss           0x0000000040006770        0x0 bin/obj/arm/exceptions/handlers/el2/el2_cur_spx_sync.o
- .bss           0x0000000040006770        0x0 bin/obj/arm/exceptions/handlers/el2/el2_low_a32_sync.o
- .bss           0x0000000040006770        0x0 bin/obj/arm/exceptions/handlers/el2/el2_cur_sp0_sync.o
- .bss           0x0000000040006770        0x0 bin/obj/arm/exceptions/handlers/el2/el2_cur_spx_irq.o
- .bss           0x0000000040006770        0x0 bin/obj/arm/exceptions/exceptions.o
- .bss           0x0000000040006770        0x0 bin/obj/lib/string.o
- *fill*         0x0000000040006770       0x10 
- .bss           0x0000000040006780   0xc00000 bin/obj/lib/memcpy/memcpy.o
-                0x0000000040006780                src
-                0x0000000040406780                dst
-                0x0000000040806780                ref
- .bss           0x0000000040c06780        0x0 bin/obj/drivers/interrupts/gicv3/gicv3.o
- .bss           0x0000000040c06780        0x0 bin/obj/drivers/interrupts/irq.o
- .bss           0x0000000040c06780        0x0 bin/obj/drivers/uart/uart.o
+ .bss           0x0000000040009280        0x0 bin/obj/__arm/cache/cache_d.o
+ .bss           0x0000000040009280        0x0 bin/obj/__arm/sysregs.o
+ .bss           0x0000000040009280        0x0 bin/obj/__arm/exceptions/el2_vectors.o
+ .bss           0x0000000040009280        0x0 bin/obj/__arm/exceptions/exceptions.o
+ .bss           0x0000000040009280        0x0 bin/obj/__arm/exceptions/el1_vectors.o
+ .bss           0x0000000040009280        0x0 bin/obj/__lib/memcpy/memcpy.o
+ .bss           0x0000000040009280        0x0 bin/obj/__boot/clean_bss.o
+ .bss           0x0000000040009280        0x0 bin/obj/__boot/boot.o
+ .bss           0x0000000040009280        0x0 bin/obj/__boot/el1.o
+ .bss           0x0000000040009280        0x0 bin/obj/__boot/panic/panic.o
+ .bss           0x0000000040009280        0x0 bin/obj/__boot/el1_cpy.o
+ .bss           0x0000000040009280        0x0 bin/obj/kernel/malloc/buddy_allocator.o
+ .bss           0x0000000040009280        0x0 bin/obj/kernel/kernel_entry.o
+ .bss           0x0000000040009280        0x0 bin/obj/arm/cpu.o
+ .bss           0x0000000040009280        0x0 bin/obj/arm/exceptions/handlers/el1/el1_cur_sp0_fiq.o
+ .bss           0x0000000040009280        0x0 bin/obj/arm/exceptions/handlers/el1/el1_low_a32_serror.o
+ .bss           0x0000000040009280        0x0 bin/obj/arm/exceptions/handlers/el1/el1_low_a32_fiq.o
+ .bss           0x0000000040009280        0x0 bin/obj/arm/exceptions/handlers/el1/el1_low_a64_sync.o
+ .bss           0x0000000040009280        0x0 bin/obj/arm/exceptions/handlers/el1/el1_cur_spx_sync.o
+ .bss           0x0000000040009280        0x0 bin/obj/arm/exceptions/handlers/el1/el1_cur_spx_fiq.o
+ .bss           0x0000000040009280        0x0 bin/obj/arm/exceptions/handlers/el1/el1_cur_spx_irq.o
+ .bss           0x0000000040009280        0x0 bin/obj/arm/exceptions/handlers/el1/el1_cur_spx_serror.o
+ .bss           0x0000000040009280        0x0 bin/obj/arm/exceptions/handlers/el1/el1_low_a32_irq.o
+ .bss           0x0000000040009280        0x0 bin/obj/arm/exceptions/handlers/el1/el1_low_a64_fiq.o
+ .bss           0x0000000040009280        0x0 bin/obj/arm/exceptions/handlers/el1/el1_low_a64_irq.o
+ .bss           0x0000000040009280        0x0 bin/obj/arm/exceptions/handlers/el1/el1_cur_sp0_sync.o
+ .bss           0x0000000040009280        0x0 bin/obj/arm/exceptions/handlers/el1/el1_cur_sp0_irq.o
+ .bss           0x0000000040009280        0x0 bin/obj/arm/exceptions/handlers/el1/el1_low_a64_serror.o
+ .bss           0x0000000040009280        0x0 bin/obj/arm/exceptions/handlers/el1/el1_low_a32_sync.o
+ .bss           0x0000000040009280        0x0 bin/obj/arm/exceptions/handlers/el1/el1_cur_sp0_serror.o
+ .bss           0x0000000040009280        0x0 bin/obj/arm/exceptions/handlers/el2/el2_low_a32_serror.o
+ .bss           0x0000000040009280        0x0 bin/obj/arm/exceptions/handlers/el2/el2_cur_spx_serror.o
+ .bss           0x0000000040009280        0x0 bin/obj/arm/exceptions/handlers/el2/el2_low_a64_serror.o
+ .bss           0x0000000040009280        0x0 bin/obj/arm/exceptions/handlers/el2/el2_low_a64_sync.o
+ .bss           0x0000000040009280        0x0 bin/obj/arm/exceptions/handlers/el2/el2_cur_sp0_irq.o
+ .bss           0x0000000040009280        0x0 bin/obj/arm/exceptions/handlers/el2/el2_cur_sp0_serror.o
+ .bss           0x0000000040009280        0x0 bin/obj/arm/exceptions/handlers/el2/el2_low_a64_irq.o
+ .bss           0x0000000040009280        0x0 bin/obj/arm/exceptions/handlers/el2/el2_low_a64_fiq.o
+ .bss           0x0000000040009280        0x0 bin/obj/arm/exceptions/handlers/el2/el2_cur_spx_fiq.o
+ .bss           0x0000000040009280        0x0 bin/obj/arm/exceptions/handlers/el2/el2_low_a32_irq.o
+ .bss           0x0000000040009280        0x0 bin/obj/arm/exceptions/handlers/el2/el2_cur_sp0_fiq.o
+ .bss           0x0000000040009280        0x0 bin/obj/arm/exceptions/handlers/el2/el2_low_a32_fiq.o
+ .bss           0x0000000040009280        0x0 bin/obj/arm/exceptions/handlers/el2/el2_cur_spx_sync.o
+ .bss           0x0000000040009280        0x0 bin/obj/arm/exceptions/handlers/el2/el2_low_a32_sync.o
+ .bss           0x0000000040009280        0x0 bin/obj/arm/exceptions/handlers/el2/el2_cur_sp0_sync.o
+ .bss           0x0000000040009280        0x0 bin/obj/arm/exceptions/handlers/el2/el2_cur_spx_irq.o
+ .bss           0x0000000040009280        0x0 bin/obj/arm/exceptions/exceptions.o
+ .bss           0x0000000040009280        0x0 bin/obj/lib/string.o
+ .bss           0x0000000040009280   0xc00000 bin/obj/lib/memcpy/memcpy.o
+                0x0000000040009280                src
+                0x0000000040409280                dst
+                0x0000000040809280                ref
+ .bss           0x0000000040c09280     0x1530 bin/obj/boot/panic/panic.o
+                0x0000000040c09280                PANIC_MESSAGE_BUF_SIZE
+                0x0000000040c09288                PANIC_FILE_BUF_SIZE
+                0x0000000040c09290                PANIC_MESSAGE_BUF_PTR
+                0x0000000040c09298                PANIC_FILE_BUF_PTR
+                0x0000000040c092a0                PANIC_LINE
+                0x0000000040c092a4                PANIC_COL
+                0x0000000040c092a8                PANIC_REASON
+                0x0000000040c092b0                PANIC_REGISTERS
+ .bss           0x0000000040c0a7b0        0x0 bin/obj/drivers/interrupts/gicv3/gicv3.o
+ .bss           0x0000000040c0a7b0        0x0 bin/obj/drivers/interrupts/irq.o
+ .bss           0x0000000040c0a7b0        0x0 bin/obj/drivers/uart/uart.o
  *(COMMON)
-                0x0000000040c06780                . = ALIGN (0x40)
-                0x0000000040c06780                __bss_end = .
+                0x0000000040c0a7c0                . = ALIGN (0x40)
+ *fill*         0x0000000040c0a7b0       0x10 
+                0x0000000040c0a7c0                __bss_end = .
 
-.stacks         0x0000000040c07000   0xa00000
-                0x0000000040c07000                . = ALIGN (0x10)
-                0x0000000040c07000                __stack_el1_bottom = .
-                0x0000000041107000                . = (. + 0x500000)
- *fill*         0x0000000040c07000   0x500000 
-                0x0000000041107000                __stack_el1_top = .
-                0x0000000041107000                . = ALIGN (0x10)
-                0x0000000041107000                __stack_el2_bottom = .
-                0x0000000041607000                . = (. + 0x500000)
- *fill*         0x0000000041107000   0x500000 
-                0x0000000041607000                __stack_el2_top = .
+.stacks         0x0000000040c0b000   0xf00000
+                0x0000000040c0b000                . = ALIGN (0x10)
+                0x0000000040c0b000                __stack_el2_bottom = .
+                0x000000004110b000                . = (. + 0x500000)
+ *fill*         0x0000000040c0b000   0x500000 
+                0x000000004110b000                __stack_el2_top = .
+                0x000000004110b000                . = ALIGN (0x10)
+                0x000000004110b000                __stack_el1_bottom = .
+                0x000000004160b000                . = (. + 0x500000)
+ *fill*         0x000000004110b000   0x500000 
+                0x000000004160b000                __stack_el1_top = .
+                0x000000004160b000                . = ALIGN (0x10)
+                0x000000004160b000                __stack_el0_bottom = .
+                0x0000000041b0b000                . = (. + 0x500000)
+ *fill*         0x000000004160b000   0x500000 
+                0x0000000041b0b000                __stack_el0_top = .
+LOAD bin/obj/__arm/cache/cache_d.o
 LOAD bin/obj/__arm/sysregs.o
 LOAD bin/obj/__arm/exceptions/el2_vectors.o
 LOAD bin/obj/__arm/exceptions/exceptions.o
+LOAD bin/obj/__arm/exceptions/el1_vectors.o
 LOAD bin/obj/__lib/memcpy/memcpy.o
 LOAD bin/obj/__boot/clean_bss.o
 LOAD bin/obj/__boot/boot.o
-LOAD bin/obj/kernel/panic.o
+LOAD bin/obj/__boot/el1.o
+LOAD bin/obj/__boot/panic/panic.o
+LOAD bin/obj/__boot/el1_cpy.o
 LOAD bin/obj/kernel/malloc/buddy_allocator.o
 LOAD bin/obj/kernel/kernel_entry.o
 LOAD bin/obj/arm/cpu.o
+LOAD bin/obj/arm/exceptions/handlers/el1/el1_cur_sp0_fiq.o
+LOAD bin/obj/arm/exceptions/handlers/el1/el1_low_a32_serror.o
+LOAD bin/obj/arm/exceptions/handlers/el1/el1_low_a32_fiq.o
+LOAD bin/obj/arm/exceptions/handlers/el1/el1_low_a64_sync.o
+LOAD bin/obj/arm/exceptions/handlers/el1/el1_cur_spx_sync.o
+LOAD bin/obj/arm/exceptions/handlers/el1/el1_cur_spx_fiq.o
+LOAD bin/obj/arm/exceptions/handlers/el1/el1_cur_spx_irq.o
+LOAD bin/obj/arm/exceptions/handlers/el1/el1_cur_spx_serror.o
+LOAD bin/obj/arm/exceptions/handlers/el1/el1_low_a32_irq.o
+LOAD bin/obj/arm/exceptions/handlers/el1/el1_low_a64_fiq.o
+LOAD bin/obj/arm/exceptions/handlers/el1/el1_low_a64_irq.o
+LOAD bin/obj/arm/exceptions/handlers/el1/el1_cur_sp0_sync.o
+LOAD bin/obj/arm/exceptions/handlers/el1/el1_cur_sp0_irq.o
+LOAD bin/obj/arm/exceptions/handlers/el1/el1_low_a64_serror.o
+LOAD bin/obj/arm/exceptions/handlers/el1/el1_low_a32_sync.o
+LOAD bin/obj/arm/exceptions/handlers/el1/el1_cur_sp0_serror.o
 LOAD bin/obj/arm/exceptions/handlers/el2/el2_low_a32_serror.o
 LOAD bin/obj/arm/exceptions/handlers/el2/el2_cur_spx_serror.o
 LOAD bin/obj/arm/exceptions/handlers/el2/el2_low_a64_serror.o
@@ -312,6 +478,7 @@ LOAD bin/obj/arm/exceptions/handlers/el2/el2_cur_spx_irq.o
 LOAD bin/obj/arm/exceptions/exceptions.o
 LOAD bin/obj/lib/string.o
 LOAD bin/obj/lib/memcpy/memcpy.o
+LOAD bin/obj/boot/panic/panic.o
 LOAD bin/obj/drivers/interrupts/gicv3/gicv3.o
 LOAD bin/obj/drivers/interrupts/irq.o
 LOAD bin/obj/drivers/uart/uart.o
@@ -319,282 +486,467 @@ LOAD bin/obj/rslib.a
 OUTPUT(bin/kernel.elf elf64-littleaarch64)
 LOAD linker stubs
 
-.debug_line     0x0000000000000000     0x1561
- .debug_line    0x0000000000000000       0x53 bin/obj/__arm/sysregs.o
- .debug_line    0x0000000000000053       0xb0 bin/obj/__arm/exceptions/el2_vectors.o
- .debug_line    0x0000000000000103       0x64 bin/obj/__arm/exceptions/exceptions.o
- .debug_line    0x0000000000000167       0xd4 bin/obj/__lib/memcpy/memcpy.o
- .debug_line    0x000000000000023b       0x5b bin/obj/__boot/clean_bss.o
- .debug_line    0x0000000000000296       0x58 bin/obj/__boot/boot.o
- .debug_line    0x00000000000002ee      0x130 bin/obj/kernel/panic.o
- .debug_line    0x000000000000041e        0x0 bin/obj/kernel/malloc/buddy_allocator.o
- .debug_line    0x000000000000041e      0x11f bin/obj/kernel/kernel_entry.o
- .debug_line    0x000000000000053d       0x7f bin/obj/arm/cpu.o
- .debug_line    0x00000000000005bc       0x5f bin/obj/arm/exceptions/handlers/el2/el2_low_a32_serror.o
- .debug_line    0x000000000000061b       0x5f bin/obj/arm/exceptions/handlers/el2/el2_cur_spx_serror.o
- .debug_line    0x000000000000067a       0x5f bin/obj/arm/exceptions/handlers/el2/el2_low_a64_serror.o
- .debug_line    0x00000000000006d9       0x5f bin/obj/arm/exceptions/handlers/el2/el2_low_a64_sync.o
- .debug_line    0x0000000000000738       0x5f bin/obj/arm/exceptions/handlers/el2/el2_cur_sp0_irq.o
- .debug_line    0x0000000000000797       0x5f bin/obj/arm/exceptions/handlers/el2/el2_cur_sp0_serror.o
- .debug_line    0x00000000000007f6       0x5f bin/obj/arm/exceptions/handlers/el2/el2_low_a64_irq.o
- .debug_line    0x0000000000000855       0x5f bin/obj/arm/exceptions/handlers/el2/el2_low_a64_fiq.o
- .debug_line    0x00000000000008b4       0x5f bin/obj/arm/exceptions/handlers/el2/el2_cur_spx_fiq.o
- .debug_line    0x0000000000000913       0x5f bin/obj/arm/exceptions/handlers/el2/el2_low_a32_irq.o
- .debug_line    0x0000000000000972       0x5f bin/obj/arm/exceptions/handlers/el2/el2_cur_sp0_fiq.o
- .debug_line    0x00000000000009d1       0x5f bin/obj/arm/exceptions/handlers/el2/el2_low_a32_fiq.o
- .debug_line    0x0000000000000a30       0x5f bin/obj/arm/exceptions/handlers/el2/el2_cur_spx_sync.o
- .debug_line    0x0000000000000a8f       0x5f bin/obj/arm/exceptions/handlers/el2/el2_low_a32_sync.o
- .debug_line    0x0000000000000aee       0x5f bin/obj/arm/exceptions/handlers/el2/el2_cur_sp0_sync.o
- .debug_line    0x0000000000000b4d       0x5f bin/obj/arm/exceptions/handlers/el2/el2_cur_spx_irq.o
- .debug_line    0x0000000000000bac      0x156 bin/obj/arm/exceptions/exceptions.o
- .debug_line    0x0000000000000d02      0x275 bin/obj/lib/string.o
- .debug_line    0x0000000000000f77      0x15e bin/obj/lib/memcpy/memcpy.o
- .debug_line    0x00000000000010d5      0x270 bin/obj/drivers/interrupts/gicv3/gicv3.o
- .debug_line    0x0000000000001345        0x0 bin/obj/drivers/interrupts/irq.o
- .debug_line    0x0000000000001345      0x21c bin/obj/drivers/uart/uart.o
+.debug_line     0x0000000000000000     0x1ec7
+ .debug_line    0x0000000000000000       0x5a bin/obj/__arm/cache/cache_d.o
+ .debug_line    0x000000000000005a       0x67 bin/obj/__arm/sysregs.o
+ .debug_line    0x00000000000000c1       0xb3 bin/obj/__arm/exceptions/el2_vectors.o
+ .debug_line    0x0000000000000174       0x64 bin/obj/__arm/exceptions/exceptions.o
+ .debug_line    0x00000000000001d8       0xb3 bin/obj/__arm/exceptions/el1_vectors.o
+ .debug_line    0x000000000000028b       0xd4 bin/obj/__lib/memcpy/memcpy.o
+ .debug_line    0x000000000000035f       0x5b bin/obj/__boot/clean_bss.o
+ .debug_line    0x00000000000003ba       0x58 bin/obj/__boot/boot.o
+ .debug_line    0x0000000000000412       0x6f bin/obj/__boot/el1.o
+ .debug_line    0x0000000000000481       0x61 bin/obj/__boot/panic/panic.o
+ .debug_line    0x00000000000004e2       0x6b bin/obj/__boot/el1_cpy.o
+ .debug_line    0x000000000000054d        0x0 bin/obj/kernel/malloc/buddy_allocator.o
+ .debug_line    0x000000000000054d      0x15e bin/obj/kernel/kernel_entry.o
+ .debug_line    0x00000000000006ab       0x7f bin/obj/arm/cpu.o
+ .debug_line    0x000000000000072a       0x60 bin/obj/arm/exceptions/handlers/el1/el1_cur_sp0_fiq.o
+ .debug_line    0x000000000000078a       0x60 bin/obj/arm/exceptions/handlers/el1/el1_low_a32_serror.o
+ .debug_line    0x00000000000007ea       0x60 bin/obj/arm/exceptions/handlers/el1/el1_low_a32_fiq.o
+ .debug_line    0x000000000000084a       0x60 bin/obj/arm/exceptions/handlers/el1/el1_low_a64_sync.o
+ .debug_line    0x00000000000008aa       0x60 bin/obj/arm/exceptions/handlers/el1/el1_cur_spx_sync.o
+ .debug_line    0x000000000000090a       0x60 bin/obj/arm/exceptions/handlers/el1/el1_cur_spx_fiq.o
+ .debug_line    0x000000000000096a       0x60 bin/obj/arm/exceptions/handlers/el1/el1_cur_spx_irq.o
+ .debug_line    0x00000000000009ca       0x60 bin/obj/arm/exceptions/handlers/el1/el1_cur_spx_serror.o
+ .debug_line    0x0000000000000a2a       0x60 bin/obj/arm/exceptions/handlers/el1/el1_low_a32_irq.o
+ .debug_line    0x0000000000000a8a       0x60 bin/obj/arm/exceptions/handlers/el1/el1_low_a64_fiq.o
+ .debug_line    0x0000000000000aea       0x60 bin/obj/arm/exceptions/handlers/el1/el1_low_a64_irq.o
+ .debug_line    0x0000000000000b4a       0x60 bin/obj/arm/exceptions/handlers/el1/el1_cur_sp0_sync.o
+ .debug_line    0x0000000000000baa       0x60 bin/obj/arm/exceptions/handlers/el1/el1_cur_sp0_irq.o
+ .debug_line    0x0000000000000c0a       0x60 bin/obj/arm/exceptions/handlers/el1/el1_low_a64_serror.o
+ .debug_line    0x0000000000000c6a       0x60 bin/obj/arm/exceptions/handlers/el1/el1_low_a32_sync.o
+ .debug_line    0x0000000000000cca       0x60 bin/obj/arm/exceptions/handlers/el1/el1_cur_sp0_serror.o
+ .debug_line    0x0000000000000d2a       0x60 bin/obj/arm/exceptions/handlers/el2/el2_low_a32_serror.o
+ .debug_line    0x0000000000000d8a       0x60 bin/obj/arm/exceptions/handlers/el2/el2_cur_spx_serror.o
+ .debug_line    0x0000000000000dea       0x60 bin/obj/arm/exceptions/handlers/el2/el2_low_a64_serror.o
+ .debug_line    0x0000000000000e4a       0x60 bin/obj/arm/exceptions/handlers/el2/el2_low_a64_sync.o
+ .debug_line    0x0000000000000eaa       0x60 bin/obj/arm/exceptions/handlers/el2/el2_cur_sp0_irq.o
+ .debug_line    0x0000000000000f0a       0x60 bin/obj/arm/exceptions/handlers/el2/el2_cur_sp0_serror.o
+ .debug_line    0x0000000000000f6a       0x60 bin/obj/arm/exceptions/handlers/el2/el2_low_a64_irq.o
+ .debug_line    0x0000000000000fca       0x60 bin/obj/arm/exceptions/handlers/el2/el2_low_a64_fiq.o
+ .debug_line    0x000000000000102a       0x60 bin/obj/arm/exceptions/handlers/el2/el2_cur_spx_fiq.o
+ .debug_line    0x000000000000108a       0x60 bin/obj/arm/exceptions/handlers/el2/el2_low_a32_irq.o
+ .debug_line    0x00000000000010ea       0x60 bin/obj/arm/exceptions/handlers/el2/el2_cur_sp0_fiq.o
+ .debug_line    0x000000000000114a       0x60 bin/obj/arm/exceptions/handlers/el2/el2_low_a32_fiq.o
+ .debug_line    0x00000000000011aa       0x60 bin/obj/arm/exceptions/handlers/el2/el2_cur_spx_sync.o
+ .debug_line    0x000000000000120a       0x60 bin/obj/arm/exceptions/handlers/el2/el2_low_a32_sync.o
+ .debug_line    0x000000000000126a       0x60 bin/obj/arm/exceptions/handlers/el2/el2_cur_sp0_sync.o
+ .debug_line    0x00000000000012ca       0x60 bin/obj/arm/exceptions/handlers/el2/el2_cur_spx_irq.o
+ .debug_line    0x000000000000132a      0x168 bin/obj/arm/exceptions/exceptions.o
+ .debug_line    0x0000000000001492      0x275 bin/obj/lib/string.o
+ .debug_line    0x0000000000001707      0x15e bin/obj/lib/memcpy/memcpy.o
+ .debug_line    0x0000000000001865      0x1d6 bin/obj/boot/panic/panic.o
+ .debug_line    0x0000000000001a3b      0x270 bin/obj/drivers/interrupts/gicv3/gicv3.o
+ .debug_line    0x0000000000001cab        0x0 bin/obj/drivers/interrupts/irq.o
+ .debug_line    0x0000000000001cab      0x21c bin/obj/drivers/uart/uart.o
 
 .debug_line_str
-                0x0000000000000000      0x779
+                0x0000000000000000      0xb2b
  .debug_line_str
-                0x0000000000000000      0x779 bin/obj/__arm/sysregs.o
-                                         0x3e (size before relaxing)
+                0x0000000000000000      0xb2b bin/obj/__arm/cache/cache_d.o
+                                         0x44 (size before relaxing)
  .debug_line_str
-                0x0000000000000779       0x4d bin/obj/__arm/exceptions/el2_vectors.o
+                0x0000000000000b2b       0x3e bin/obj/__arm/sysregs.o
  .debug_line_str
-                0x0000000000000779       0x4c bin/obj/__arm/exceptions/exceptions.o
+                0x0000000000000b2b       0x4d bin/obj/__arm/exceptions/el2_vectors.o
  .debug_line_str
-                0x0000000000000779       0x44 bin/obj/__lib/memcpy/memcpy.o
+                0x0000000000000b2b       0x4c bin/obj/__arm/exceptions/exceptions.o
  .debug_line_str
-                0x0000000000000779       0x41 bin/obj/__boot/clean_bss.o
+                0x0000000000000b2b       0x4d bin/obj/__arm/exceptions/el1_vectors.o
  .debug_line_str
-                0x0000000000000779       0x3c bin/obj/__boot/boot.o
+                0x0000000000000b2b       0x44 bin/obj/__lib/memcpy/memcpy.o
  .debug_line_str
-                0x0000000000000779       0xff bin/obj/kernel/panic.o
+                0x0000000000000b2b       0x41 bin/obj/__boot/clean_bss.o
  .debug_line_str
-                0x0000000000000779       0x50 bin/obj/kernel/malloc/buddy_allocator.o
+                0x0000000000000b2b       0x3c bin/obj/__boot/boot.o
  .debug_line_str
-                0x0000000000000779      0x17e bin/obj/kernel/kernel_entry.o
+                0x0000000000000b2b       0x3b bin/obj/__boot/el1.o
  .debug_line_str
-                0x0000000000000779       0xad bin/obj/arm/cpu.o
+                0x0000000000000b2b       0x43 bin/obj/__boot/panic/panic.o
  .debug_line_str
-                0x0000000000000779      0x105 bin/obj/arm/exceptions/handlers/el2/el2_low_a32_serror.o
+                0x0000000000000b2b       0x3f bin/obj/__boot/el1_cpy.o
  .debug_line_str
-                0x0000000000000779      0x105 bin/obj/arm/exceptions/handlers/el2/el2_cur_spx_serror.o
+                0x0000000000000b2b       0x50 bin/obj/kernel/malloc/buddy_allocator.o
  .debug_line_str
-                0x0000000000000779      0x105 bin/obj/arm/exceptions/handlers/el2/el2_low_a64_serror.o
+                0x0000000000000b2b      0x186 bin/obj/kernel/kernel_entry.o
  .debug_line_str
-                0x0000000000000779       0xff bin/obj/arm/exceptions/handlers/el2/el2_low_a64_sync.o
+                0x0000000000000b2b       0xad bin/obj/arm/cpu.o
  .debug_line_str
-                0x0000000000000779       0xfc bin/obj/arm/exceptions/handlers/el2/el2_cur_sp0_irq.o
+                0x0000000000000b2b       0xfa bin/obj/arm/exceptions/handlers/el1/el1_cur_sp0_fiq.o
  .debug_line_str
-                0x0000000000000779      0x105 bin/obj/arm/exceptions/handlers/el2/el2_cur_sp0_serror.o
+                0x0000000000000b2b      0x103 bin/obj/arm/exceptions/handlers/el1/el1_low_a32_serror.o
  .debug_line_str
-                0x0000000000000779       0xfc bin/obj/arm/exceptions/handlers/el2/el2_low_a64_irq.o
+                0x0000000000000b2b       0xfa bin/obj/arm/exceptions/handlers/el1/el1_low_a32_fiq.o
  .debug_line_str
-                0x0000000000000779       0xfc bin/obj/arm/exceptions/handlers/el2/el2_low_a64_fiq.o
+                0x0000000000000b2b       0xfd bin/obj/arm/exceptions/handlers/el1/el1_low_a64_sync.o
  .debug_line_str
-                0x0000000000000779       0xfc bin/obj/arm/exceptions/handlers/el2/el2_cur_spx_fiq.o
+                0x0000000000000b2b       0xfd bin/obj/arm/exceptions/handlers/el1/el1_cur_spx_sync.o
  .debug_line_str
-                0x0000000000000779       0xfc bin/obj/arm/exceptions/handlers/el2/el2_low_a32_irq.o
+                0x0000000000000b2b       0xfa bin/obj/arm/exceptions/handlers/el1/el1_cur_spx_fiq.o
  .debug_line_str
-                0x0000000000000779       0xfc bin/obj/arm/exceptions/handlers/el2/el2_cur_sp0_fiq.o
+                0x0000000000000b2b       0xfa bin/obj/arm/exceptions/handlers/el1/el1_cur_spx_irq.o
  .debug_line_str
-                0x0000000000000779       0xfc bin/obj/arm/exceptions/handlers/el2/el2_low_a32_fiq.o
+                0x0000000000000b2b      0x103 bin/obj/arm/exceptions/handlers/el1/el1_cur_spx_serror.o
  .debug_line_str
-                0x0000000000000779       0xff bin/obj/arm/exceptions/handlers/el2/el2_cur_spx_sync.o
+                0x0000000000000b2b       0xfa bin/obj/arm/exceptions/handlers/el1/el1_low_a32_irq.o
  .debug_line_str
-                0x0000000000000779       0xff bin/obj/arm/exceptions/handlers/el2/el2_low_a32_sync.o
+                0x0000000000000b2b       0xfa bin/obj/arm/exceptions/handlers/el1/el1_low_a64_fiq.o
  .debug_line_str
-                0x0000000000000779       0xff bin/obj/arm/exceptions/handlers/el2/el2_cur_sp0_sync.o
+                0x0000000000000b2b       0xfa bin/obj/arm/exceptions/handlers/el1/el1_low_a64_irq.o
  .debug_line_str
-                0x0000000000000779       0xfc bin/obj/arm/exceptions/handlers/el2/el2_cur_spx_irq.o
+                0x0000000000000b2b       0xfd bin/obj/arm/exceptions/handlers/el1/el1_cur_sp0_sync.o
  .debug_line_str
-                0x0000000000000779       0xf8 bin/obj/arm/exceptions/exceptions.o
+                0x0000000000000b2b       0xfa bin/obj/arm/exceptions/handlers/el1/el1_cur_sp0_irq.o
  .debug_line_str
-                0x0000000000000779       0xb1 bin/obj/lib/string.o
+                0x0000000000000b2b      0x103 bin/obj/arm/exceptions/handlers/el1/el1_low_a64_serror.o
  .debug_line_str
-                0x0000000000000779       0xee bin/obj/lib/memcpy/memcpy.o
+                0x0000000000000b2b       0xfd bin/obj/arm/exceptions/handlers/el1/el1_low_a32_sync.o
  .debug_line_str
-                0x0000000000000779      0x1c6 bin/obj/drivers/interrupts/gicv3/gicv3.o
+                0x0000000000000b2b      0x103 bin/obj/arm/exceptions/handlers/el1/el1_cur_sp0_serror.o
  .debug_line_str
-                0x0000000000000779       0x49 bin/obj/drivers/interrupts/irq.o
+                0x0000000000000b2b      0x103 bin/obj/arm/exceptions/handlers/el2/el2_low_a32_serror.o
  .debug_line_str
-                0x0000000000000779      0x17d bin/obj/drivers/uart/uart.o
+                0x0000000000000b2b      0x103 bin/obj/arm/exceptions/handlers/el2/el2_cur_spx_serror.o
+ .debug_line_str
+                0x0000000000000b2b      0x103 bin/obj/arm/exceptions/handlers/el2/el2_low_a64_serror.o
+ .debug_line_str
+                0x0000000000000b2b       0xfd bin/obj/arm/exceptions/handlers/el2/el2_low_a64_sync.o
+ .debug_line_str
+                0x0000000000000b2b       0xfa bin/obj/arm/exceptions/handlers/el2/el2_cur_sp0_irq.o
+ .debug_line_str
+                0x0000000000000b2b      0x103 bin/obj/arm/exceptions/handlers/el2/el2_cur_sp0_serror.o
+ .debug_line_str
+                0x0000000000000b2b       0xfa bin/obj/arm/exceptions/handlers/el2/el2_low_a64_irq.o
+ .debug_line_str
+                0x0000000000000b2b       0xfa bin/obj/arm/exceptions/handlers/el2/el2_low_a64_fiq.o
+ .debug_line_str
+                0x0000000000000b2b       0xfa bin/obj/arm/exceptions/handlers/el2/el2_cur_spx_fiq.o
+ .debug_line_str
+                0x0000000000000b2b       0xfa bin/obj/arm/exceptions/handlers/el2/el2_low_a32_irq.o
+ .debug_line_str
+                0x0000000000000b2b       0xfa bin/obj/arm/exceptions/handlers/el2/el2_cur_sp0_fiq.o
+ .debug_line_str
+                0x0000000000000b2b       0xfa bin/obj/arm/exceptions/handlers/el2/el2_low_a32_fiq.o
+ .debug_line_str
+                0x0000000000000b2b       0xfd bin/obj/arm/exceptions/handlers/el2/el2_cur_spx_sync.o
+ .debug_line_str
+                0x0000000000000b2b       0xfd bin/obj/arm/exceptions/handlers/el2/el2_low_a32_sync.o
+ .debug_line_str
+                0x0000000000000b2b       0xfd bin/obj/arm/exceptions/handlers/el2/el2_cur_sp0_sync.o
+ .debug_line_str
+                0x0000000000000b2b       0xfa bin/obj/arm/exceptions/handlers/el2/el2_cur_spx_irq.o
+ .debug_line_str
+                0x0000000000000b2b      0x10d bin/obj/arm/exceptions/exceptions.o
+ .debug_line_str
+                0x0000000000000b2b       0xaf bin/obj/lib/string.o
+ .debug_line_str
+                0x0000000000000b2b       0xec bin/obj/lib/memcpy/memcpy.o
+ .debug_line_str
+                0x0000000000000b2b      0x11c bin/obj/boot/panic/panic.o
+ .debug_line_str
+                0x0000000000000b2b      0x1c4 bin/obj/drivers/interrupts/gicv3/gicv3.o
+ .debug_line_str
+                0x0000000000000b2b       0x49 bin/obj/drivers/interrupts/irq.o
+ .debug_line_str
+                0x0000000000000b2b      0x17d bin/obj/drivers/uart/uart.o
 
-.debug_info     0x0000000000000000     0x450b
- .debug_info    0x0000000000000000       0x28 bin/obj/__arm/sysregs.o
- .debug_info    0x0000000000000028       0x23 bin/obj/__arm/exceptions/el2_vectors.o
- .debug_info    0x000000000000004b       0x28 bin/obj/__arm/exceptions/exceptions.o
- .debug_info    0x0000000000000073       0x29 bin/obj/__lib/memcpy/memcpy.o
- .debug_info    0x000000000000009c       0x28 bin/obj/__boot/clean_bss.o
- .debug_info    0x00000000000000c4       0x28 bin/obj/__boot/boot.o
- .debug_info    0x00000000000000ec      0x50b bin/obj/kernel/panic.o
- .debug_info    0x00000000000005f7      0x4f2 bin/obj/kernel/kernel_entry.o
- .debug_info    0x0000000000000ae9      0x116 bin/obj/arm/cpu.o
- .debug_info    0x0000000000000bff      0x11f bin/obj/arm/exceptions/handlers/el2/el2_low_a32_serror.o
- .debug_info    0x0000000000000d1e      0x11f bin/obj/arm/exceptions/handlers/el2/el2_cur_spx_serror.o
- .debug_info    0x0000000000000e3d      0x11f bin/obj/arm/exceptions/handlers/el2/el2_low_a64_serror.o
- .debug_info    0x0000000000000f5c      0x11f bin/obj/arm/exceptions/handlers/el2/el2_low_a64_sync.o
- .debug_info    0x000000000000107b      0x11f bin/obj/arm/exceptions/handlers/el2/el2_cur_sp0_irq.o
- .debug_info    0x000000000000119a      0x11f bin/obj/arm/exceptions/handlers/el2/el2_cur_sp0_serror.o
- .debug_info    0x00000000000012b9      0x11f bin/obj/arm/exceptions/handlers/el2/el2_low_a64_irq.o
- .debug_info    0x00000000000013d8      0x11f bin/obj/arm/exceptions/handlers/el2/el2_low_a64_fiq.o
- .debug_info    0x00000000000014f7      0x11f bin/obj/arm/exceptions/handlers/el2/el2_cur_spx_fiq.o
- .debug_info    0x0000000000001616      0x11f bin/obj/arm/exceptions/handlers/el2/el2_low_a32_irq.o
- .debug_info    0x0000000000001735      0x11f bin/obj/arm/exceptions/handlers/el2/el2_cur_sp0_fiq.o
- .debug_info    0x0000000000001854      0x11f bin/obj/arm/exceptions/handlers/el2/el2_low_a32_fiq.o
- .debug_info    0x0000000000001973      0x11f bin/obj/arm/exceptions/handlers/el2/el2_cur_spx_sync.o
- .debug_info    0x0000000000001a92      0x11f bin/obj/arm/exceptions/handlers/el2/el2_low_a32_sync.o
- .debug_info    0x0000000000001bb1      0x11f bin/obj/arm/exceptions/handlers/el2/el2_cur_sp0_sync.o
- .debug_info    0x0000000000001cd0      0x11f bin/obj/arm/exceptions/handlers/el2/el2_cur_spx_irq.o
- .debug_info    0x0000000000001def      0x2b3 bin/obj/arm/exceptions/exceptions.o
- .debug_info    0x00000000000020a2      0x441 bin/obj/lib/string.o
- .debug_info    0x00000000000024e3      0x4cd bin/obj/lib/memcpy/memcpy.o
- .debug_info    0x00000000000029b0      0xf3e bin/obj/drivers/interrupts/gicv3/gicv3.o
- .debug_info    0x00000000000038ee      0xc1d bin/obj/drivers/uart/uart.o
+.debug_info     0x0000000000000000     0x6315
+ .debug_info    0x0000000000000000       0x28 bin/obj/__arm/cache/cache_d.o
+ .debug_info    0x0000000000000028       0x28 bin/obj/__arm/sysregs.o
+ .debug_info    0x0000000000000050       0x23 bin/obj/__arm/exceptions/el2_vectors.o
+ .debug_info    0x0000000000000073       0x28 bin/obj/__arm/exceptions/exceptions.o
+ .debug_info    0x000000000000009b       0x23 bin/obj/__arm/exceptions/el1_vectors.o
+ .debug_info    0x00000000000000be       0x29 bin/obj/__lib/memcpy/memcpy.o
+ .debug_info    0x00000000000000e7       0x28 bin/obj/__boot/clean_bss.o
+ .debug_info    0x000000000000010f       0x28 bin/obj/__boot/boot.o
+ .debug_info    0x0000000000000137       0x29 bin/obj/__boot/el1.o
+ .debug_info    0x0000000000000160       0x28 bin/obj/__boot/panic/panic.o
+ .debug_info    0x0000000000000188       0x29 bin/obj/__boot/el1_cpy.o
+ .debug_info    0x00000000000001b1      0x51c bin/obj/kernel/kernel_entry.o
+ .debug_info    0x00000000000006cd      0x116 bin/obj/arm/cpu.o
+ .debug_info    0x00000000000007e3      0x15e bin/obj/arm/exceptions/handlers/el1/el1_cur_sp0_fiq.o
+ .debug_info    0x0000000000000941      0x15e bin/obj/arm/exceptions/handlers/el1/el1_low_a32_serror.o
+ .debug_info    0x0000000000000a9f      0x15e bin/obj/arm/exceptions/handlers/el1/el1_low_a32_fiq.o
+ .debug_info    0x0000000000000bfd      0x15e bin/obj/arm/exceptions/handlers/el1/el1_low_a64_sync.o
+ .debug_info    0x0000000000000d5b      0x15e bin/obj/arm/exceptions/handlers/el1/el1_cur_spx_sync.o
+ .debug_info    0x0000000000000eb9      0x15e bin/obj/arm/exceptions/handlers/el1/el1_cur_spx_fiq.o
+ .debug_info    0x0000000000001017      0x15e bin/obj/arm/exceptions/handlers/el1/el1_cur_spx_irq.o
+ .debug_info    0x0000000000001175      0x15e bin/obj/arm/exceptions/handlers/el1/el1_cur_spx_serror.o
+ .debug_info    0x00000000000012d3      0x15e bin/obj/arm/exceptions/handlers/el1/el1_low_a32_irq.o
+ .debug_info    0x0000000000001431      0x15e bin/obj/arm/exceptions/handlers/el1/el1_low_a64_fiq.o
+ .debug_info    0x000000000000158f      0x15e bin/obj/arm/exceptions/handlers/el1/el1_low_a64_irq.o
+ .debug_info    0x00000000000016ed      0x15e bin/obj/arm/exceptions/handlers/el1/el1_cur_sp0_sync.o
+ .debug_info    0x000000000000184b      0x15e bin/obj/arm/exceptions/handlers/el1/el1_cur_sp0_irq.o
+ .debug_info    0x00000000000019a9      0x15e bin/obj/arm/exceptions/handlers/el1/el1_low_a64_serror.o
+ .debug_info    0x0000000000001b07      0x15e bin/obj/arm/exceptions/handlers/el1/el1_low_a32_sync.o
+ .debug_info    0x0000000000001c65      0x15e bin/obj/arm/exceptions/handlers/el1/el1_cur_sp0_serror.o
+ .debug_info    0x0000000000001dc3      0x15e bin/obj/arm/exceptions/handlers/el2/el2_low_a32_serror.o
+ .debug_info    0x0000000000001f21      0x15e bin/obj/arm/exceptions/handlers/el2/el2_cur_spx_serror.o
+ .debug_info    0x000000000000207f      0x15e bin/obj/arm/exceptions/handlers/el2/el2_low_a64_serror.o
+ .debug_info    0x00000000000021dd      0x15e bin/obj/arm/exceptions/handlers/el2/el2_low_a64_sync.o
+ .debug_info    0x000000000000233b      0x15e bin/obj/arm/exceptions/handlers/el2/el2_cur_sp0_irq.o
+ .debug_info    0x0000000000002499      0x15e bin/obj/arm/exceptions/handlers/el2/el2_cur_sp0_serror.o
+ .debug_info    0x00000000000025f7      0x15e bin/obj/arm/exceptions/handlers/el2/el2_low_a64_irq.o
+ .debug_info    0x0000000000002755      0x15e bin/obj/arm/exceptions/handlers/el2/el2_low_a64_fiq.o
+ .debug_info    0x00000000000028b3      0x15e bin/obj/arm/exceptions/handlers/el2/el2_cur_spx_fiq.o
+ .debug_info    0x0000000000002a11      0x15e bin/obj/arm/exceptions/handlers/el2/el2_low_a32_irq.o
+ .debug_info    0x0000000000002b6f      0x15e bin/obj/arm/exceptions/handlers/el2/el2_cur_sp0_fiq.o
+ .debug_info    0x0000000000002ccd      0x15e bin/obj/arm/exceptions/handlers/el2/el2_low_a32_fiq.o
+ .debug_info    0x0000000000002e2b      0x15e bin/obj/arm/exceptions/handlers/el2/el2_cur_spx_sync.o
+ .debug_info    0x0000000000002f89      0x15e bin/obj/arm/exceptions/handlers/el2/el2_low_a32_sync.o
+ .debug_info    0x00000000000030e7      0x15e bin/obj/arm/exceptions/handlers/el2/el2_cur_sp0_sync.o
+ .debug_info    0x0000000000003245      0x15e bin/obj/arm/exceptions/handlers/el2/el2_cur_spx_irq.o
+ .debug_info    0x00000000000033a3      0x327 bin/obj/arm/exceptions/exceptions.o
+ .debug_info    0x00000000000036ca      0x47f bin/obj/lib/string.o
+ .debug_info    0x0000000000003b49      0x506 bin/obj/lib/memcpy/memcpy.o
+ .debug_info    0x000000000000404f      0x732 bin/obj/boot/panic/panic.o
+ .debug_info    0x0000000000004781      0xf77 bin/obj/drivers/interrupts/gicv3/gicv3.o
+ .debug_info    0x00000000000056f8      0xc1d bin/obj/drivers/uart/uart.o
 
-.debug_abbrev   0x0000000000000000     0x17d1
- .debug_abbrev  0x0000000000000000       0x14 bin/obj/__arm/sysregs.o
- .debug_abbrev  0x0000000000000014       0x12 bin/obj/__arm/exceptions/el2_vectors.o
- .debug_abbrev  0x0000000000000026       0x14 bin/obj/__arm/exceptions/exceptions.o
- .debug_abbrev  0x000000000000003a       0x14 bin/obj/__lib/memcpy/memcpy.o
- .debug_abbrev  0x000000000000004e       0x14 bin/obj/__boot/clean_bss.o
- .debug_abbrev  0x0000000000000062       0x14 bin/obj/__boot/boot.o
- .debug_abbrev  0x0000000000000076      0x1fd bin/obj/kernel/panic.o
- .debug_abbrev  0x0000000000000273      0x1e0 bin/obj/kernel/kernel_entry.o
- .debug_abbrev  0x0000000000000453       0xad bin/obj/arm/cpu.o
- .debug_abbrev  0x0000000000000500       0xae bin/obj/arm/exceptions/handlers/el2/el2_low_a32_serror.o
- .debug_abbrev  0x00000000000005ae       0xae bin/obj/arm/exceptions/handlers/el2/el2_cur_spx_serror.o
- .debug_abbrev  0x000000000000065c       0xae bin/obj/arm/exceptions/handlers/el2/el2_low_a64_serror.o
- .debug_abbrev  0x000000000000070a       0xae bin/obj/arm/exceptions/handlers/el2/el2_low_a64_sync.o
- .debug_abbrev  0x00000000000007b8       0xae bin/obj/arm/exceptions/handlers/el2/el2_cur_sp0_irq.o
- .debug_abbrev  0x0000000000000866       0xae bin/obj/arm/exceptions/handlers/el2/el2_cur_sp0_serror.o
- .debug_abbrev  0x0000000000000914       0xae bin/obj/arm/exceptions/handlers/el2/el2_low_a64_irq.o
- .debug_abbrev  0x00000000000009c2       0xae bin/obj/arm/exceptions/handlers/el2/el2_low_a64_fiq.o
- .debug_abbrev  0x0000000000000a70       0xae bin/obj/arm/exceptions/handlers/el2/el2_cur_spx_fiq.o
- .debug_abbrev  0x0000000000000b1e       0xae bin/obj/arm/exceptions/handlers/el2/el2_low_a32_irq.o
- .debug_abbrev  0x0000000000000bcc       0xae bin/obj/arm/exceptions/handlers/el2/el2_cur_sp0_fiq.o
- .debug_abbrev  0x0000000000000c7a       0xae bin/obj/arm/exceptions/handlers/el2/el2_low_a32_fiq.o
- .debug_abbrev  0x0000000000000d28       0xae bin/obj/arm/exceptions/handlers/el2/el2_cur_spx_sync.o
- .debug_abbrev  0x0000000000000dd6       0xae bin/obj/arm/exceptions/handlers/el2/el2_low_a32_sync.o
- .debug_abbrev  0x0000000000000e84       0xae bin/obj/arm/exceptions/handlers/el2/el2_cur_sp0_sync.o
- .debug_abbrev  0x0000000000000f32       0xae bin/obj/arm/exceptions/handlers/el2/el2_cur_spx_irq.o
- .debug_abbrev  0x0000000000000fe0      0x12b bin/obj/arm/exceptions/exceptions.o
- .debug_abbrev  0x000000000000110b      0x194 bin/obj/lib/string.o
- .debug_abbrev  0x000000000000129f      0x1e0 bin/obj/lib/memcpy/memcpy.o
- .debug_abbrev  0x000000000000147f      0x1be bin/obj/drivers/interrupts/gicv3/gicv3.o
- .debug_abbrev  0x000000000000163d      0x194 bin/obj/drivers/uart/uart.o
+.debug_abbrev   0x0000000000000000     0x2703
+ .debug_abbrev  0x0000000000000000       0x14 bin/obj/__arm/cache/cache_d.o
+ .debug_abbrev  0x0000000000000014       0x14 bin/obj/__arm/sysregs.o
+ .debug_abbrev  0x0000000000000028       0x12 bin/obj/__arm/exceptions/el2_vectors.o
+ .debug_abbrev  0x000000000000003a       0x14 bin/obj/__arm/exceptions/exceptions.o
+ .debug_abbrev  0x000000000000004e       0x12 bin/obj/__arm/exceptions/el1_vectors.o
+ .debug_abbrev  0x0000000000000060       0x14 bin/obj/__lib/memcpy/memcpy.o
+ .debug_abbrev  0x0000000000000074       0x14 bin/obj/__boot/clean_bss.o
+ .debug_abbrev  0x0000000000000088       0x14 bin/obj/__boot/boot.o
+ .debug_abbrev  0x000000000000009c       0x14 bin/obj/__boot/el1.o
+ .debug_abbrev  0x00000000000000b0       0x14 bin/obj/__boot/panic/panic.o
+ .debug_abbrev  0x00000000000000c4       0x14 bin/obj/__boot/el1_cpy.o
+ .debug_abbrev  0x00000000000000d8      0x1e0 bin/obj/kernel/kernel_entry.o
+ .debug_abbrev  0x00000000000002b8       0xad bin/obj/arm/cpu.o
+ .debug_abbrev  0x0000000000000365       0xca bin/obj/arm/exceptions/handlers/el1/el1_cur_sp0_fiq.o
+ .debug_abbrev  0x000000000000042f       0xca bin/obj/arm/exceptions/handlers/el1/el1_low_a32_serror.o
+ .debug_abbrev  0x00000000000004f9       0xca bin/obj/arm/exceptions/handlers/el1/el1_low_a32_fiq.o
+ .debug_abbrev  0x00000000000005c3       0xca bin/obj/arm/exceptions/handlers/el1/el1_low_a64_sync.o
+ .debug_abbrev  0x000000000000068d       0xca bin/obj/arm/exceptions/handlers/el1/el1_cur_spx_sync.o
+ .debug_abbrev  0x0000000000000757       0xca bin/obj/arm/exceptions/handlers/el1/el1_cur_spx_fiq.o
+ .debug_abbrev  0x0000000000000821       0xca bin/obj/arm/exceptions/handlers/el1/el1_cur_spx_irq.o
+ .debug_abbrev  0x00000000000008eb       0xca bin/obj/arm/exceptions/handlers/el1/el1_cur_spx_serror.o
+ .debug_abbrev  0x00000000000009b5       0xca bin/obj/arm/exceptions/handlers/el1/el1_low_a32_irq.o
+ .debug_abbrev  0x0000000000000a7f       0xca bin/obj/arm/exceptions/handlers/el1/el1_low_a64_fiq.o
+ .debug_abbrev  0x0000000000000b49       0xca bin/obj/arm/exceptions/handlers/el1/el1_low_a64_irq.o
+ .debug_abbrev  0x0000000000000c13       0xca bin/obj/arm/exceptions/handlers/el1/el1_cur_sp0_sync.o
+ .debug_abbrev  0x0000000000000cdd       0xca bin/obj/arm/exceptions/handlers/el1/el1_cur_sp0_irq.o
+ .debug_abbrev  0x0000000000000da7       0xca bin/obj/arm/exceptions/handlers/el1/el1_low_a64_serror.o
+ .debug_abbrev  0x0000000000000e71       0xca bin/obj/arm/exceptions/handlers/el1/el1_low_a32_sync.o
+ .debug_abbrev  0x0000000000000f3b       0xca bin/obj/arm/exceptions/handlers/el1/el1_cur_sp0_serror.o
+ .debug_abbrev  0x0000000000001005       0xca bin/obj/arm/exceptions/handlers/el2/el2_low_a32_serror.o
+ .debug_abbrev  0x00000000000010cf       0xca bin/obj/arm/exceptions/handlers/el2/el2_cur_spx_serror.o
+ .debug_abbrev  0x0000000000001199       0xca bin/obj/arm/exceptions/handlers/el2/el2_low_a64_serror.o
+ .debug_abbrev  0x0000000000001263       0xca bin/obj/arm/exceptions/handlers/el2/el2_low_a64_sync.o
+ .debug_abbrev  0x000000000000132d       0xca bin/obj/arm/exceptions/handlers/el2/el2_cur_sp0_irq.o
+ .debug_abbrev  0x00000000000013f7       0xca bin/obj/arm/exceptions/handlers/el2/el2_cur_sp0_serror.o
+ .debug_abbrev  0x00000000000014c1       0xca bin/obj/arm/exceptions/handlers/el2/el2_low_a64_irq.o
+ .debug_abbrev  0x000000000000158b       0xca bin/obj/arm/exceptions/handlers/el2/el2_low_a64_fiq.o
+ .debug_abbrev  0x0000000000001655       0xca bin/obj/arm/exceptions/handlers/el2/el2_cur_spx_fiq.o
+ .debug_abbrev  0x000000000000171f       0xca bin/obj/arm/exceptions/handlers/el2/el2_low_a32_irq.o
+ .debug_abbrev  0x00000000000017e9       0xca bin/obj/arm/exceptions/handlers/el2/el2_cur_sp0_fiq.o
+ .debug_abbrev  0x00000000000018b3       0xca bin/obj/arm/exceptions/handlers/el2/el2_low_a32_fiq.o
+ .debug_abbrev  0x000000000000197d       0xca bin/obj/arm/exceptions/handlers/el2/el2_cur_spx_sync.o
+ .debug_abbrev  0x0000000000001a47       0xca bin/obj/arm/exceptions/handlers/el2/el2_low_a32_sync.o
+ .debug_abbrev  0x0000000000001b11       0xca bin/obj/arm/exceptions/handlers/el2/el2_cur_sp0_sync.o
+ .debug_abbrev  0x0000000000001bdb       0xca bin/obj/arm/exceptions/handlers/el2/el2_cur_spx_irq.o
+ .debug_abbrev  0x0000000000001ca5      0x163 bin/obj/arm/exceptions/exceptions.o
+ .debug_abbrev  0x0000000000001e08      0x193 bin/obj/lib/string.o
+ .debug_abbrev  0x0000000000001f9b      0x1e0 bin/obj/lib/memcpy/memcpy.o
+ .debug_abbrev  0x000000000000217b      0x233 bin/obj/boot/panic/panic.o
+ .debug_abbrev  0x00000000000023ae      0x1c1 bin/obj/drivers/interrupts/gicv3/gicv3.o
+ .debug_abbrev  0x000000000000256f      0x194 bin/obj/drivers/uart/uart.o
 
-.debug_aranges  0x0000000000000000      0x5b0
+.debug_aranges  0x0000000000000000      0x9b0
  .debug_aranges
-                0x0000000000000000       0x30 bin/obj/__arm/sysregs.o
+                0x0000000000000000       0x30 bin/obj/__arm/cache/cache_d.o
  .debug_aranges
-                0x0000000000000030       0x40 bin/obj/__arm/exceptions/el2_vectors.o
+                0x0000000000000030       0x30 bin/obj/__arm/sysregs.o
  .debug_aranges
-                0x0000000000000070       0x30 bin/obj/__arm/exceptions/exceptions.o
+                0x0000000000000060       0x40 bin/obj/__arm/exceptions/el2_vectors.o
  .debug_aranges
-                0x00000000000000a0       0x30 bin/obj/__lib/memcpy/memcpy.o
+                0x00000000000000a0       0x30 bin/obj/__arm/exceptions/exceptions.o
  .debug_aranges
-                0x00000000000000d0       0x30 bin/obj/__boot/clean_bss.o
+                0x00000000000000d0       0x40 bin/obj/__arm/exceptions/el1_vectors.o
  .debug_aranges
-                0x0000000000000100       0x30 bin/obj/__boot/boot.o
+                0x0000000000000110       0x30 bin/obj/__lib/memcpy/memcpy.o
  .debug_aranges
-                0x0000000000000130       0x30 bin/obj/kernel/panic.o
+                0x0000000000000140       0x30 bin/obj/__boot/clean_bss.o
  .debug_aranges
-                0x0000000000000160       0x30 bin/obj/kernel/kernel_entry.o
+                0x0000000000000170       0x30 bin/obj/__boot/boot.o
  .debug_aranges
-                0x0000000000000190       0x30 bin/obj/arm/cpu.o
+                0x00000000000001a0       0x30 bin/obj/__boot/el1.o
  .debug_aranges
-                0x00000000000001c0       0x30 bin/obj/arm/exceptions/handlers/el2/el2_low_a32_serror.o
+                0x00000000000001d0       0x30 bin/obj/__boot/panic/panic.o
  .debug_aranges
-                0x00000000000001f0       0x30 bin/obj/arm/exceptions/handlers/el2/el2_cur_spx_serror.o
+                0x0000000000000200       0x30 bin/obj/__boot/el1_cpy.o
  .debug_aranges
-                0x0000000000000220       0x30 bin/obj/arm/exceptions/handlers/el2/el2_low_a64_serror.o
+                0x0000000000000230       0x30 bin/obj/kernel/kernel_entry.o
  .debug_aranges
-                0x0000000000000250       0x30 bin/obj/arm/exceptions/handlers/el2/el2_low_a64_sync.o
+                0x0000000000000260       0x30 bin/obj/arm/cpu.o
  .debug_aranges
-                0x0000000000000280       0x30 bin/obj/arm/exceptions/handlers/el2/el2_cur_sp0_irq.o
+                0x0000000000000290       0x30 bin/obj/arm/exceptions/handlers/el1/el1_cur_sp0_fiq.o
  .debug_aranges
-                0x00000000000002b0       0x30 bin/obj/arm/exceptions/handlers/el2/el2_cur_sp0_serror.o
+                0x00000000000002c0       0x30 bin/obj/arm/exceptions/handlers/el1/el1_low_a32_serror.o
  .debug_aranges
-                0x00000000000002e0       0x30 bin/obj/arm/exceptions/handlers/el2/el2_low_a64_irq.o
+                0x00000000000002f0       0x30 bin/obj/arm/exceptions/handlers/el1/el1_low_a32_fiq.o
  .debug_aranges
-                0x0000000000000310       0x30 bin/obj/arm/exceptions/handlers/el2/el2_low_a64_fiq.o
+                0x0000000000000320       0x30 bin/obj/arm/exceptions/handlers/el1/el1_low_a64_sync.o
  .debug_aranges
-                0x0000000000000340       0x30 bin/obj/arm/exceptions/handlers/el2/el2_cur_spx_fiq.o
+                0x0000000000000350       0x30 bin/obj/arm/exceptions/handlers/el1/el1_cur_spx_sync.o
  .debug_aranges
-                0x0000000000000370       0x30 bin/obj/arm/exceptions/handlers/el2/el2_low_a32_irq.o
+                0x0000000000000380       0x30 bin/obj/arm/exceptions/handlers/el1/el1_cur_spx_fiq.o
  .debug_aranges
-                0x00000000000003a0       0x30 bin/obj/arm/exceptions/handlers/el2/el2_cur_sp0_fiq.o
+                0x00000000000003b0       0x30 bin/obj/arm/exceptions/handlers/el1/el1_cur_spx_irq.o
  .debug_aranges
-                0x00000000000003d0       0x30 bin/obj/arm/exceptions/handlers/el2/el2_low_a32_fiq.o
+                0x00000000000003e0       0x30 bin/obj/arm/exceptions/handlers/el1/el1_cur_spx_serror.o
  .debug_aranges
-                0x0000000000000400       0x30 bin/obj/arm/exceptions/handlers/el2/el2_cur_spx_sync.o
+                0x0000000000000410       0x30 bin/obj/arm/exceptions/handlers/el1/el1_low_a32_irq.o
  .debug_aranges
-                0x0000000000000430       0x30 bin/obj/arm/exceptions/handlers/el2/el2_low_a32_sync.o
+                0x0000000000000440       0x30 bin/obj/arm/exceptions/handlers/el1/el1_low_a64_fiq.o
  .debug_aranges
-                0x0000000000000460       0x30 bin/obj/arm/exceptions/handlers/el2/el2_cur_sp0_sync.o
+                0x0000000000000470       0x30 bin/obj/arm/exceptions/handlers/el1/el1_low_a64_irq.o
  .debug_aranges
-                0x0000000000000490       0x30 bin/obj/arm/exceptions/handlers/el2/el2_cur_spx_irq.o
+                0x00000000000004a0       0x30 bin/obj/arm/exceptions/handlers/el1/el1_cur_sp0_sync.o
  .debug_aranges
-                0x00000000000004c0       0x30 bin/obj/arm/exceptions/exceptions.o
+                0x00000000000004d0       0x30 bin/obj/arm/exceptions/handlers/el1/el1_cur_sp0_irq.o
  .debug_aranges
-                0x00000000000004f0       0x30 bin/obj/lib/string.o
+                0x0000000000000500       0x30 bin/obj/arm/exceptions/handlers/el1/el1_low_a64_serror.o
  .debug_aranges
-                0x0000000000000520       0x30 bin/obj/lib/memcpy/memcpy.o
+                0x0000000000000530       0x30 bin/obj/arm/exceptions/handlers/el1/el1_low_a32_sync.o
  .debug_aranges
-                0x0000000000000550       0x30 bin/obj/drivers/interrupts/gicv3/gicv3.o
+                0x0000000000000560       0x30 bin/obj/arm/exceptions/handlers/el1/el1_cur_sp0_serror.o
  .debug_aranges
-                0x0000000000000580       0x30 bin/obj/drivers/uart/uart.o
+                0x0000000000000590       0x30 bin/obj/arm/exceptions/handlers/el2/el2_low_a32_serror.o
+ .debug_aranges
+                0x00000000000005c0       0x30 bin/obj/arm/exceptions/handlers/el2/el2_cur_spx_serror.o
+ .debug_aranges
+                0x00000000000005f0       0x30 bin/obj/arm/exceptions/handlers/el2/el2_low_a64_serror.o
+ .debug_aranges
+                0x0000000000000620       0x30 bin/obj/arm/exceptions/handlers/el2/el2_low_a64_sync.o
+ .debug_aranges
+                0x0000000000000650       0x30 bin/obj/arm/exceptions/handlers/el2/el2_cur_sp0_irq.o
+ .debug_aranges
+                0x0000000000000680       0x30 bin/obj/arm/exceptions/handlers/el2/el2_cur_sp0_serror.o
+ .debug_aranges
+                0x00000000000006b0       0x30 bin/obj/arm/exceptions/handlers/el2/el2_low_a64_irq.o
+ .debug_aranges
+                0x00000000000006e0       0x30 bin/obj/arm/exceptions/handlers/el2/el2_low_a64_fiq.o
+ .debug_aranges
+                0x0000000000000710       0x30 bin/obj/arm/exceptions/handlers/el2/el2_cur_spx_fiq.o
+ .debug_aranges
+                0x0000000000000740       0x30 bin/obj/arm/exceptions/handlers/el2/el2_low_a32_irq.o
+ .debug_aranges
+                0x0000000000000770       0x30 bin/obj/arm/exceptions/handlers/el2/el2_cur_sp0_fiq.o
+ .debug_aranges
+                0x00000000000007a0       0x30 bin/obj/arm/exceptions/handlers/el2/el2_low_a32_fiq.o
+ .debug_aranges
+                0x00000000000007d0       0x30 bin/obj/arm/exceptions/handlers/el2/el2_cur_spx_sync.o
+ .debug_aranges
+                0x0000000000000800       0x30 bin/obj/arm/exceptions/handlers/el2/el2_low_a32_sync.o
+ .debug_aranges
+                0x0000000000000830       0x30 bin/obj/arm/exceptions/handlers/el2/el2_cur_sp0_sync.o
+ .debug_aranges
+                0x0000000000000860       0x30 bin/obj/arm/exceptions/handlers/el2/el2_cur_spx_irq.o
+ .debug_aranges
+                0x0000000000000890       0x30 bin/obj/arm/exceptions/exceptions.o
+ .debug_aranges
+                0x00000000000008c0       0x30 bin/obj/lib/string.o
+ .debug_aranges
+                0x00000000000008f0       0x30 bin/obj/lib/memcpy/memcpy.o
+ .debug_aranges
+                0x0000000000000920       0x30 bin/obj/boot/panic/panic.o
+ .debug_aranges
+                0x0000000000000950       0x30 bin/obj/drivers/interrupts/gicv3/gicv3.o
+ .debug_aranges
+                0x0000000000000980       0x30 bin/obj/drivers/uart/uart.o
 
-.debug_str      0x0000000000000000     0x1c00
- .debug_str     0x0000000000000000     0x1c00 bin/obj/__arm/sysregs.o
-                                         0x4c (size before relaxing)
- .debug_str     0x0000000000001c00       0x5b bin/obj/__arm/exceptions/el2_vectors.o
- .debug_str     0x0000000000001c00       0x5a bin/obj/__arm/exceptions/exceptions.o
- .debug_str     0x0000000000001c00       0x52 bin/obj/__lib/memcpy/memcpy.o
- .debug_str     0x0000000000001c00       0x4f bin/obj/__boot/clean_bss.o
- .debug_str     0x0000000000001c00       0x4a bin/obj/__boot/boot.o
- .debug_str     0x0000000000001c00      0x3ce bin/obj/kernel/panic.o
- .debug_str     0x0000000000001c00       0x79 bin/obj/kernel/malloc/buddy_allocator.o
- .debug_str     0x0000000000001c00      0x38b bin/obj/kernel/kernel_entry.o
- .debug_str     0x0000000000001c00      0x154 bin/obj/arm/cpu.o
- .debug_str     0x0000000000001c00      0x16b bin/obj/arm/exceptions/handlers/el2/el2_low_a32_serror.o
- .debug_str     0x0000000000001c00      0x16b bin/obj/arm/exceptions/handlers/el2/el2_cur_spx_serror.o
- .debug_str     0x0000000000001c00      0x16b bin/obj/arm/exceptions/handlers/el2/el2_low_a64_serror.o
- .debug_str     0x0000000000001c00      0x169 bin/obj/arm/exceptions/handlers/el2/el2_low_a64_sync.o
- .debug_str     0x0000000000001c00      0x168 bin/obj/arm/exceptions/handlers/el2/el2_cur_sp0_irq.o
- .debug_str     0x0000000000001c00      0x16b bin/obj/arm/exceptions/handlers/el2/el2_cur_sp0_serror.o
- .debug_str     0x0000000000001c00      0x168 bin/obj/arm/exceptions/handlers/el2/el2_low_a64_irq.o
- .debug_str     0x0000000000001c00      0x168 bin/obj/arm/exceptions/handlers/el2/el2_low_a64_fiq.o
- .debug_str     0x0000000000001c00      0x168 bin/obj/arm/exceptions/handlers/el2/el2_cur_spx_fiq.o
- .debug_str     0x0000000000001c00      0x168 bin/obj/arm/exceptions/handlers/el2/el2_low_a32_irq.o
- .debug_str     0x0000000000001c00      0x168 bin/obj/arm/exceptions/handlers/el2/el2_cur_sp0_fiq.o
- .debug_str     0x0000000000001c00      0x168 bin/obj/arm/exceptions/handlers/el2/el2_low_a32_fiq.o
- .debug_str     0x0000000000001c00      0x169 bin/obj/arm/exceptions/handlers/el2/el2_cur_spx_sync.o
- .debug_str     0x0000000000001c00      0x169 bin/obj/arm/exceptions/handlers/el2/el2_low_a32_sync.o
- .debug_str     0x0000000000001c00      0x169 bin/obj/arm/exceptions/handlers/el2/el2_cur_sp0_sync.o
- .debug_str     0x0000000000001c00      0x168 bin/obj/arm/exceptions/handlers/el2/el2_cur_spx_irq.o
- .debug_str     0x0000000000001c00      0x2bb bin/obj/arm/exceptions/exceptions.o
- .debug_str     0x0000000000001c00      0x31a bin/obj/lib/string.o
- .debug_str     0x0000000000001c00      0x305 bin/obj/lib/memcpy/memcpy.o
- .debug_str     0x0000000000001c00     0x1216 bin/obj/drivers/interrupts/gicv3/gicv3.o
- .debug_str     0x0000000000001c00       0x79 bin/obj/drivers/interrupts/irq.o
- .debug_str     0x0000000000001c00      0x4d8 bin/obj/drivers/uart/uart.o
+.debug_str      0x0000000000000000     0x1fe5
+ .debug_str     0x0000000000000000     0x1fe5 bin/obj/__arm/cache/cache_d.o
+                                         0x52 (size before relaxing)
+ .debug_str     0x0000000000001fe5       0x4c bin/obj/__arm/sysregs.o
+ .debug_str     0x0000000000001fe5       0x5b bin/obj/__arm/exceptions/el2_vectors.o
+ .debug_str     0x0000000000001fe5       0x5a bin/obj/__arm/exceptions/exceptions.o
+ .debug_str     0x0000000000001fe5       0x5b bin/obj/__arm/exceptions/el1_vectors.o
+ .debug_str     0x0000000000001fe5       0x52 bin/obj/__lib/memcpy/memcpy.o
+ .debug_str     0x0000000000001fe5       0x4f bin/obj/__boot/clean_bss.o
+ .debug_str     0x0000000000001fe5       0x4a bin/obj/__boot/boot.o
+ .debug_str     0x0000000000001fe5       0x49 bin/obj/__boot/el1.o
+ .debug_str     0x0000000000001fe5       0x51 bin/obj/__boot/panic/panic.o
+ .debug_str     0x0000000000001fe5       0x4d bin/obj/__boot/el1_cpy.o
+ .debug_str     0x0000000000001fe5       0x79 bin/obj/kernel/malloc/buddy_allocator.o
+ .debug_str     0x0000000000001fe5      0x3d2 bin/obj/kernel/kernel_entry.o
+ .debug_str     0x0000000000001fe5      0x154 bin/obj/arm/cpu.o
+ .debug_str     0x0000000000001fe5      0x1e1 bin/obj/arm/exceptions/handlers/el1/el1_cur_sp0_fiq.o
+ .debug_str     0x0000000000001fe5      0x1e4 bin/obj/arm/exceptions/handlers/el1/el1_low_a32_serror.o
+ .debug_str     0x0000000000001fe5      0x1e1 bin/obj/arm/exceptions/handlers/el1/el1_low_a32_fiq.o
+ .debug_str     0x0000000000001fe5      0x1e2 bin/obj/arm/exceptions/handlers/el1/el1_low_a64_sync.o
+ .debug_str     0x0000000000001fe5      0x1e2 bin/obj/arm/exceptions/handlers/el1/el1_cur_spx_sync.o
+ .debug_str     0x0000000000001fe5      0x1e1 bin/obj/arm/exceptions/handlers/el1/el1_cur_spx_fiq.o
+ .debug_str     0x0000000000001fe5      0x1e1 bin/obj/arm/exceptions/handlers/el1/el1_cur_spx_irq.o
+ .debug_str     0x0000000000001fe5      0x1e4 bin/obj/arm/exceptions/handlers/el1/el1_cur_spx_serror.o
+ .debug_str     0x0000000000001fe5      0x1e1 bin/obj/arm/exceptions/handlers/el1/el1_low_a32_irq.o
+ .debug_str     0x0000000000001fe5      0x1e1 bin/obj/arm/exceptions/handlers/el1/el1_low_a64_fiq.o
+ .debug_str     0x0000000000001fe5      0x1e1 bin/obj/arm/exceptions/handlers/el1/el1_low_a64_irq.o
+ .debug_str     0x0000000000001fe5      0x1e2 bin/obj/arm/exceptions/handlers/el1/el1_cur_sp0_sync.o
+ .debug_str     0x0000000000001fe5      0x1e1 bin/obj/arm/exceptions/handlers/el1/el1_cur_sp0_irq.o
+ .debug_str     0x0000000000001fe5      0x1e4 bin/obj/arm/exceptions/handlers/el1/el1_low_a64_serror.o
+ .debug_str     0x0000000000001fe5      0x1e2 bin/obj/arm/exceptions/handlers/el1/el1_low_a32_sync.o
+ .debug_str     0x0000000000001fe5      0x1e4 bin/obj/arm/exceptions/handlers/el1/el1_cur_sp0_serror.o
+ .debug_str     0x0000000000001fe5      0x1e4 bin/obj/arm/exceptions/handlers/el2/el2_low_a32_serror.o
+ .debug_str     0x0000000000001fe5      0x1e4 bin/obj/arm/exceptions/handlers/el2/el2_cur_spx_serror.o
+ .debug_str     0x0000000000001fe5      0x1e4 bin/obj/arm/exceptions/handlers/el2/el2_low_a64_serror.o
+ .debug_str     0x0000000000001fe5      0x1e2 bin/obj/arm/exceptions/handlers/el2/el2_low_a64_sync.o
+ .debug_str     0x0000000000001fe5      0x1e1 bin/obj/arm/exceptions/handlers/el2/el2_cur_sp0_irq.o
+ .debug_str     0x0000000000001fe5      0x1e4 bin/obj/arm/exceptions/handlers/el2/el2_cur_sp0_serror.o
+ .debug_str     0x0000000000001fe5      0x1e1 bin/obj/arm/exceptions/handlers/el2/el2_low_a64_irq.o
+ .debug_str     0x0000000000001fe5      0x1e1 bin/obj/arm/exceptions/handlers/el2/el2_low_a64_fiq.o
+ .debug_str     0x0000000000001fe5      0x1e1 bin/obj/arm/exceptions/handlers/el2/el2_cur_spx_fiq.o
+ .debug_str     0x0000000000001fe5      0x1e1 bin/obj/arm/exceptions/handlers/el2/el2_low_a32_irq.o
+ .debug_str     0x0000000000001fe5      0x1e1 bin/obj/arm/exceptions/handlers/el2/el2_cur_sp0_fiq.o
+ .debug_str     0x0000000000001fe5      0x1e1 bin/obj/arm/exceptions/handlers/el2/el2_low_a32_fiq.o
+ .debug_str     0x0000000000001fe5      0x1e2 bin/obj/arm/exceptions/handlers/el2/el2_cur_spx_sync.o
+ .debug_str     0x0000000000001fe5      0x1e2 bin/obj/arm/exceptions/handlers/el2/el2_low_a32_sync.o
+ .debug_str     0x0000000000001fe5      0x1e2 bin/obj/arm/exceptions/handlers/el2/el2_cur_sp0_sync.o
+ .debug_str     0x0000000000001fe5      0x1e1 bin/obj/arm/exceptions/handlers/el2/el2_cur_spx_irq.o
+ .debug_str     0x0000000000001fe5      0x376 bin/obj/arm/exceptions/exceptions.o
+ .debug_str     0x0000000000001fe5      0x393 bin/obj/lib/string.o
+ .debug_str     0x0000000000001fe5      0x37e bin/obj/lib/memcpy/memcpy.o
+ .debug_str     0x0000000000001fe5      0x552 bin/obj/boot/panic/panic.o
+ .debug_str     0x0000000000001fe5     0x128f bin/obj/drivers/interrupts/gicv3/gicv3.o
+ .debug_str     0x0000000000001fe5       0x79 bin/obj/drivers/interrupts/irq.o
+ .debug_str     0x0000000000001fe5      0x4d8 bin/obj/drivers/uart/uart.o
 
 .debug_rnglists
-                0x0000000000000000       0x4e
+                0x0000000000000000       0x71
  .debug_rnglists
                 0x0000000000000000       0x23 bin/obj/__arm/exceptions/el2_vectors.o
  .debug_rnglists
-                0x0000000000000023       0x2b bin/obj/lib/string.o
+                0x0000000000000023       0x23 bin/obj/__arm/exceptions/el1_vectors.o
+ .debug_rnglists
+                0x0000000000000046       0x2b bin/obj/lib/string.o
 
 .comment        0x0000000000000000       0x45
- .comment       0x0000000000000000       0x45 bin/obj/kernel/panic.o
+ .comment       0x0000000000000000       0x45 bin/obj/kernel/malloc/buddy_allocator.o
                                          0x46 (size before relaxing)
- .comment       0x0000000000000045       0x46 bin/obj/kernel/malloc/buddy_allocator.o
  .comment       0x0000000000000045       0x46 bin/obj/kernel/kernel_entry.o
  .comment       0x0000000000000045       0x46 bin/obj/arm/cpu.o
+ .comment       0x0000000000000045       0x46 bin/obj/arm/exceptions/handlers/el1/el1_cur_sp0_fiq.o
+ .comment       0x0000000000000045       0x46 bin/obj/arm/exceptions/handlers/el1/el1_low_a32_serror.o
+ .comment       0x0000000000000045       0x46 bin/obj/arm/exceptions/handlers/el1/el1_low_a32_fiq.o
+ .comment       0x0000000000000045       0x46 bin/obj/arm/exceptions/handlers/el1/el1_low_a64_sync.o
+ .comment       0x0000000000000045       0x46 bin/obj/arm/exceptions/handlers/el1/el1_cur_spx_sync.o
+ .comment       0x0000000000000045       0x46 bin/obj/arm/exceptions/handlers/el1/el1_cur_spx_fiq.o
+ .comment       0x0000000000000045       0x46 bin/obj/arm/exceptions/handlers/el1/el1_cur_spx_irq.o
+ .comment       0x0000000000000045       0x46 bin/obj/arm/exceptions/handlers/el1/el1_cur_spx_serror.o
+ .comment       0x0000000000000045       0x46 bin/obj/arm/exceptions/handlers/el1/el1_low_a32_irq.o
+ .comment       0x0000000000000045       0x46 bin/obj/arm/exceptions/handlers/el1/el1_low_a64_fiq.o
+ .comment       0x0000000000000045       0x46 bin/obj/arm/exceptions/handlers/el1/el1_low_a64_irq.o
+ .comment       0x0000000000000045       0x46 bin/obj/arm/exceptions/handlers/el1/el1_cur_sp0_sync.o
+ .comment       0x0000000000000045       0x46 bin/obj/arm/exceptions/handlers/el1/el1_cur_sp0_irq.o
+ .comment       0x0000000000000045       0x46 bin/obj/arm/exceptions/handlers/el1/el1_low_a64_serror.o
+ .comment       0x0000000000000045       0x46 bin/obj/arm/exceptions/handlers/el1/el1_low_a32_sync.o
+ .comment       0x0000000000000045       0x46 bin/obj/arm/exceptions/handlers/el1/el1_cur_sp0_serror.o
  .comment       0x0000000000000045       0x46 bin/obj/arm/exceptions/handlers/el2/el2_low_a32_serror.o
  .comment       0x0000000000000045       0x46 bin/obj/arm/exceptions/handlers/el2/el2_cur_spx_serror.o
  .comment       0x0000000000000045       0x46 bin/obj/arm/exceptions/handlers/el2/el2_low_a64_serror.o
@@ -614,32 +966,49 @@ LOAD linker stubs
  .comment       0x0000000000000045       0x46 bin/obj/arm/exceptions/exceptions.o
  .comment       0x0000000000000045       0x46 bin/obj/lib/string.o
  .comment       0x0000000000000045       0x46 bin/obj/lib/memcpy/memcpy.o
+ .comment       0x0000000000000045       0x46 bin/obj/boot/panic/panic.o
  .comment       0x0000000000000045       0x46 bin/obj/drivers/interrupts/gicv3/gicv3.o
  .comment       0x0000000000000045       0x46 bin/obj/drivers/interrupts/irq.o
  .comment       0x0000000000000045       0x46 bin/obj/drivers/uart/uart.o
 
-.debug_frame    0x0000000000000000      0xf50
- .debug_frame   0x0000000000000000       0xd0 bin/obj/kernel/panic.o
- .debug_frame   0x00000000000000d0       0xa0 bin/obj/kernel/kernel_entry.o
- .debug_frame   0x0000000000000170       0x38 bin/obj/arm/cpu.o
- .debug_frame   0x00000000000001a8       0x30 bin/obj/arm/exceptions/handlers/el2/el2_low_a32_serror.o
- .debug_frame   0x00000000000001d8       0x30 bin/obj/arm/exceptions/handlers/el2/el2_cur_spx_serror.o
- .debug_frame   0x0000000000000208       0x30 bin/obj/arm/exceptions/handlers/el2/el2_low_a64_serror.o
- .debug_frame   0x0000000000000238       0x30 bin/obj/arm/exceptions/handlers/el2/el2_low_a64_sync.o
- .debug_frame   0x0000000000000268       0x30 bin/obj/arm/exceptions/handlers/el2/el2_cur_sp0_irq.o
- .debug_frame   0x0000000000000298       0x30 bin/obj/arm/exceptions/handlers/el2/el2_cur_sp0_serror.o
- .debug_frame   0x00000000000002c8       0x30 bin/obj/arm/exceptions/handlers/el2/el2_low_a64_irq.o
- .debug_frame   0x00000000000002f8       0x30 bin/obj/arm/exceptions/handlers/el2/el2_low_a64_fiq.o
- .debug_frame   0x0000000000000328       0x30 bin/obj/arm/exceptions/handlers/el2/el2_cur_spx_fiq.o
- .debug_frame   0x0000000000000358       0x30 bin/obj/arm/exceptions/handlers/el2/el2_low_a32_irq.o
- .debug_frame   0x0000000000000388       0x30 bin/obj/arm/exceptions/handlers/el2/el2_cur_sp0_fiq.o
- .debug_frame   0x00000000000003b8       0x30 bin/obj/arm/exceptions/handlers/el2/el2_low_a32_fiq.o
- .debug_frame   0x00000000000003e8       0x30 bin/obj/arm/exceptions/handlers/el2/el2_cur_spx_sync.o
- .debug_frame   0x0000000000000418       0x30 bin/obj/arm/exceptions/handlers/el2/el2_low_a32_sync.o
- .debug_frame   0x0000000000000448       0x30 bin/obj/arm/exceptions/handlers/el2/el2_cur_sp0_sync.o
- .debug_frame   0x0000000000000478       0x30 bin/obj/arm/exceptions/handlers/el2/el2_cur_spx_irq.o
- .debug_frame   0x00000000000004a8       0xb0 bin/obj/arm/exceptions/exceptions.o
- .debug_frame   0x0000000000000558       0x80 bin/obj/lib/string.o
- .debug_frame   0x00000000000005d8       0x88 bin/obj/lib/memcpy/memcpy.o
- .debug_frame   0x0000000000000660      0x450 bin/obj/drivers/interrupts/gicv3/gicv3.o
- .debug_frame   0x0000000000000ab0      0x4a0 bin/obj/drivers/uart/uart.o
+.debug_frame    0x0000000000000000     0x12b8
+ .debug_frame   0x0000000000000000       0xa0 bin/obj/kernel/kernel_entry.o
+ .debug_frame   0x00000000000000a0       0x38 bin/obj/arm/cpu.o
+ .debug_frame   0x00000000000000d8       0x30 bin/obj/arm/exceptions/handlers/el1/el1_cur_sp0_fiq.o
+ .debug_frame   0x0000000000000108       0x30 bin/obj/arm/exceptions/handlers/el1/el1_low_a32_serror.o
+ .debug_frame   0x0000000000000138       0x30 bin/obj/arm/exceptions/handlers/el1/el1_low_a32_fiq.o
+ .debug_frame   0x0000000000000168       0x30 bin/obj/arm/exceptions/handlers/el1/el1_low_a64_sync.o
+ .debug_frame   0x0000000000000198       0x30 bin/obj/arm/exceptions/handlers/el1/el1_cur_spx_sync.o
+ .debug_frame   0x00000000000001c8       0x30 bin/obj/arm/exceptions/handlers/el1/el1_cur_spx_fiq.o
+ .debug_frame   0x00000000000001f8       0x30 bin/obj/arm/exceptions/handlers/el1/el1_cur_spx_irq.o
+ .debug_frame   0x0000000000000228       0x30 bin/obj/arm/exceptions/handlers/el1/el1_cur_spx_serror.o
+ .debug_frame   0x0000000000000258       0x30 bin/obj/arm/exceptions/handlers/el1/el1_low_a32_irq.o
+ .debug_frame   0x0000000000000288       0x30 bin/obj/arm/exceptions/handlers/el1/el1_low_a64_fiq.o
+ .debug_frame   0x00000000000002b8       0x30 bin/obj/arm/exceptions/handlers/el1/el1_low_a64_irq.o
+ .debug_frame   0x00000000000002e8       0x30 bin/obj/arm/exceptions/handlers/el1/el1_cur_sp0_sync.o
+ .debug_frame   0x0000000000000318       0x30 bin/obj/arm/exceptions/handlers/el1/el1_cur_sp0_irq.o
+ .debug_frame   0x0000000000000348       0x30 bin/obj/arm/exceptions/handlers/el1/el1_low_a64_serror.o
+ .debug_frame   0x0000000000000378       0x30 bin/obj/arm/exceptions/handlers/el1/el1_low_a32_sync.o
+ .debug_frame   0x00000000000003a8       0x30 bin/obj/arm/exceptions/handlers/el1/el1_cur_sp0_serror.o
+ .debug_frame   0x00000000000003d8       0x30 bin/obj/arm/exceptions/handlers/el2/el2_low_a32_serror.o
+ .debug_frame   0x0000000000000408       0x30 bin/obj/arm/exceptions/handlers/el2/el2_cur_spx_serror.o
+ .debug_frame   0x0000000000000438       0x30 bin/obj/arm/exceptions/handlers/el2/el2_low_a64_serror.o
+ .debug_frame   0x0000000000000468       0x30 bin/obj/arm/exceptions/handlers/el2/el2_low_a64_sync.o
+ .debug_frame   0x0000000000000498       0x30 bin/obj/arm/exceptions/handlers/el2/el2_cur_sp0_irq.o
+ .debug_frame   0x00000000000004c8       0x30 bin/obj/arm/exceptions/handlers/el2/el2_cur_sp0_serror.o
+ .debug_frame   0x00000000000004f8       0x30 bin/obj/arm/exceptions/handlers/el2/el2_low_a64_irq.o
+ .debug_frame   0x0000000000000528       0x30 bin/obj/arm/exceptions/handlers/el2/el2_low_a64_fiq.o
+ .debug_frame   0x0000000000000558       0x30 bin/obj/arm/exceptions/handlers/el2/el2_cur_spx_fiq.o
+ .debug_frame   0x0000000000000588       0x30 bin/obj/arm/exceptions/handlers/el2/el2_low_a32_irq.o
+ .debug_frame   0x00000000000005b8       0x30 bin/obj/arm/exceptions/handlers/el2/el2_cur_sp0_fiq.o
+ .debug_frame   0x00000000000005e8       0x30 bin/obj/arm/exceptions/handlers/el2/el2_low_a32_fiq.o
+ .debug_frame   0x0000000000000618       0x30 bin/obj/arm/exceptions/handlers/el2/el2_cur_spx_sync.o
+ .debug_frame   0x0000000000000648       0x30 bin/obj/arm/exceptions/handlers/el2/el2_low_a32_sync.o
+ .debug_frame   0x0000000000000678       0x30 bin/obj/arm/exceptions/handlers/el2/el2_cur_sp0_sync.o
+ .debug_frame   0x00000000000006a8       0x30 bin/obj/arm/exceptions/handlers/el2/el2_cur_spx_irq.o
+ .debug_frame   0x00000000000006d8       0xd8 bin/obj/arm/exceptions/exceptions.o
+ .debug_frame   0x00000000000007b0       0x80 bin/obj/lib/string.o
+ .debug_frame   0x0000000000000830       0x88 bin/obj/lib/memcpy/memcpy.o
+ .debug_frame   0x00000000000008b8      0x110 bin/obj/boot/panic/panic.o
+ .debug_frame   0x00000000000009c8      0x450 bin/obj/drivers/interrupts/gicv3/gicv3.o
+ .debug_frame   0x0000000000000e18      0x4a0 bin/obj/drivers/uart/uart.o

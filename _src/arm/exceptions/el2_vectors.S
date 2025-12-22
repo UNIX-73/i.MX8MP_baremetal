@@ -59,7 +59,7 @@ _el2_init_vector:
 .endm
 
 .section .text
-.align 4
+.align 11
 _el2_cur_sp0_sync:
     EL2_CALL_WITH_CONTEXT el2_cur_sp0_sync_handler
 

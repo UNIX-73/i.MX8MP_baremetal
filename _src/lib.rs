@@ -21,7 +21,11 @@ unsafe extern "C" {
 
     static PANIC_MESSAGE_BUF_SIZE: u64;
     static PANIC_FILE_BUF_SIZE: u64;
+
+    static mut PANIC_REASON: u32;
 }
+
+const PANIC_REASON_RUST_PANIC: u32 = 3; // Full enum defined in _include/boot/panic.h
 
 #[unsafe(no_mangle)]
 extern "C" fn rust_test_panic() -> ! {
@@ -54,7 +58,7 @@ fn rust_panic(info: &PanicInfo) -> ! {
         }
 
         let copy_bytes = core::cmp::min(location.file().len(), file_len - 1);
-        
+
         unsafe {
             core::ptr::copy_nonoverlapping(
                 location.file().as_ptr(),
@@ -63,6 +67,10 @@ fn rust_panic(info: &PanicInfo) -> ! {
             );
             *PANIC_FILE_BUF_PTR.add(copy_bytes) = b'\0';
         }
+    }
+
+    unsafe {
+        PANIC_REASON = PANIC_REASON_RUST_PANIC;
     }
 
     unsafe { panic() };

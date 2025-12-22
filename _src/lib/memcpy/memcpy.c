@@ -1,4 +1,4 @@
-#include <kernel/panic.h>
+#include <boot/panic.h>
 #include <lib/memcpy.h>
 #include <lib/stdint.h>
 

@@ -4,7 +4,7 @@
 #error "This header should only be imported by a driver"
 #endif
 
-#include <kernel/panic.h>
+#include <boot/panic.h>
 #include <lib/mmio/mmio_macros.h>
 #include <lib/stdbool.h>
 #include <lib/stdint.h>

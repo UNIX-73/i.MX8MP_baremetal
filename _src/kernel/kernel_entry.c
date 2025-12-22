@@ -1,16 +1,17 @@
 
+#include "arm/sysregs.h"
+#include "drivers/interrupts/interrupts.h"
 #define DRIVERS
 
 #include <arm/exceptions/exceptions.h>
+#include <boot/panic.h>
 #include <drivers/uart/uart.h>
-#include <kernel/panic.h>
 #include <lib/memcpy.h>
 #include <lib/stdint.h>
 #include <lib/stdmacros.h>
 #include <lib/string.h>
 
 #include "arm/cpu.h"
-#include "arm/sysregs.h"
 #include "drivers/interrupts/gicv3/gicv3_raw/gicr_typer.h"
 
 static void kernel_init()
@@ -18,7 +19,7 @@ static void kernel_init()
 	init_panic();
 	UART_init(UART_ID_2);
 
-	exceptions_set_status((EXCEPTION_STATUS){
+	ARM_exceptions_set_status((ARM_exception_status){
 		.fiq = true,
 		.irq = true,
 		.serror = true,
@@ -28,11 +29,15 @@ static void kernel_init()
 
 extern uint64 _ARM_ICC_SRE_EL2();
 extern uint64 _ARM_HCR_EL2();
+extern void _switch_to_el1();
 
 // Main function of the kernel, called by the bootloader (/boot/boot.S)
 _Noreturn void kernel_entry()
 {
-	kernel_init();
+	if (_ARM_currentEL() == 2) {
+		kernel_init();
+		_switch_to_el1();
+	}
 
 	UART_puts(UART_ID_2, "Hello test!\n\r");
 
@@ -51,10 +56,22 @@ _Noreturn void kernel_entry()
 		UART_puts(UART_ID_2, "\n\r");
 	}
 
-	uint64 icc_sre = _ARM_HCR_EL2();
+	UART_puts(UART_ID_2, "\n\r");
+
+	size_t el = ARM_get_exception_level();
 	UART_puts(UART_ID_2,
-			  stdint_to_ascii((STDINT_UNION){.uint64 = icc_sre}, STDINT_UINT64,
-							  buf, 200, STDINT_BASE_REPR_BIN));
+			  stdint_to_ascii((STDINT_UNION){.uint64 = el}, STDINT_UINT64, buf,
+							  200, STDINT_BASE_REPR_DEC));
+
+	UART_puts(UART_ID_2, "\n\rSCTLR_EL2: ");
+	UART_puts(UART_ID_2,
+			  stdint_to_ascii((STDINT_UNION){.uint64 = _ARM_SCTLR_EL2()},
+							  STDINT_UINT64, buf, 200, STDINT_BASE_REPR_BIN));
+
+	UART_puts(UART_ID_2, "\n\rSCTLR_EL1: ");
+	UART_puts(UART_ID_2,
+			  stdint_to_ascii((STDINT_UNION){.uint64 = _ARM_SCTLR_EL1()},
+							  STDINT_UINT64, buf, 200, STDINT_BASE_REPR_BIN));
 
 	loop
 	{

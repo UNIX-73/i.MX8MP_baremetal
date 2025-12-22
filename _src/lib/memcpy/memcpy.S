@@ -6,7 +6,7 @@
 
 // void *_memcpy64(void *dst, void *src, uint64 size);
 .global _memcpy
-.align 64
+.align 4
 _memcpy:
     mov     x3, x0
 

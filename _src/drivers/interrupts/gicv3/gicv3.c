@@ -1,6 +1,6 @@
+#include <boot/panic.h>
 #include <drivers/interrupts/gicv3/gicv3.h>
 #include <drivers/interrupts/gicv3/gicv3_raw/gicv3_raw.h>
-#include <kernel/panic.h>
 #include <lib/stdint.h>
 
 #include "drivers/interrupts/gicv3/gicv3_raw/gicd_icfgr.h"
