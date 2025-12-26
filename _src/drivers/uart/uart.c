@@ -89,7 +89,7 @@ void UART_reset(UART_ID id)
 	while (!(UART_UCR2_read(base).val & (1 << 0)));
 }
 
-void UART_init(UART_ID id)
+void UART_init_stage0(UART_ID id)
 {
 	UART_reset(id);
 
@@ -98,8 +98,6 @@ void UART_init(UART_ID id)
 
 	UartUcr1Value ucr1 = {0};
 	UART_UCR1_BF_set_UARTEN(&ucr1, true);
-	UART_UCR1_BF_set_RRDYEN(&ucr1, true);  // Rx IRQs
-	UART_UCR1_BF_set_TRDYEN(&ucr1, true);  // Tx IRQs
 	UART_UCR1_BF_set_IDEN(&ucr1, false);
 	UART_UCR1_write(periph_base, ucr1);
 
@@ -124,7 +122,7 @@ void UART_init(UART_ID id)
 
 	UartUfcrValue ufcr = {0};		  // 0000 1010 0000 0001
 	UART_UFCR_BF_set_RXTL(&ufcr, 1);  // RX fifo threashold interrupt 1
-	UART_UFCR_BF_set_TXTL(&ufcr, 4);  // TX fifo threashold interrupt 1
+	UART_UFCR_BF_set_TXTL(&ufcr, 4);  // TX fifo threashold interrupt 4
 	UART_UFCR_BF_set_DCEDTE(&ufcr, false);
 	UART_UFCR_BF_set_RFDIV(&ufcr, UART_UFCR_RFDIV_DIV_BY_2);
 
@@ -159,6 +157,16 @@ void UART_init(UART_ID id)
 
 	UART_USR1_write(periph_base, (UartUsr1Value){.val = usr1_v});
 	UART_USR2_write(periph_base, (UartUsr2Value){.val = usr2_v});
+}
+
+void UART_init_stage1(UART_ID id)
+{
+	uintptr periph_base = UART_N_BASE[id];
+
+	UartUcr1Value ucr1 = UART_UCR1_read(periph_base);
+	UART_UCR1_BF_set_RRDYEN(&ucr1, true);  // Rx IRQs
+	UART_UCR1_BF_set_TRDYEN(&ucr1, true);  // Tx IRQs
+	UART_UCR1_write(periph_base, ucr1);
 }
 
 bool UART_read(UART_ID id, uint8 *data) { return UART_rxbuf_pop(id, data); }

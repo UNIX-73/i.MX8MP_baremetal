@@ -5,16 +5,28 @@
 #include <kernel/init.h>
 #include <lib/stdint.h>
 
-extern kernel_initcall_t __kernel_init_start[];
-extern kernel_initcall_t __kernel_init_end[];
+extern kernel_initcall_t __kernel_init_stage0_start[];
+extern kernel_initcall_t __kernel_init_stage0_end[];
 
-extern void rust_kernel_initcalls(void);
-KERNEL_INITCALL(rust_kernel_initcalls);
+extern kernel_initcall_t __kernel_init_stage1_start[];
+extern kernel_initcall_t __kernel_init_stage1_end[];
+
+extern kernel_initcall_t __kernel_init_stage2_start[];
+extern kernel_initcall_t __kernel_init_stage2_end[];
+
+extern void rust_kernel_initcalls_stage0(void);
+extern void rust_kernel_initcalls_stage1(void);
+extern void rust_kernel_initcalls_stage2(void);
+
+KERNEL_INITCALL(rust_kernel_initcalls_stage0, KERNEL_INITCALL_STAGE0);
+KERNEL_INITCALL(rust_kernel_initcalls_stage1, KERNEL_INITCALL_STAGE1);
+KERNEL_INITCALL(rust_kernel_initcalls_stage2, KERNEL_INITCALL_STAGE2);
 
 void kernel_init(void)
 {
-	for (kernel_initcall_t *fn = __kernel_init_start; fn < __kernel_init_end;
-		 fn++) {
+	// Stage 0 (pre irq initialization)
+	for (kernel_initcall_t *fn = __kernel_init_stage0_start;
+		 fn < __kernel_init_stage0_end; fn++) {
 		(*fn)();
 	}
 
@@ -28,14 +40,13 @@ void kernel_init(void)
 	GICV3_init_distributor();
 	GICV3_init_cpu(ARM_get_cpu_affinity().aff0);
 
-	UART_init(UART_ID_2);
-
-	uart_irq_init();
-
-#if TEST
-	if (((uintptr)__kernel_init_start & 0x7) ||
-		((uintptr)__kernel_init_end & 0x7)) {
-		PANIC("kernel_init section not 8 byte aligned");
+	for (kernel_initcall_t *fn = __kernel_init_stage1_start;
+		 fn < __kernel_init_stage1_end; fn++) {
+		(*fn)();
 	}
-#endif
+
+	for (kernel_initcall_t *fn = __kernel_init_stage2_start;
+		 fn < __kernel_init_stage2_end; fn++) {
+		(*fn)();
+	}
 }

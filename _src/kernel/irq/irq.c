@@ -26,6 +26,6 @@ static void init_irq_handler_table()
 	KERNEL_IRQ_HANDLER_TABLE[IMX8MP_IRQ_UART4] = UART4_handler;
 }
 
-KERNEL_INITCALL(init_irq_handler_table);
+KERNEL_INITCALL(init_irq_handler_table, KERNEL_INITCALL_STAGE0);
 
 void kernel_handle_irq(imx8mp_irq irqid) { KERNEL_IRQ_HANDLER_TABLE[irqid](); }

@@ -12,7 +12,11 @@ typedef enum {
 
 void UART_reset(UART_ID id);
 
-void UART_init(UART_ID id);
+// Pre IRQ initialization
+void UART_init_stage0(UART_ID id);
+
+// Post IRQ initialization
+void UART_init_stage1(UART_ID id);
 
 void UART_putc_sync(UART_ID id, uint8 c);
 void UART_putc(UART_ID id, uint8 c);
@@ -22,5 +26,3 @@ void UART_puts(const UART_ID id, const char *s);
 bool UART_read(UART_ID id, uint8 *data);
 
 void UART_handle_irq(UART_ID id);
-
-

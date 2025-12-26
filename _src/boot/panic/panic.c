@@ -8,7 +8,10 @@
 #include "arm/sysregs.h"
 
 #define PANIC_UART_OUTPUT UART_ID_2
-#define PANIC_puts(str) UART_puts(PANIC_UART_OUTPUT, str)
+static inline void PANIC_puts(char *s)
+{
+	while (*s) UART_putc_sync(PANIC_UART_OUTPUT, *s++);
+}
 
 #define PANIC_MESSAGE_LEN_INIT_VALUE 4096
 #define PANIC_FILE_LEN_INIT_VALUE 1024
@@ -87,7 +90,7 @@ _Noreturn void panic()
 
 	char buf[200];
 
-	UART_init(PANIC_UART_OUTPUT);
+	UART_init_stage0(PANIC_UART_OUTPUT);
 	PANIC_puts("\n\r[PANIC!]");
 
 	char *panic_reason_str = "INVALID";
@@ -128,7 +131,7 @@ _Noreturn void panic()
 
 	log_system_info();
 
-	loop {}	 // TODO: TUI with options
+	loop { asm volatile("wfe"); }  // TODO: TUI with options
 }
 
 _Noreturn void set_and_throw_panic(panic_info panic_info)
