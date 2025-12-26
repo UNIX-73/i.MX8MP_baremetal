@@ -1,17 +1,11 @@
+#include <arm/exceptions/exceptions.h>
 #include <boot/panic.h>
 #include <drivers/interrupts/gicv3/gicv3.h>
-#include <drivers/interrupts/gicv3/gicv3_raw/gicv3_raw.h>
+#include <drivers/interrupts/gicv3/raw/gicv3_raw.h>
 #include <lib/stdint.h>
 
-#include "arm/exceptions/exceptions.h"
-#include "drivers/interrupts/gicv3/gicv3_raw/gicd_ctlr.h"
-#include "drivers/interrupts/gicv3/gicv3_raw/gicd_icfgr.h"
-#include "drivers/interrupts/gicv3/gicv3_raw/gicd_ipriorityr.h"
-#include "drivers/interrupts/gicv3/gicv3_raw/gicd_irouter.h"
-#include "drivers/interrupts/gicv3/gicv3_raw/gicd_isenabler.h"
-#include "drivers/interrupts/gicv3/gicv3_raw/gicr_waker.h"
-#include "drivers/uart/uart.h"
-#include "lib/string.h"
+#include "drivers/interrupts/gicv3/raw/gicd_typer.h"
+#include "drivers/interrupts/gicv3/raw/gicr_waker.h"
 
 // Declared at gicv3_arm_interface.S
 extern void _GICV3_ARM_ICC_SRE_EL1_write(uint64 v);
@@ -37,7 +31,7 @@ static inline void GICV3_arm_interface_enable(void)
 static void GICV3_validate_spi_id(uint32 intid)
 {
 	GicdTyper typer = GICV3_GICD_TYPER_read();
-	uint32 itlines = (uint32)GICV3_GICD_TYPER_BF_get_ITLinesNumber(typer);
+	uint32 itlines = (uint32)GICV3_GICD_TYPER_ITLinesNumber_get(typer);
 
 	uint32 max_spi = (32 * (itlines + 1)) - 1;
 
@@ -67,12 +61,12 @@ void GICV3_route_spi_to_cpu(imx8mp_irq irq, ARM_cpu_affinity affinity)
 
 	GicdIrouter r = {0};
 
-	GICV3_GICD_IROUTER_BF_set_Interrupt_Routing_Mode(&r, false);
+	GICV3_GICD_IROUTER_Interrupt_Routing_Mode_set(&r, false);
 
-	GICV3_GICD_IROUTER_BF_set_Aff3(&r, affinity.aff3);
-	GICV3_GICD_IROUTER_BF_set_Aff2(&r, affinity.aff2);
-	GICV3_GICD_IROUTER_BF_set_Aff1(&r, affinity.aff1);
-	GICV3_GICD_IROUTER_BF_set_Aff0(&r, affinity.aff0);
+	GICV3_GICD_IROUTER_Aff3_set(&r, affinity.aff3);
+	GICV3_GICD_IROUTER_Aff2_set(&r, affinity.aff2);
+	GICV3_GICD_IROUTER_Aff1_set(&r, affinity.aff1);
+	GICV3_GICD_IROUTER_Aff0_set(&r, affinity.aff0);
 
 	GICV3_GICD_IROUTER_write(intid, r);
 }
@@ -139,7 +133,7 @@ void GICV3_set_level_sensitive(imx8mp_irq irq)
 void GICV3_wake_redistributor(size_t n)
 {
 	GicrWaker w = GICV3_GICR_WAKER_read(n);
-	GICV3_GICR_WAKER_BF_set_ProcessorSleep(&w, false);
+	GICV3_GICR_WAKER_ProcessorSleep_set(&w, false);
 	GICV3_GICR_WAKER_write(n, w);
 
 	bool asleep = true;
@@ -148,7 +142,7 @@ void GICV3_wake_redistributor(size_t n)
 		for (size_t i = 0; i < 5000; i++) asm volatile("nop");
 
 		GicrWaker r = GICV3_GICR_WAKER_read(n);
-		asleep = GICV3_GICR_WAKER_BF_get_ChildrenAsleep(r);
+		asleep = GICV3_GICR_WAKER_ChildrenAsleep_get(r);
 	}
 }
 
@@ -160,7 +154,7 @@ void GICV3_init_distributor(void)
 	// TODO: clean pending
 
 	GicdCtlr ctlr = {0};
-	GICV3_GICD_CTLR_BF_set_EnableGrp1NS(&ctlr, true);
+	GICV3_GICD_CTLR_EnableGrp1NS_set(&ctlr, true);
 	GICV3_GICD_CTLR_write(ctlr);
 
 	asm volatile("dsb sy");
@@ -226,12 +220,6 @@ imx8mp_irq GICV3_imx8mp_irq_from_intid(uint64 intid)
 		PANIC("Reading EL1 source while not being in EL1");
 
 	if (intid <= 32 || intid > IMX8MP_IRQ_SIZE + 32) {
-		char buf[200];
-		stdint_to_ascii((STDINT_UNION){.uint64 = intid}, STDINT_UINT64, buf,
-						200, STDINT_BASE_REPR_DEC);
-		UART_puts(UART_ID_2, "\r\nUnhandled irq number:\t");
-		UART_puts(UART_ID_2, buf);
-
 		PANIC("UNHANDLED IRQ");
 	}
 #endif

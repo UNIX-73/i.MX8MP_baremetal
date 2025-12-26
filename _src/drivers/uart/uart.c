@@ -3,6 +3,9 @@
 #include <drivers/uart/uart_raw.h>
 #include <lib/stdint.h>
 
+#include "drivers/uart/raw/uart_ucr1.h"
+#include "drivers/uart/raw/uart_usr1.h"
+
 // Rust fns (driver buffer control)
 extern bool UART_txbuf_push(UART_ID id, uint8 v);
 extern bool UART_rxbuf_push(UART_ID id, uint8 v);
@@ -31,7 +34,7 @@ static const uint8 USR2_IRQ_W2C_BITS[8] = {
 static inline bool UART_tx_fifo_full(uintptr periph_base)
 {
 	UartUtsValue uts = UART_UTS_read(periph_base);
-	return UART_UTS_BF_get_TXFULL(uts);
+	return UART_UTS_TXFULL_get(uts);
 }
 
 void UART_reset(UART_ID id)
@@ -168,7 +171,7 @@ static void UART_set_irq_state(UART_ID id, UART_IRQ_SOURCE irq, bool state)
 #define SET_IRQ_CASE(irq, reg, bf, regv_name)         \
 	case irq: {                                       \
 		regv_name r = UART_##reg##_read(periph_base); \
-		UART_##reg##_BF_set_##bf(&r, state);          \
+		UART_##reg##_##bf##_set(&r, state);           \
 		UART_##reg##_write(periph_base, r);           \
 	} break;
 
@@ -235,34 +238,34 @@ bitfield32 UART_get_irq_sources(UART_ID id)
 #define SET_SRC(bit, status) \
 	sources |= ((bitfield32)(((status) & UART_get_irq_state(id, bit)) << (bit)))
 
-	SET_SRC(UART_IRQ_SRC_RRDY, UART_USR1_BF_get_RRDY(usr1));
-	SET_SRC(UART_IRQ_SRC_IDLE, UART_USR2_BF_get_IDLE(usr2));
-	SET_SRC(UART_IRQ_SRC_RDR, UART_USR2_BF_get_RDR(usr2));
-	SET_SRC(UART_IRQ_SRC_RXDS, UART_USR1_BF_get_RXDS(usr1));
-	SET_SRC(UART_IRQ_SRC_AGTIM, UART_USR1_BF_get_AGTIM(usr1));
+	SET_SRC(UART_IRQ_SRC_RRDY, UART_USR1_RRDY_get(usr1));
+	SET_SRC(UART_IRQ_SRC_IDLE, UART_USR2_IDLE_get(usr2));
+	SET_SRC(UART_IRQ_SRC_RDR, UART_USR2_RDR_get(usr2));
+	SET_SRC(UART_IRQ_SRC_RXDS, UART_USR1_RXDS_get(usr1));
+	SET_SRC(UART_IRQ_SRC_AGTIM, UART_USR1_AGTIM_get(usr1));
 
-	SET_SRC(UART_IRQ_SRC_TXFE, UART_USR2_BF_get_TXFE(usr2));
-	SET_SRC(UART_IRQ_SRC_TRDY, UART_USR1_BF_get_TRDY(usr1));
-	SET_SRC(UART_IRQ_SRC_TXDC, UART_USR2_BF_get_TXDC(usr2));
+	SET_SRC(UART_IRQ_SRC_TXFE, UART_USR2_TXFE_get(usr2));
+	SET_SRC(UART_IRQ_SRC_TRDY, UART_USR1_TRDY_get(usr1));
+	SET_SRC(UART_IRQ_SRC_TXDC, UART_USR2_TXDC_get(usr2));
 
-	SET_SRC(UART_IRQ_SRC_ORE, UART_USR2_BF_get_ORE(usr2));
-	SET_SRC(UART_IRQ_SRC_BRCD, UART_USR2_BF_get_BRCD(usr2));
-	SET_SRC(UART_IRQ_SRC_WAKE, UART_USR2_BF_get_WAKE(usr2));
-	SET_SRC(UART_IRQ_SRC_ADET, UART_USR2_BF_get_ADET(usr2));
-	SET_SRC(UART_IRQ_SRC_ACST, UART_USR2_BF_get_ACST(usr2));
-	SET_SRC(UART_IRQ_SRC_ESC, UART_USR1_BF_get_ESCF(usr1));
-	SET_SRC(UART_IRQ_SRC_IRINT, UART_USR2_BF_get_IRINT(usr2));
-	SET_SRC(UART_IRQ_SRC_AIRINT, UART_USR1_BF_get_AIRINT(usr1));
-	SET_SRC(UART_IRQ_SRC_AWAKE, UART_USR1_BF_get_AWAKE(usr1));
-	SET_SRC(UART_IRQ_SRC_FRAERR, UART_USR1_BF_get_FRAERR(usr1));
-	SET_SRC(UART_IRQ_SRC_PARITYERR, UART_USR1_BF_get_PARITYERR(usr1));
-	SET_SRC(UART_IRQ_SRC_RTSD, UART_USR1_BF_get_RTSD(usr1));
-	SET_SRC(UART_IRQ_SRC_RTSF, UART_USR2_BF_get_RTSF(usr2));
-	SET_SRC(UART_IRQ_SRC_DTRF, UART_USR2_BF_get_DTRF(usr2));
-	SET_SRC(UART_IRQ_SRC_RIDELT, UART_USR2_BF_get_RIDELT(usr2));
-	SET_SRC(UART_IRQ_SRC_DCDDELT, UART_USR2_BF_get_DCDDELT(usr2));
-	SET_SRC(UART_IRQ_SRC_DTRD, UART_USR1_BF_get_DTRD(usr1));
-	SET_SRC(UART_IRQ_SRC_SAD, UART_USR1_BF_get_SAD(usr1));
+	SET_SRC(UART_IRQ_SRC_ORE, UART_USR2_ORE_get(usr2));
+	SET_SRC(UART_IRQ_SRC_BRCD, UART_USR2_BRCD_get(usr2));
+	SET_SRC(UART_IRQ_SRC_WAKE, UART_USR2_WAKE_get(usr2));
+	SET_SRC(UART_IRQ_SRC_ADET, UART_USR2_ADET_get(usr2));
+	SET_SRC(UART_IRQ_SRC_ACST, UART_USR2_ACST_get(usr2));
+	SET_SRC(UART_IRQ_SRC_ESC, UART_USR1_ESCF_get(usr1));
+	SET_SRC(UART_IRQ_SRC_IRINT, UART_USR2_IRINT_get(usr2));
+	SET_SRC(UART_IRQ_SRC_AIRINT, UART_USR1_AIRINT_get(usr1));
+	SET_SRC(UART_IRQ_SRC_AWAKE, UART_USR1_AWAKE_get(usr1));
+	SET_SRC(UART_IRQ_SRC_FRAERR, UART_USR1_FRAERR_get(usr1));
+	SET_SRC(UART_IRQ_SRC_PARITYERR, UART_USR1_PARITYERR_get(usr1));
+	SET_SRC(UART_IRQ_SRC_RTSD, UART_USR1_RTSD_get(usr1));
+	SET_SRC(UART_IRQ_SRC_RTSF, UART_USR2_RTSF_get(usr2));
+	SET_SRC(UART_IRQ_SRC_DTRF, UART_USR2_DTRF_get(usr2));
+	SET_SRC(UART_IRQ_SRC_RIDELT, UART_USR2_RIDELT_get(usr2));
+	SET_SRC(UART_IRQ_SRC_DCDDELT, UART_USR2_DCDDELT_get(usr2));
+	SET_SRC(UART_IRQ_SRC_DTRD, UART_USR1_DTRD_get(usr1));
+	SET_SRC(UART_IRQ_SRC_SAD, UART_USR1_SAD_get(usr1));
 
 #undef SET_SRC
 
@@ -279,20 +282,20 @@ static void handle_RRDY(UART_ID id)
 {
 	uintptr periph_base = UART_N_BASE[id];
 #ifdef TEST
-	if (UART_UTS_BF_get_RXEMPTY(UART_UTS_read(periph_base)))
+	if (UART_UTS_RXEMPTY_get(UART_UTS_read(periph_base)))
 		PANIC("RRDY irq arrived but no data was available");
 #endif
 	// Push all the uart fifo data into the driver ring buffer
 	do {
 		UartUrxdValue urxd = UART_URXD_read(periph_base);
-		uint8 data = UART_URDX_BF_get_RX_DATA(urxd);
+		uint8 data = UART_URDX_RX_DATA_get(urxd);
 
 		bool non_overwrite = UART_rxbuf_push(id, data);
 		if (!non_overwrite)
 			PANIC("Uart rx buffer overwrite");	// TODO: better handling of
 												// overwrites
 
-	} while (!UART_UTS_BF_get_RXEMPTY(UART_UTS_read(periph_base)));
+	} while (!UART_UTS_RXEMPTY_get(UART_UTS_read(periph_base)));
 }
 
 // UART_IRQ_SRC_TRDY: Tx hardware fifo reached less or the stablished value (4
@@ -303,13 +306,13 @@ static void handle_TRDY(UART_ID id)
 	uintptr periph_base = UART_N_BASE[id];
 
 #ifdef TEST
-	if (!UART_USR1_BF_get_TRDY(UART_USR1_read(periph_base)))
+	if (!UART_USR1_TRDY_get(UART_USR1_read(periph_base)))
 		PANIC("TRDY irq arrived but irq bit was not on");
 #endif
 
 	uint8 data;
 	bool txbuf_empty = false;
-	while (!UART_UTS_BF_get_TXFULL(UART_UTS_read(periph_base))) {
+	while (!UART_UTS_TXFULL_get(UART_UTS_read(periph_base))) {
 		txbuf_empty = !UART_txbuf_pop(id, &data);
 
 		if (txbuf_empty) {
@@ -360,43 +363,41 @@ void UART_init_stage0(UART_ID id)
 	uintptr periph_base = UART_N_BASE[id];
 
 	UartUcr1Value ucr1 = {0};
-	UART_UCR1_BF_set_UARTEN(&ucr1, true);
-	UART_UCR1_BF_set_IDEN(&ucr1, false);
+	UART_UCR1_UARTEN_set(&ucr1, true);
+	UART_UCR1_IDEN_set(&ucr1, false);
 	UART_UCR1_write(periph_base, ucr1);
 
 	UartUcr2Value ucr2 = {0};
-	UART_UCR2_BF_set_SRST(&ucr2, true);
-	UART_UCR2_BF_set_RXEN(&ucr2, true);
-	UART_UCR2_BF_set_TXEN(&ucr2, true);
-	UART_UCR2_BF_set_WS(&ucr2, true);
-	UART_UCR2_BF_set_IRTS(&ucr2, true);
+	UART_UCR2_SRST_set(&ucr2, true);
+	UART_UCR2_RXEN_set(&ucr2, true);
+	UART_UCR2_TXEN_set(&ucr2, true);
+	UART_UCR2_WS_set(&ucr2, true);
+	UART_UCR2_IRTS_set(&ucr2, true);
 	UART_UCR2_write(periph_base, ucr2);
 
 	UartUcr3Value ucr3 = {0};
-	UART_UCR3_BF_set_RXDMUXSEL(&ucr3, true);
-	UART_UCR3_BF_set_RXDSEN(&ucr3, false);
-	UART_UCR3_BF_set_AWAKEN(&ucr3, false);
-
+	UART_UCR3_RXDMUXSEL_set(&ucr3, true);
+	UART_UCR3_RXDSEN_set(&ucr3, false);
+	UART_UCR3_AWAKEN_set(&ucr3, false);
 	UART_UCR3_write(periph_base, ucr3);
 
 	UartUcr4Value ucr4 = {0};
-	UART_UCR4_BF_set_CTSTL(&ucr4, 31);
+	UART_UCR4_CTSTL_set(&ucr4, 31);
 	UART_UCR4_write(periph_base, ucr4);
 
-	UartUfcrValue ufcr = {0};		  // 0000 1010 0000 0001
-	UART_UFCR_BF_set_RXTL(&ufcr, 1);  // RX fifo threashold interrupt 1
-	UART_UFCR_BF_set_TXTL(&ufcr, 4);  // TX fifo threashold interrupt 4
-	UART_UFCR_BF_set_DCEDTE(&ufcr, false);
-	UART_UFCR_BF_set_RFDIV(&ufcr, UART_UFCR_RFDIV_DIV_BY_2);
-
+	UartUfcrValue ufcr = {0};	   // 0000 1010 0000 0001
+	UART_UFCR_RXTL_set(&ufcr, 1);  // RX fifo threshold interrupt 1
+	UART_UFCR_TXTL_set(&ufcr, 4);  // TX fifo threshold interrupt 4
+	UART_UFCR_DCEDTE_set(&ufcr, false);
+	UART_UFCR_RFDIV_set(&ufcr, UART_UFCR_RFDIV_DIV_BY_2);
 	UART_UFCR_write(periph_base, ufcr);
 
 	UartUbirValue ubir = {0};
-	UART_UBIR_BF_set_INC(&ubir, 0xF);
+	UART_UBIR_INC_set(&ubir, 0xF);
 	UART_UBIR_write(periph_base, ubir);
 
 	UartUbmrValue ubmr = {0};
-	UART_UBMR_BF_set_MOD(&ubmr, 0x68);
+	UART_UBMR_MOD_set(&ubmr, 0x68);
 	UART_UBMR_write(periph_base, ubmr);
 
 	UartUmcrValue umcr = {0};
@@ -404,8 +405,8 @@ void UART_init_stage0(UART_ID id)
 
 	// Flush rx fifo
 	UartUrxdValue urxd = UART_URXD_read(periph_base);
-	while (!UART_UTS_BF_get_RXEMPTY(UART_UTS_read(periph_base))) {
-		UART_URDX_BF_get_RX_DATA(urxd);
+	while (!UART_UTS_RXEMPTY_get(UART_UTS_read(periph_base))) {
+		UART_URDX_RX_DATA_get(urxd);
 	}
 
 	uint32 usr1_v = 0;

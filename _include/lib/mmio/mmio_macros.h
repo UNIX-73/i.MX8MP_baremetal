@@ -139,11 +139,10 @@
 		*((reg64_ptr)((uintptr)base_macro(n) + (offset))) = v.val;           \
 	}
 
-// Bit field getters
-
+// Bit field
 #define MMIO_DECLARE_BIT_FIELD_GETTER(periph_name, reg_name, bf_name,          \
 									  RegValueStruct, T, SHIFT, MASK)          \
-	static inline T periph_name##_##reg_name##_BF_get_##bf_name(               \
+	static inline T periph_name##_##reg_name##_##bf_name##_get(                \
 		const RegValueStruct r)                                                \
 	{                                                                          \
 		typedef typeof(r.val) reg_t;                                           \
@@ -157,7 +156,7 @@
 
 #define MMIO_DECLARE_BIT_FIELD_SETTER(periph_name, reg_name, bf_name,          \
 									  RegValueStruct, T, SHIFT, MASK)          \
-	static inline void periph_name##_##reg_name##_BF_set_##bf_name(            \
+	static inline void periph_name##_##reg_name##_##bf_name##_set(                \
 		RegValueStruct *r, T v)                                                \
 	{                                                                          \
 		typedef typeof(r->val) reg_t;                                          \
