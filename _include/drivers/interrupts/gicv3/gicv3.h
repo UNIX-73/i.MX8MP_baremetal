@@ -1,7 +1,7 @@
 #pragma once
 
 #include <arm/cpu.h>
-#include <drivers/interrupts/interrupts.h>
+#include <kernel/irq/interrupts.h>
 #include <lib/stdint.h>
 
 void GICV3_route_spi_to_cpu(imx8mp_irq irq, ARM_cpu_affinity affinity);

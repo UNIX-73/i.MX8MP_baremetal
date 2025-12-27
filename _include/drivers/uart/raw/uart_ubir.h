@@ -8,7 +8,7 @@
 #include <lib/mmio/mmio_macros.h>
 #include <lib/stdbool.h>
 
-#include "uart_map.h"
+#include "uart_macros.h"
 
 // 17.2.14.12 - 7384
 

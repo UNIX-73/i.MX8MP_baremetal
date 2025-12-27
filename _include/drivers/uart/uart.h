@@ -1,32 +1,45 @@
 #pragma once
+#include <kernel/devices/device.h>
 #include <lib/stdbitfield.h>
 #include <lib/stdbool.h>
 #include <lib/stdint.h>
 
-typedef enum {
-	UART_ID_1 = 0,
-	UART_ID_2,
-	UART_ID_3,
-	UART_ID_4,
+#define UART_TX_BUF_SIZE 8192
+#define UART_RX_BUF_SIZE 1024
 
-	UART_ID_COUNT,
-} UART_ID;
+typedef struct {
+	bitfield32 irq_status;
 
-void UART_reset(UART_ID id);
+	_Alignas(64) struct {
+		bool overwrite;
+		size_t head;
+		size_t tail;
+		uint8 buf[UART_TX_BUF_SIZE];
+	} tx;
+
+	_Alignas(64) struct {
+		bool overwrite;
+		size_t head;
+		size_t tail;
+		uint8 buf[UART_RX_BUF_SIZE];
+	} rx;
+} uart_state;
+
+void UART_reset(const driver_handle *h);
 
 // Pre IRQ initialization
-void UART_init_stage0(UART_ID id);
+void UART_init_stage0(const driver_handle *h);
 
 // Post IRQ initialization
-void UART_init_stage1(UART_ID id);
+void UART_init_stage1(const driver_handle *h);
 
-bool UART_read(UART_ID id, uint8 *data);
+bool UART_read(const driver_handle *h, uint8 *data);
 
 // The kernel should call this fn
-void UART_handle_irq(UART_ID id);
+void UART_handle_irq(const driver_handle *h);
 
-void UART_putc_sync(UART_ID id, const uint8 c);
-void UART_puts_sync(UART_ID id, const char *s);
+void UART_putc_sync(const driver_handle *h, const uint8 c);
+void UART_puts_sync(const driver_handle *h, const char *s);
 
-void UART_putc(UART_ID id, const uint8 c);
-void UART_puts(const UART_ID id, const char *s);
+void UART_putc(const driver_handle *h, const uint8 c);
+void UART_puts(const driver_handle *h, const char *s);

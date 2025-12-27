@@ -16,3 +16,4 @@ opt-level = "s"
 
 [dependencies]
 paste = "1.0.15"
+static_assertions = "1.1.0"

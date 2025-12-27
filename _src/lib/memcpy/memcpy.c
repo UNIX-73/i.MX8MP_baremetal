@@ -2,6 +2,7 @@
 #include <lib/memcpy.h>
 #include <lib/stdint.h>
 
+#include "kernel/devices/drivers.h"
 #include "lib/string.h"
 
 extern void *_memcpy64(void *dst, void *src, uint64 size);
@@ -76,21 +77,21 @@ void test_memcpy(size_t size_start)
 		for (size_t j = 0; j < i; j++) {
 			if (dst[(sizeof(dst) - 1 - i) + j] !=
 				src[(sizeof(src) - 1 - i) + j]) {
-				UART_puts(UART_ID_2, "Something went wrong");
+				UART_puts(&UART2_DRIVER, "Something went wrong");
 
 				loop {}
 			}
 		}
 
 		if (i % 10000 == 0) {
-			UART_puts(UART_ID_2, "i: ");
-			UART_puts(UART_ID_2,
+			UART_puts(&UART2_DRIVER, "i: ");
+			UART_puts(&UART2_DRIVER,
 					  stdint_to_ascii((STDINT_UNION){.int64 = i}, STDINT_UINT64,
 									  buf, 100, STDINT_BASE_REPR_DEC));
-			UART_puts(UART_ID_2, " ok\n\r");
+			UART_puts(&UART2_DRIVER, " ok\n\r");
 		}
 	}
 
-	UART_puts(UART_ID_2, "FINISHED without hang");
+	UART_puts(&UART2_DRIVER, "FINISHED without hang");
 }
 #endif

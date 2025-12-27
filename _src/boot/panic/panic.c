@@ -6,8 +6,9 @@
 #include <lib/string.h>
 
 #include "arm/sysregs.h"
+#include "kernel/devices/drivers.h"
 
-#define PANIC_UART_OUTPUT UART_ID_2
+#define PANIC_UART_OUTPUT &UART2_DRIVER
 static inline void PANIC_puts(char *s)
 {
 	while (*s) UART_putc_sync(PANIC_UART_OUTPUT, *s++);

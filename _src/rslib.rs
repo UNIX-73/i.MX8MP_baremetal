@@ -3,13 +3,14 @@
 #![allow(non_camel_case_types)]
 #![allow(special_module_name)]
 
+#[macro_use]
+extern crate static_assertions;
+
 mod drivers;
 mod kernel;
 mod lib;
 
 use core::panic::PanicInfo;
-
-use crate::drivers::uart::{UART_ID, UART_put_str};
 
 // -- Panic handler ---
 
@@ -41,7 +42,6 @@ fn rust_panic(info: &PanicInfo) -> ! {
     let file_len: usize = unsafe { PANIC_FILE_BUF_SIZE } as usize;
 
     if msg_len == 0 || file_len == 0 {
-        UART_put_str(UART_ID::UART_ID_2, "\n\r[PROBABLE LINKING ERROR]\n\r");
         loop {}
     }
 

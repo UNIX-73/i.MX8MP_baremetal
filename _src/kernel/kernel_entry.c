@@ -7,6 +7,7 @@
 #include <lib/stdint.h>
 #include <lib/stdmacros.h>
 #include <lib/string.h>
+#include "kernel/devices/drivers.h"
 
 extern uint64 _ARM_ICC_SRE_EL2();
 extern uint64 _ARM_HCR_EL2();
@@ -17,12 +18,12 @@ _Noreturn void kernel_entry()
 {
 	kernel_init();
 
-	UART_puts(UART_ID_2, "Hello world!\n\r");
+	UART_puts(&UART2_DRIVER, "Hello world!\n\r");
 
 	uint8 data;
 	while (1) {
-		if (UART_read(UART_ID_2, &data)) {
-			UART_putc(UART_ID_2, data);
+		if (UART_read(&UART2_DRIVER, &data)) {
+			UART_putc(&UART2_DRIVER, data);
 		}
 	}
 

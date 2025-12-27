@@ -1,7 +1,7 @@
 #include <arm/exceptions/handlers/handlers_macros.h>
 #include <drivers/interrupts/gicv3/gicv3.h>
-#include <drivers/interrupts/interrupts.h>
 #include <drivers/uart/uart.h>
+#include <kernel/irq/interrupts.h>
 #include <kernel/irq/irq.h>
 #include <lib/string.h>
 

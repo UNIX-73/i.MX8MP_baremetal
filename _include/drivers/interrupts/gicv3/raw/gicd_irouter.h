@@ -9,7 +9,7 @@
 #include <lib/stdbool.h>
 #include <lib/stdint.h>
 
-#include "gicv3_map.h"
+#include "gicv3_macros.h"
 
 #define GICD_IROUTER_OFFSET(n) (0x6000UL + (8UL * n))
 

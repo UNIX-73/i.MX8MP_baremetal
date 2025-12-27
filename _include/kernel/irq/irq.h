@@ -1,6 +1,6 @@
 #pragma once
 
-#include <drivers/interrupts/interrupts.h>
+#include <kernel/irq/interrupts.h>
 
 typedef void (*irq_handler_t)(void);
 

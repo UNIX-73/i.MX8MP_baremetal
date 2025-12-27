@@ -9,7 +9,7 @@
 #include <lib/stdbool.h>
 #include <lib/stdint.h>
 
-#include "gicv3_map.h"
+#include "gicv3_macros.h"
 
 #define GICR_TYPER_OFFSET 0x8UL
 

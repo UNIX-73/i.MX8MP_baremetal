@@ -7,7 +7,7 @@
 #include <lib/mmio/mmio_macros.h>
 #include <lib/stdbool.h>
 
-#include "gicv3_map.h"
+#include "gicv3_macros.h"
 
 #define GICR_WAKER_OFFSET 0x14UL
 

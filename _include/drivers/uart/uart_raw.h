@@ -4,7 +4,6 @@
 #error "This header should only be imported by a driver"
 #endif
 
-#include <drivers/uart/raw/uart_map.h>
 #include <drivers/uart/raw/uart_onems.h>
 #include <drivers/uart/raw/uart_ubir.h>
 #include <drivers/uart/raw/uart_ubmr.h>

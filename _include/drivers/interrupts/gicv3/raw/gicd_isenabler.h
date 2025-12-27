@@ -9,7 +9,7 @@
 #include <lib/stdbool.h>
 #include <lib/stdint.h>
 
-#include "gicv3_map.h"
+#include "gicv3_macros.h"
 
 #define GICD_ISENABLER_OFFSET(n) (0x100UL + (4UL * n))
 

@@ -21,13 +21,11 @@
 		return (RegValueStruct){.val = *((reg32_ptr)(addr))};                  \
 	}
 
-#define MMIO_DECLARE_REG32_GETTER_WITH_BASE(periph_name, reg_name,           \
-											RegValueStruct, offset)          \
-	static inline RegValueStruct periph_name##_##reg_name##_read(            \
-		uintptr periph_base)                                                 \
-	{                                                                        \
-		return (RegValueStruct){.val =                                       \
-									*((reg32_ptr)(periph_base + (offset)))}; \
+#define MMIO_DECLARE_REG32_GETTER_WITH_BASE(periph_name, reg_name,             \
+											RegValueStruct, offset)            \
+	static inline RegValueStruct periph_name##_##reg_name##_read(uintptr base) \
+	{                                                                          \
+		return (RegValueStruct){.val = *((reg32_ptr)(base + (offset)))};       \
 	}
 
 #define MMIO_DECLARE_REG32_GETTER_N_OFFSET(periph_name, reg_name,              \
@@ -52,13 +50,11 @@
 		return (RegValueStruct){.val = *((reg64_ptr)(addr))};                  \
 	}
 
-#define MMIO_DECLARE_REG64_GETTER_WITH_BASE(periph_name, reg_name,           \
-											RegValueStruct, offset)          \
-	static inline RegValueStruct periph_name##_##reg_name##_read(            \
-		uintptr periph_base)                                                 \
-	{                                                                        \
-		return (RegValueStruct){.val =                                       \
-									*((reg64_ptr)(periph_base + (offset)))}; \
+#define MMIO_DECLARE_REG64_GETTER_WITH_BASE(periph_name, reg_name,             \
+											RegValueStruct, offset)            \
+	static inline RegValueStruct periph_name##_##reg_name##_read(uintptr base) \
+	{                                                                          \
+		return (RegValueStruct){.val = *((reg64_ptr)(base + (offset)))};       \
 	}
 
 #define MMIO_DECLARE_REG64_GETTER_N_OFFSET(periph_name, reg_name,              \
@@ -85,12 +81,12 @@
 		*((reg32_ptr)(addr)) = v.val;                                          \
 	}
 
-#define MMIO_DECLARE_REG32_SETTER_WITH_BASE(periph_name, reg_name,           \
-											RegValueStruct, offset)          \
-	static inline void periph_name##_##reg_name##_write(uintptr periph_base, \
-														RegValueStruct v)    \
-	{                                                                        \
-		*((reg32_ptr)(periph_base + (offset))) = v.val;                      \
+#define MMIO_DECLARE_REG32_SETTER_WITH_BASE(periph_name, reg_name,        \
+											RegValueStruct, offset)       \
+	static inline void periph_name##_##reg_name##_write(uintptr base,     \
+														RegValueStruct v) \
+	{                                                                     \
+		*((reg32_ptr)(base + (offset))) = v.val;                          \
 	}
 
 #define MMIO_DECLARE_REG32_SETTER_N_OFFSET(periph_name, reg_name,              \
@@ -115,12 +111,12 @@
 		*((reg64_ptr)(addr)) = v.val;                                          \
 	}
 
-#define MMIO_DECLARE_REG64_SETTER_WITH_BASE(periph_name, reg_name,           \
-											RegValueStruct, offset)          \
-	static inline void periph_name##_##reg_name##_write(uintptr periph_base, \
-														RegValueStruct v)    \
-	{                                                                        \
-		*((reg64_ptr)(periph_base + (offset))) = v.val;                      \
+#define MMIO_DECLARE_REG64_SETTER_WITH_BASE(periph_name, reg_name,        \
+											RegValueStruct, offset)       \
+	static inline void periph_name##_##reg_name##_write(uintptr base,     \
+														RegValueStruct v) \
+	{                                                                     \
+		*((reg64_ptr)(base + (offset))) = v.val;                          \
 	}
 
 #define MMIO_DECLARE_REG64_SETTER_N_OFFSET(periph_name, reg_name,              \
@@ -156,7 +152,7 @@
 
 #define MMIO_DECLARE_BIT_FIELD_SETTER(periph_name, reg_name, bf_name,          \
 									  RegValueStruct, T, SHIFT, MASK)          \
-	static inline void periph_name##_##reg_name##_##bf_name##_set(                \
+	static inline void periph_name##_##reg_name##_##bf_name##_set(             \
 		RegValueStruct *r, T v)                                                \
 	{                                                                          \
 		typedef typeof(r->val) reg_t;                                          \

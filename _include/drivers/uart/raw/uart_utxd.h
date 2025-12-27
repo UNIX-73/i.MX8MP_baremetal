@@ -10,7 +10,7 @@
 
 #define UART_UTXD_OFFSET 0x40UL
 
-static inline void UART_UTXD_write(uintptr periph_base, uint8 v)
+static inline void UART_UTXD_write(uintptr base, uint8 v)
 {
-	*((reg32_ptr)(periph_base + (0x40UL))) = v;
+	*((reg32_ptr)(base + (0x40UL))) = v;
 }

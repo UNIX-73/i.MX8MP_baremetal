@@ -1,7 +1,8 @@
 #include <boot/panic.h>
-#include <drivers/interrupts/interrupts.h>
 #include <drivers/uart/uart.h>
+#include <kernel/devices/drivers.h>
 #include <kernel/init.h>
+#include <kernel/irq/interrupts.h>
 #include <kernel/irq/irq.h>
 #include <lib/stdint.h>
 
@@ -9,10 +10,10 @@ static irq_handler_t KERNEL_IRQ_HANDLER_TABLE[IMX8MP_IRQ_SIZE];
 
 static void unhandled_irq() { PANIC("UNHANDLED IRQ"); }
 
-static void UART1_handler() { UART_handle_irq(UART_ID_1); }
-static void UART2_handler() { UART_handle_irq(UART_ID_2); }
-static void UART3_handler() { UART_handle_irq(UART_ID_3); }
-static void UART4_handler() { UART_handle_irq(UART_ID_4); }
+static void UART1_handler() { UART_handle_irq(&UART2_DRIVER); }
+static void UART2_handler() { UART_handle_irq(&UART2_DRIVER); }
+static void UART3_handler() { UART_handle_irq(&UART2_DRIVER); }
+static void UART4_handler() { UART_handle_irq(&UART2_DRIVER); }
 
 static void init_irq_handler_table()
 {

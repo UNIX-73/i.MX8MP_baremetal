@@ -1,6 +1,6 @@
 #pragma once
 
-#include <drivers/imx8mp.h>
+#include "imx8mp.h"
 
 #define GICV3_DECLARE_BIT_FIELD_GETTER(reg_name, bf_name, RegValueStruct, T,   \
 									   SHIFT, MASK)                            \
@@ -13,7 +13,7 @@
 								  SHIFT, MASK)
 
 /*
-	--- GIC DISTRIBUTOR ---
+--- GIC DISTRIBUTOR ---
 */
 // Arm Generic Interrupt Controller Architecture Specification GIC architecture
 // version 3 and version 4

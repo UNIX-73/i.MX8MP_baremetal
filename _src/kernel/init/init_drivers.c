@@ -1,24 +1,19 @@
 // The purpose of this file is to manually set the initialization stages of the
 // drivers, as a driver can need to initialize before and after irqs are enabled
 
+#include <arm/cpu.h>
 #include <drivers/interrupts/gicv3/gicv3.h>
 #include <drivers/uart/uart.h>
+#include <kernel/devices/drivers.h>
 #include <kernel/init.h>
+#include <kernel/irq/interrupts.h>
 
-#include "arm/cpu.h"
-#include "drivers/interrupts/interrupts.h"
-
-static void uart_stage0()
-{
-	for (UART_ID id = UART_ID_1; id <= UART_ID_4; id++) {
-		UART_init_stage0(id);
-	}
-}
+static void uart_stage0() { UART_init_stage0(&UART2_DRIVER); }
 
 static void uart_stage1()
 {
 	// UART_init_stage1(UART_ID_1);
-	UART_init_stage1(UART_ID_2);
+	UART_init_stage1(&UART2_DRIVER);
 	// UART_init_stage1(UART_ID_3);
 	// UART_init_stage1(UART_ID_4);
 }
