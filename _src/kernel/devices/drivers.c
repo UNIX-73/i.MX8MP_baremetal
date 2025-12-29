@@ -1,39 +1,47 @@
+#include <drivers/tmu/tmu.h>
 #include <drivers/uart/uart.h>
 #include <kernel/devices/drivers.h>
 
 #include "device_map.h"
 #include "kernel/devices/device.h"
 
-// UART1
-uart_state uart1_state;
-const driver_handle UART1_DRIVER = {
-	.base = UART1_BASE,
-	.state = &uart1_state,
-};
-
-// UART2
-uart_state uart2_state;
-const driver_handle UART2_DRIVER = {
-	.base = UART2_BASE,
-	.state = &uart2_state,
-};
-
-// UART3
-uart_state uart3_state;
-const driver_handle UART3_DRIVER = {
-	.base = UART3_BASE,
-	.state = &uart3_state,
-};
-
-// UART4
-uart_state uart4_state;
-const driver_handle UART4_DRIVER = {
-	.base = UART4_BASE,
-	.state = &uart4_state,
-};
-
 // GIC
 const driver_handle GIC_DRIVER = {
 	.base = GIC_BASE,
 	.state = (void *)0,
+};
+
+// UART1
+static uart_state uart1_priv_state;
+const driver_handle UART1_DRIVER = {
+	.base = UART1_BASE,
+	.state = &uart1_priv_state,
+};
+
+// UART2
+static uart_state uart2_priv_state;
+const driver_handle UART2_DRIVER = {
+	.base = UART2_BASE,
+	.state = &uart2_priv_state,
+};
+
+// UART3
+static uart_state uart3_priv_state;
+const driver_handle UART3_DRIVER = {
+	.base = UART3_BASE,
+	.state = &uart3_priv_state,
+};
+
+// UART4
+static uart_state uart4_priv_state;
+const driver_handle UART4_DRIVER = {
+	.base = UART4_BASE,
+	.state = &uart4_priv_state,
+};
+
+// TMU
+static tmu_state tmu_priv_state;
+const driver_handle TMU_DRIVER = {
+	.base = TMU_BASE,
+	.state = &tmu_priv_state,
 };

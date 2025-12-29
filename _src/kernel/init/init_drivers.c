@@ -3,10 +3,12 @@
 
 #include <arm/cpu.h>
 #include <drivers/interrupts/gicv3/gicv3.h>
+#include <drivers/tmu/tmu.h>
 #include <drivers/uart/uart.h>
 #include <kernel/devices/drivers.h>
 #include <kernel/init.h>
 #include <kernel/irq/interrupts.h>
+#include <lib/stdmacros.h>
 
 static void uart_stage0() { UART_init_stage0(&UART2_DRIVER); }
 
@@ -27,3 +29,23 @@ static void uart_stage2()
 KERNEL_INITCALL(uart_stage0, KERNEL_INITCALL_STAGE0);
 KERNEL_INITCALL(uart_stage1, KERNEL_INITCALL_STAGE1);
 KERNEL_INITCALL(uart_stage2, KERNEL_INITCALL_STAGE2);
+
+static void tmu_stage0()
+{
+	TMU_init_stage0(&TMU_DRIVER, (tmu_cfg){
+									 .warn_max = 25,
+									 .critical_max = 85,
+								 });
+}
+
+static void tmu_stage1() { TMU_init_stage1(&TMU_DRIVER); }
+
+static void tmu_stage2()
+{
+	GICV3_init_irq(&GIC_DRIVER, IMX8MP_IRQ_ANAMIX_TEMP, 0x0,
+				   GICV3_LEVEL_SENSITIVE, ARM_get_cpu_affinity());
+}
+
+KERNEL_INITCALL(tmu_stage0, KERNEL_INITCALL_STAGE0);
+KERNEL_INITCALL(tmu_stage1, KERNEL_INITCALL_STAGE1);
+KERNEL_INITCALL(tmu_stage2, KERNEL_INITCALL_STAGE2);

@@ -25,7 +25,7 @@ MMIO_DECLARE_REG32_WRITER(TMU, TER, TER_VALUE_STRUCT_NAME, TMU_TER_OFFSET);
 								 bf_name##_SHIFT, bf_name##_MASK);
 
 #define EN_SHIFT 31
-#define EN_MASK (0b1U << EN_SHIFT)
+#define EN_MASK (0b1u << EN_SHIFT)
 TER_DECLARE_BIT_FIELD_FNS(EN, bool);
 
 #define ADC_PD_SHIFT 30

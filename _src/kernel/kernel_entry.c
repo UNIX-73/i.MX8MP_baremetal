@@ -7,6 +7,8 @@
 #include <lib/stdint.h>
 #include <lib/stdmacros.h>
 #include <lib/string.h>
+
+#include "drivers/tmu/tmu.h"
 #include "kernel/devices/drivers.h"
 
 extern uint64 _ARM_ICC_SRE_EL2();
@@ -20,10 +22,18 @@ _Noreturn void kernel_entry()
 
 	UART_puts(&UART2_DRIVER, "Hello world!\n\r");
 
+	char buf1[100];
+
 	uint8 data;
 	while (1) {
 		if (UART_read(&UART2_DRIVER, &data)) {
-			UART_putc(&UART2_DRIVER, data);
+			int8 temp1 = TMU_get_temp(&TMU_DRIVER);
+
+			stdint_to_ascii((STDINT_UNION){.int8 = temp1}, STDINT_INT8, buf1,
+							100, STDINT_BASE_REPR_DEC);
+
+			UART_puts(&UART2_DRIVER, "\n\r");
+			UART_puts(&UART2_DRIVER, buf1);
 		}
 	}
 

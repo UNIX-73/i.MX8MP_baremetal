@@ -33,3 +33,4 @@ const kernel_device UART4_DEVICE = {
 	.irqid = IMX8MP_IRQ_UART4,
 	.drv = &UART4_DRIVER,
 };
+
