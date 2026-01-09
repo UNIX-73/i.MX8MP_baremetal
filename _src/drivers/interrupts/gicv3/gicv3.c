@@ -192,16 +192,14 @@ void GICV3_ack_intid_el1(irq_id id) { _GICV3_ARM_ICC_EOIR1_EL1_write(id.n); }
 
 void GICV3_enable_ppi(const driver_handle *h, irq_id id, ARM_cpu_affinity cpu)
 {
-	size_t rd = cpu.aff0;  // o el índice de redistributor que uses
+	size_t rd = cpu.aff0;
 
-	uint32 bit = id.n;	// INTID directo (0..31)
+	uint32 bit = id.n;
 
-	// 1. Group 1 Non-secure
 	GicrIgroupr0 ig = GICV3_GICR_IGROUPR0_read(h->base, rd);
 	GICV3_GICR_IGROUPR0_set_bit(&ig, bit, true);
 	GICV3_GICR_IGROUPR0_write(h->base, rd, ig);
 
-	// 2. Priority (ejemplo: 0x80)
 	uint32 n = id.n / 4;
 	uint32 byte = id.n % 4;
 
@@ -209,6 +207,5 @@ void GICV3_enable_ppi(const driver_handle *h, irq_id id, ARM_cpu_affinity cpu)
 	GICV3_GICR_IPRIORITYR_BF_set(&pr, byte, 0x80);
 	GICV3_GICR_IPRIORITYR_write(h->base, rd, n, pr);
 
-	// 3. Enable
 	GICV3_GICR_ISENABLER0_set_bit(h->base, rd, bit);
 }

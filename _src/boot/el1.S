@@ -10,8 +10,6 @@ _switch_to_el1:
     cmp x0, #2
     b.ne hang
 
-    ldr x0, =__stack_el1_top
-    msr SP_EL1, x0
 
     /* EL1 AArch64 */
     mov x0, #(1 << 31)

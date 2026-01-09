@@ -53,4 +53,9 @@ KERNEL_INITCALL(tmu_stage1, KERNEL_INITCALL_STAGE1);
 KERNEL_INITCALL(tmu_stage2, KERNEL_INITCALL_STAGE2);
 
 static void agt_stage0() { AGT_init_stage0(&AGT0_DRIVER); }
+static void agt_stage2()
+{
+	GICV3_enable_ppi(&GIC_DRIVER, irq_id_new(27), ARM_get_cpu_affinity());
+}
 KERNEL_INITCALL(agt_stage0, KERNEL_INITCALL_STAGE0);
+KERNEL_INITCALL(agt_stage2, KERNEL_INITCALL_STAGE2);

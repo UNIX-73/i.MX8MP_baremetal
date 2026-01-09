@@ -1,8 +1,12 @@
 OUTPUT_FORMAT("elf64-littleaarch64")
 ENTRY(_start)
 
+__NUM_CORES       = 4;
+__EL2_STACK_SIZE  = 0x20000;  /*  1/8MiB   */ 
+__EL1_STACK_SIZE  = 0x100000; /*  1MiB     */
+
 SECTIONS {
-    . = 0x40000000;
+    . = 0x40200000;
 
     .text : ALIGN(64) {
         __text_start = .;
@@ -58,23 +62,12 @@ SECTIONS {
     }
 
     .stacks (NOLOAD) : ALIGN(4096) {
-        /* EL2 */
+        __stacks_el2_start = .;
+        . += (__NUM_CORES * __EL2_STACK_SIZE);
+        __stacks_el2_end = .;
         . = ALIGN(16);
-        __stack_el2_bottom = .;
-        . += 0x500000;
-        __stack_el2_top = .;
-
-         /* EL1 */
-        . = ALIGN(16);
-        __stack_el1_bottom = .;
-        . += 0x500000;
-        __stack_el1_top = .;
-         
-         /* EL0 */
-        . = ALIGN(16);
-        __stack_el0_bottom = .;
-        . += 0x500000;
-        __stack_el0_top = .;
+        __stacks_el1_start = .;
+        . += (__NUM_CORES * __EL1_STACK_SIZE);
+        __stacks_el1_end = .;
     }
-    
 }

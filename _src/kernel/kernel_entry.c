@@ -1,4 +1,5 @@
 #include <arm/exceptions/exceptions.h>
+#include <arm/tfa/smccc.h>
 #include <boot/panic.h>
 #include <drivers/interrupts/gicv3/gicv3.h>
 #include <drivers/uart/uart.h>
@@ -9,42 +10,37 @@
 #include <lib/string.h>
 
 #include "arm/cpu.h"
-#include "drivers/arm_generic_timer/arm_generic_timer.h"
 #include "kernel/devices/drivers.h"
-
-static inline uint64 sec_to_ns(uint64 sec) { return sec * 1'000'000'000ULL; }
-
-static void testcb(void *)
-{
-	UART_puts_sync(&UART2_DRIVER, "a\n");
-	AGT_timer_schedule_delta(&AGT0_DRIVER, sec_to_ns(1), testcb, NULL);
-}
 
 // Main function of the kernel, called by the bootloader (/boot/boot.S)
 _Noreturn void kernel_entry()
 {
-	kernel_init();
+    ARM_cpu_affinity aff = ARM_get_cpu_affinity();
 
-	GICV3_enable_ppi(&GIC_DRIVER, irq_id_new(27), ARM_get_cpu_affinity());
+    if (aff.aff0 == 0)
+    {
+        kernel_init();
+        uintptr entry = 0x40200000;
 
-	UART_puts(&UART2_DRIVER, "Hello world!\n\r");
+        UART_puts(&UART2_DRIVER, "CORE 0\n\r");
 
-	char buf1[100];
+        for (size_t i = 0; i < 400000; i++)
+            asm volatile("nop");
 
-	uint8 data;
-	while (1) {
-		if (UART_read(&UART2_DRIVER, &data)) {
-			uint64 time = AGT_cnt_time_us();
+        _smc_call(PSCI_CPU_ON_FID64, 0x0000001, entry, 0x0, 0x0, 0x0, 0x0, 0x0);
+    }
+    else
+    {
+        UART_puts_sync(&UART2_DRIVER, "CORE 1");
+        for (size_t i = 0; i < 4000000; i++)
+            asm volatile("nop");
 
-			stdint_to_ascii((STDINT_UNION){.uint64 = time}, STDINT_UINT64, buf1,
-							100, STDINT_BASE_REPR_DEC);
+        PANIC("CORE X");
+        //  _smc_call(PSCI_SYSTEM_OFF_FID, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0);
+    }
 
-			UART_puts(&UART2_DRIVER, buf1);
-			UART_puts(&UART2_DRIVER, "\n\r");
 
-			AGT_timer_schedule_delta(&AGT0_DRIVER, sec_to_ns(1), testcb, NULL);
-		}
-	}
-
-	loop {}
+    loop
+    {
+    }
 }
