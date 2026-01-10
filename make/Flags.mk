@@ -9,7 +9,8 @@ RS_TARGET	=  aarch64-unknown-none
 CSTD		:= gnu23 	# Project uses c23 standard attributes
 
 ASM_FLAGS   = $(DEFINES)
-C_FLAGS     = $(OPT_LEVEL) $(DEFINES) -std=$(CSTD) -Wall -Wextra -Werror -ffreestanding -nostdlib -nostdinc -nostartfiles -x c -I$(INCLUDE_DIR) -march=$(MARCH) -mcpu=$(MCPU)
+#TODO: delete -mgeneral-regs-only when mmu is implemented
+C_FLAGS     = $(OPT_LEVEL) $(DEFINES) -std=$(CSTD) -mgeneral-regs-only -Wall -Wextra -Werror -ffreestanding -nostdlib -nostdinc -nostartfiles -x c -I$(INCLUDE_DIR) -march=$(MARCH) -mcpu=$(MCPU)
 LD_FLAGS    = -T linker.ld -Map $(MAP)
 
 $(OBJ_DIR)/drivers/%.o: C_FLAGS += -DDRIVERS

@@ -49,3 +49,4 @@ void UART_puts_sync(const driver_handle* h, const char* s);
 
 void UART_putc(const driver_handle* h, const uint8 c);
 void UART_puts(const driver_handle* h, const char* s);
+
