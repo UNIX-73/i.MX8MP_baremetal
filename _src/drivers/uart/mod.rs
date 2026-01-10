@@ -59,10 +59,8 @@ extern "C" fn UART_rxbuf_pop(h: *mut DriverHandle, v: *mut u8) -> bool {
     if let Some(res) = state.rx.pop() {
         if let Some(v) = unsafe { v.as_mut() } {
             *v = res;
-            return true;
-        } else {
-            panic!()
         }
+        return true;
     }
 
     false

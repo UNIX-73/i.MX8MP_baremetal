@@ -22,18 +22,21 @@ _spin_try_lock:
 .global _spin_lock
 // x0 = spinlock_t *lock
 _spin_lock:
-1:
     ldr     w1, [x0]
-    cbnz    w1, 1b          // slock != 0 -> spin
+    cbnz    w1, sleep       // slock != 0 -> spin
 
     ldaxr   w1, [x0]        // load acquire exclusive
-    cbnz    w1, 1b          // slock != 0 -> spin
+    cbnz    w1, sleep       // slock != 0 -> spin
 
     mov     w2, #1
     stxr    w3, w2, [x0]    // store exclusive (0 for success 1 for failure in w3)
-    cbnz    w3, 1b
+    cbnz    w3, sleep
 
     ret
+
+sleep:
+    wfe
+    b _spin_lock
 
 
 .global _spin_unlock
@@ -47,7 +50,9 @@ _spin_unlock:
     mov     w1, #0
     stlr    w1, [x0]
     
+    sev     // wake up other cores
     ret
+
 #ifdef TEST
 1:  wfe
     b       1b

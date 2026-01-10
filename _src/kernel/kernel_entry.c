@@ -13,6 +13,7 @@
 
 #include "arm/cpu.h"
 #include "kernel/devices/drivers.h"
+#include "kernel/lib/smp.h"
 
 static void test_timer(timer_arg arg)
 {
@@ -25,6 +26,8 @@ static void test_timer(timer_arg arg)
     UART_puts(&UART2_DRIVER, buf);
     UART_puts(&UART2_DRIVER, "\n\r");
 
+    if (*call_n == 3000)
+        return;
 
     AGT_timer_schedule_delta(&AGT0_DRIVER, 1e6, test_timer, arg);
 }
@@ -52,8 +55,7 @@ _Noreturn void kernel_entry()
 
     if (aff.aff0 < 3)
     {
-        _smc_call(PSCI_CPU_ON_FID64, aff.aff0 + 1, (uintptr)_secondary_entry, 0x0, 0x0, 0x0, 0x0,
-                  0x0);
+        wake_core(aff.aff0 + 1, (uintptr)_secondary_entry, 0);
     }
 
     uint64 call_n = 0;
@@ -70,7 +72,7 @@ _Noreturn void kernel_entry()
         UART_puts(&UART2_DRIVER, "CORE 0");
 
 
-        AGT_timer_schedule_delta(&AGT0_DRIVER, 3e9 , test_timer, &call_n);
+        AGT_timer_schedule_delta(&AGT0_DRIVER, 3e9, test_timer, &call_n);
     }
     else
     {
@@ -84,5 +86,10 @@ _Noreturn void kernel_entry()
 
     loop
     {
+        uint8 c;
+        if (UART_read(&UART2_DRIVER, &c))
+            UART_putc(&UART2_DRIVER, c);
+
+        asm volatile("wfi");
     }
 }
