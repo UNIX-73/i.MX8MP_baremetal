@@ -1,11 +1,11 @@
 #include <lib/align.h>
 #include <lib/math.h>
+#include <lib/mem.h>
 #include <lib/stdint.h>
 
 #include "../init/early_kalloc.h"
 #include "../mm_info.h"
 #include "boot/panic.h"
-#include "kernel/mm/mm_types.h"
 
 
 typedef struct
@@ -48,7 +48,7 @@ static inline uint8 get_order(int8 order)
 void mm_page_allocator_init()
 {
     size_t num_pages = mm_info_page_count();
-    max_order_ = u64log2_floor(num_pages);
+    max_order_ = log2_floor_u64 (num_pages);
 
 
     size_t free_lists_bytes = sizeof(free_list) * max_order_;
@@ -70,10 +70,9 @@ void mm_page_allocator_init()
     for (size_t i = 0; i < max_order_; i++)
         p_free_lists_[i] = (free_list) {FREE_LIST_NULL_VALUE};
     p_free_lists_[max_order_] = (free_list) {0}; // start with only the first order being valid
-
-    
 }
 
+/*
 
 static void alloc_(size_t order)
 {
@@ -82,3 +81,5 @@ static void alloc_(size_t order)
 static void free(size_t idx)
 {
 }
+
+*/

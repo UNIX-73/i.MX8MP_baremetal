@@ -1,6 +1,6 @@
 #pragma once
 
-#include <kernel/mm/mm_types.h>
+#include <lib/mem.h>
 #include <lib/stdint.h>
 
 typedef struct
@@ -29,7 +29,6 @@ void early_kalloc_get_memblocks(memblock** memblocks, size_t* memblock_count);
 #ifdef TEST
 #    include <drivers/uart/uart.h>
 
-#    include "arm/mmu/mmu_page_descriptor.h"
 #    include "kernel/devices/drivers.h"
 #    include "lib/string.h"
 #    include "lib/unit/mem.h"

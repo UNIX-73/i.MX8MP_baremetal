@@ -1,7 +1,8 @@
 #include "mm_info.h"
 
 #include <frdm_imx8mp.h>
-#include <kernel/mm/mm_types.h>
+#include <lib/mem.h>
+#include "boot/panic.h"
 
 const size_t MM_PAGE_BYTES = MMU_GRANULARITY_4KB;
 
@@ -14,7 +15,6 @@ static p_uintptr mm_ddr_end_;
 static p_uintptr mm_kernel_start_;
 
 static size_t mm_page_count_;
-
 
 
 void mm_info_init()

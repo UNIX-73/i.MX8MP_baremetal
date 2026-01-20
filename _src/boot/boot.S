@@ -45,7 +45,7 @@ setup_system:
     bl init_panic
 
     ldr x0, =__text_start
-    ldr x1, =__bss_end
+    ldr x1, =__kernel_mem_start
     bl _cache_flush_range
 
     ldp x29, x30, [sp], #16

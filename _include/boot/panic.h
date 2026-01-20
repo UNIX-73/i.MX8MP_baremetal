@@ -70,7 +70,7 @@ _Noreturn void panic();
 #ifdef DEBUG
 #    define DEBUBG_ASSERT(...) GET_ASSERT(__VA_ARGS__, _ASSERT2, _DEBUG_ASSERT1)(__VA_ARGS__)
 #else
-#    define DEBUBG_ASSERT(condition)
+#    define DEBUBG_ASSERT(...)
 #endif
 
 
