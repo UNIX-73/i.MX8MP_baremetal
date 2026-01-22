@@ -12,7 +12,7 @@
 static inline void PANIC_puts_(char* s)
 {
     while (*s)
-        UART_putc_sync(PANIC_UART_OUTPUT, *s++);
+        uart_putc_sync(PANIC_UART_OUTPUT, *s++);
 }
 
 #define PANIC_MESSAGE_LEN_INIT_VALUE 4096
@@ -104,8 +104,7 @@ _Noreturn void panic()
 
 
     char* panic_reason_str = "INVALID";
-    switch (PANIC_REASON)
-    {
+    switch (PANIC_REASON) {
         case PANIC_REASON_UNDEFINED:
             panic_reason_str = "UNDEFINED";
             break;
@@ -131,13 +130,12 @@ _Noreturn void panic()
     PANIC_puts_(" at line ");
 
     PANIC_puts_(stdint_to_ascii((STDINT_UNION) {.uint32 = PANIC_LINE}, STDINT_UINT32, buf, 200,
-                               STDINT_BASE_REPR_DEC));
+                                STDINT_BASE_REPR_DEC));
 
-    if (PANIC_COL != 0)
-    {
+    if (PANIC_COL != 0) {
         PANIC_puts_(":");
         PANIC_puts_(stdint_to_ascii((STDINT_UNION) {.uint32 = PANIC_COL}, STDINT_UINT32, buf, 200,
-                                   STDINT_BASE_REPR_DEC));
+                                    STDINT_BASE_REPR_DEC));
     }
 
     log_system_info_();
@@ -211,8 +209,7 @@ static void log_exception_info_()
 
     uint64 current_el = _ARM_currentEL();
 
-    switch (current_el)
-    {
+    switch (current_el) {
         case 3:
             PANIC_puts_("\n\rException info (EL3)!\n\r");
             return;
@@ -249,8 +246,7 @@ static void log_exception_info_()
         spsr,
     };
 
-    for (size_t i = 0; i < 4; i++)
-    {
+    for (size_t i = 0; i < 4; i++) {
         char* fmt_value = stdint_to_ascii((STDINT_UNION) {.uint64 = values[i]}, STDINT_UINT64, buf,
                                           200, STDINT_BASE_REPR_HEX);
         PANIC_puts_("\t");
@@ -269,8 +265,7 @@ static void log_registers_()
     char reg_n[8];
     char reg_v[24];
 
-    for (size_t i = 0; i < 32; i++)
-    {
+    for (size_t i = 0; i < 32; i++) {
         uint64 x_reg = PANIC_REGISTERS[i];
 
         stdint_to_ascii((STDINT_UNION) {.uint64 = i}, STDINT_UINT64, reg_n, 8,
@@ -279,8 +274,7 @@ static void log_registers_()
         stdint_to_ascii((STDINT_UNION) {.uint64 = x_reg}, STDINT_UINT64, reg_v, 24,
                         STDINT_BASE_REPR_HEX);
 
-        if (i != 31)
-        { // Gpr
+        if (i != 31) { // Gpr
             PANIC_puts_("\tx");
             PANIC_puts_(reg_n);
             PANIC_puts_(": ");

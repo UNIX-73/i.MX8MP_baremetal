@@ -20,23 +20,21 @@
 #include "lib/unit/mem.h"
 #include "mm/init/early_kalloc.h"
 
-p_uintptr early_kalloc(size_t bytes, const char* tag, bool permanent);
 
-extern void _secondary_entry(void);
-void early_kalloc_init();
-extern void early_kalloc_debug();
-
-
-static inline size_t mmu_bd_cover_bytes(mmu_granularity g, mmu_tbl_level l)
+static void test_putc(char c)
 {
-    size_t page_bits = log2_floor_u64(g);
-    size_t index_bits = page_bits - 3;
+    uart_putc(&UART2_DRIVER, c);
+}
 
-    size_t max_level = (g == MMU_GRANULARITY_64KB) ? MMU_TBL_LV2 : MMU_TBL_LV3;
 
-    ASSERT(l <= max_level);
+static void puts(const char* s, ...)
+{
+    va_list ap;
+    va_start(ap, s);
 
-    return 1ULL << (page_bits + index_bits * (max_level - l));
+    str_fmt_print(test_putc, s, ap);
+
+    va_end(ap);
 }
 
 // Main function of the kernel, called by the bootloader (/boot/boot.S)
@@ -46,12 +44,15 @@ _Noreturn void kernel_entry()
 
     if (aff.aff0 == 0) {
         kernel_init();
-
+        uart_puts(&UART2_DRIVER, "\x1B[2J\x1B[H"); // clear screen
 
         mm_early_init();
 
-        UART_puts(&UART2_DRIVER, "MMU apparently not crashing\n\r");
+        uart_puts(&UART2_DRIVER, "MMU apparently not crashing\n\r");
     }
+
+
+    puts("c=%c s=%s d=%d u=%u x=%x p=%p %%\n", 'A', NULL, -42, 42u, 0x2A, (void*)0x1234);
 
 
     loop

@@ -7,8 +7,8 @@ pub struct RingBuffer<const N: usize> {
     buf: [u8; N],
 }
 
-impl<const T: usize> RingBuffer<T> {
-    const MASK: usize = T - 1;
+impl<const N: usize> RingBuffer<N> {
+    const MASK: usize = N - 1;
 
     #[inline]
     pub fn is_empty(&self) -> bool {
@@ -49,5 +49,13 @@ impl<const T: usize> RingBuffer<T> {
         self.tail = (self.tail + 1) & Self::MASK;
 
         return Some(v);
+    }
+
+    pub fn len(&self) -> usize {
+        self.head.wrapping_sub(self.tail) & Self::MASK
+    }
+
+    pub const fn capacity() -> usize {
+        N - 1
     }
 }

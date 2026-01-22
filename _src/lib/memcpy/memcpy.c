@@ -5,55 +5,58 @@
 #include "kernel/devices/drivers.h"
 #include "lib/string.h"
 
-extern void *_memcpy64(void *dst, void *src, uint64 size);
-extern void *_memcpy32(void *dst, void *src, uint64 size);
-extern void *_memcpy16(void *dst, void *src, uint64 size);
-extern void *_memcpy8(void *dst, void *src, uint64 size);
-extern void *_memcpy4(void *dst, void *src, uint64 size);
-extern void *_memcpy1(void *dst, void *src, uint64 size);
+extern void* _memcpy64(void* dst, void* src, uint64 size);
+extern void* _memcpy32(void* dst, void* src, uint64 size);
+extern void* _memcpy16(void* dst, void* src, uint64 size);
+extern void* _memcpy8(void* dst, void* src, uint64 size);
+extern void* _memcpy4(void* dst, void* src, uint64 size);
+extern void* _memcpy1(void* dst, void* src, uint64 size);
 
 // byte per byte
 // extern void *_memcpy(void *dst, void *src, uint64 size);
 
-void *memcpy64_aligned(void *dst, void *src, uint64 size)
+void* memcpy64_aligned(void* dst, void* src, uint64 size)
 {
-	if (size == 0) return dst;
+    if (size == 0)
+        return dst;
 
-	if (((uintptr)dst & 15) != 0)
-		PANIC("memcpy64_aligned: dst not aligned to 16 bytes");
+    if (((uintptr)dst & 15) != 0)
+        PANIC("memcpy64_aligned: dst not aligned to 16 bytes");
 
-	if (((uintptr)src & 15) != 0)
-		PANIC("memcpy64_aligned: src not aligned to 16 bytes");
+    if (((uintptr)src & 15) != 0)
+        PANIC("memcpy64_aligned: src not aligned to 16 bytes");
 
-	if ((size & 63) != 0)
-		PANIC("memcpy64_aligned: size is not a multiple of 64");
+    if ((size & 63) != 0)
+        PANIC("memcpy64_aligned: size is not a multiple of 64");
 
-	return _memcpy64(dst, src, size);
+    return _memcpy64(dst, src, size);
 }
 
-void *memcpy64(void *dst, void *src, uint64 size)
+void* memcpy64(void* dst, void* src, uint64 size)
 {
-	if (size == 0) return dst;
+    if (size == 0)
+        return dst;
 
-	if ((size & 63) != 0) PANIC("memcpy64: size is not a multiple of 64");
+    if ((size & 63) != 0)
+        PANIC("memcpy64: size is not a multiple of 64");
 
-	return _memcpy64(dst, src, size);
+    return _memcpy64(dst, src, size);
 }
 
 /*
 void *memcpy(void *dst, void *src, uint64 size)
 {
 
-	return dst;
+    return dst;
 }
 */
 
 #ifdef TEST
 
-#include "drivers/uart/uart.h"
-#include "lib/stdmacros.h"
+#    include "drivers/uart/uart.h"
+#    include "lib/stdmacros.h"
 
-#define MEMCPY_TEST_SIZE 1048576 * 4
+#    define MEMCPY_TEST_SIZE 1048576 * 4
 
 _Alignas(64) uint8 src[MEMCPY_TEST_SIZE];
 _Alignas(64) uint8 dst[MEMCPY_TEST_SIZE];
@@ -61,37 +64,37 @@ _Alignas(64) uint8 ref[MEMCPY_TEST_SIZE];
 
 void test_memcpy(size_t size_start)
 {
-	char buf[100];
+    char buf[100];
 
-	for (size_t i = 0; i < sizeof(src); i++) {
-		src[i] = (uint8)(i * 37 + 13);
-	}
+    for (size_t i = 0; i < sizeof(src); i++) {
+        src[i] = (uint8)(i * 37 + 13);
+    }
 
-	for (size_t i = size_start; i < sizeof(src); i++) {
-		for (size_t j = 0; j < sizeof(src); j++) {
-			dst[j] = (uint8)(0xFF);
-		}
+    for (size_t i = size_start; i < sizeof(src); i++) {
+        for (size_t j = 0; j < sizeof(src); j++) {
+            dst[j] = (uint8)(0xFF);
+        }
 
-		memcpy(&dst[sizeof(dst) - 1 - i], &src[sizeof(src) - 1 - i], i);
+        memcpy(&dst[sizeof(dst) - 1 - i], &src[sizeof(src) - 1 - i], i);
 
-		for (size_t j = 0; j < i; j++) {
-			if (dst[(sizeof(dst) - 1 - i) + j] !=
-				src[(sizeof(src) - 1 - i) + j]) {
-				UART_puts(&UART2_DRIVER, "Something went wrong");
+        for (size_t j = 0; j < i; j++) {
+            if (dst[(sizeof(dst) - 1 - i) + j] != src[(sizeof(src) - 1 - i) + j]) {
+                uart_puts(&UART2_DRIVER, "Something went wrong");
 
-				loop {}
-			}
-		}
+                loop
+                {
+                }
+            }
+        }
 
-		if (i % 10000 == 0) {
-			UART_puts(&UART2_DRIVER, "i: ");
-			UART_puts(&UART2_DRIVER,
-					  stdint_to_ascii((STDINT_UNION){.int64 = i}, STDINT_UINT64,
-									  buf, 100, STDINT_BASE_REPR_DEC));
-			UART_puts(&UART2_DRIVER, " ok\n\r");
-		}
-	}
+        if (i % 10000 == 0) {
+            uart_puts(&UART2_DRIVER, "i: ");
+            uart_puts(&UART2_DRIVER, stdint_to_ascii((STDINT_UNION) {.int64 = i}, STDINT_UINT64,
+                                                     buf, 100, STDINT_BASE_REPR_DEC));
+            uart_puts(&UART2_DRIVER, " ok\n\r");
+        }
+    }
 
-	UART_puts(&UART2_DRIVER, "FINISHED without hang");
+    uart_puts(&UART2_DRIVER, "FINISHED without hang");
 }
 #endif

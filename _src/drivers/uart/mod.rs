@@ -23,21 +23,21 @@ fn uart_state_from_handle<'a>(h: *mut DriverHandle) -> &'a mut UartState {
 }
 
 #[unsafe(no_mangle)]
-extern "C" fn UART_txbuf_push(h: *mut DriverHandle, v: u8) -> bool {
+extern "C" fn uart_txbuf_push(h: *mut DriverHandle, v: u8) -> bool {
     let state = uart_state_from_handle(h);
 
     state.tx.push(v)
 }
 
 #[unsafe(no_mangle)]
-extern "C" fn UART_rxbuf_push(h: *mut DriverHandle, v: u8) -> bool {
+extern "C" fn uart_rxbuf_push(h: *mut DriverHandle, v: u8) -> bool {
     let state = uart_state_from_handle(h);
 
     state.rx.push(v)
 }
 
 #[unsafe(no_mangle)]
-extern "C" fn UART_txbuf_pop(h: *mut DriverHandle, v: *mut u8) -> bool {
+extern "C" fn uart_txbuf_pop(h: *mut DriverHandle, v: *mut u8) -> bool {
     let state = uart_state_from_handle(h);
 
     if let Some(res) = state.tx.pop() {
@@ -53,7 +53,7 @@ extern "C" fn UART_txbuf_pop(h: *mut DriverHandle, v: *mut u8) -> bool {
 }
 
 #[unsafe(no_mangle)]
-extern "C" fn UART_rxbuf_pop(h: *mut DriverHandle, v: *mut u8) -> bool {
+extern "C" fn uart_rxbuf_pop(h: *mut DriverHandle, v: *mut u8) -> bool {
     let state = uart_state_from_handle(h);
 
     if let Some(res) = state.rx.pop() {
@@ -66,14 +66,28 @@ extern "C" fn UART_rxbuf_pop(h: *mut DriverHandle, v: *mut u8) -> bool {
     false
 }
 
-unsafe extern "C" {
-    fn UART_putc(h: *const DriverHandle, c: u8);
+#[unsafe(no_mangle)]
+extern "C" fn uart_tx_len(h: *mut DriverHandle) -> usize {
+    let state = uart_state_from_handle(h);
+
+    state.tx.len()
 }
 
-pub fn UART_put_str(h: *const DriverHandle, s: &str) {
+#[unsafe(no_mangle)]
+extern "C" fn uart_rx_len(h: *mut DriverHandle) -> usize {
+    let state = uart_state_from_handle(h);
+
+    state.rx.len()
+}
+
+unsafe extern "C" {
+    fn uart_putc(h: *const DriverHandle, c: u8);
+}
+
+pub fn uart_put_str(h: *const DriverHandle, s: &str) {
     for c in s.as_bytes().iter() {
         unsafe {
-            UART_putc(h, *c);
+            uart_putc(h, *c);
         }
     }
 }

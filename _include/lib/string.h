@@ -1,5 +1,6 @@
 #pragma once
 
+#include <lib/stdarg.h>
 #include <lib/stdint.h>
 
 /// Copies a string into another buffer until the max_size or until finding a
@@ -29,4 +30,9 @@ char uint8_to_ascii_char(uint8 n);
 char* stdint_to_ascii(STDINT_UNION n, STDINT_TYPES n_type, char* buf, uint64 buf_len,
                       STDINT_BASE_REPR repr);
 
+
 void test_stdint_to_ascii(int64 test_v, uint64 buf_size);
+
+
+typedef void (*str_fmt_putc)(char c);
+void str_fmt_print(str_fmt_putc putc, const char* s, va_list ap);

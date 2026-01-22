@@ -14,8 +14,7 @@
 
 typedef void (*driver_irq_handler)(const driver_handle* h);
 
-typedef struct
-{
+typedef struct {
     driver_irq_handler handler;
     const driver_handle* h;
 } kernel_irq_handler;
@@ -37,15 +36,14 @@ static inline kernel_irq_handler build_handler_(driver_irq_handler handler, cons
 
 static void init_irq_handler_table_()
 {
-    for (size_t i = 0; i < IMX8MP_IRQ_SIZE; i++)
-    {
+    for (size_t i = 0; i < IMX8MP_IRQ_SIZE; i++) {
         KERNEL_IRQ_HANDLER_TABLE_[i] = (kernel_irq_handler) {unhandled_irq_, NULL};
     }
 
-    KERNEL_IRQ_HANDLER_TABLE_[IMX8MP_IRQ_UART1] = build_handler_(UART_handle_irq, &UART1_DRIVER);
-    KERNEL_IRQ_HANDLER_TABLE_[IMX8MP_IRQ_UART2] = build_handler_(UART_handle_irq, &UART2_DRIVER);
-    KERNEL_IRQ_HANDLER_TABLE_[IMX8MP_IRQ_UART3] = build_handler_(UART_handle_irq, &UART3_DRIVER);
-    KERNEL_IRQ_HANDLER_TABLE_[IMX8MP_IRQ_UART4] = build_handler_(UART_handle_irq, &UART4_DRIVER);
+    KERNEL_IRQ_HANDLER_TABLE_[IMX8MP_IRQ_UART1] = build_handler_(uart_handle_irq, &UART1_DRIVER);
+    KERNEL_IRQ_HANDLER_TABLE_[IMX8MP_IRQ_UART2] = build_handler_(uart_handle_irq, &UART2_DRIVER);
+    KERNEL_IRQ_HANDLER_TABLE_[IMX8MP_IRQ_UART3] = build_handler_(uart_handle_irq, &UART3_DRIVER);
+    KERNEL_IRQ_HANDLER_TABLE_[IMX8MP_IRQ_UART4] = build_handler_(uart_handle_irq, &UART4_DRIVER);
 
     KERNEL_IRQ_HANDLER_TABLE_[IMX8MP_IRQ_ANAMIX_TEMP] = build_handler_(TMU_handle_irq, &TMU_DRIVER);
 

@@ -14,36 +14,32 @@
 #include "mm_info.h"
 
 
-static void* mmu_allocator(size_t bytes, size_t alignment)
+static void* mmu_early_im_alloc(size_t bytes, size_t alignment)
 {
     (void)alignment;
 
-    return (void*)early_kalloc(bytes, "mmu alignment", false);
+    return (void*)early_kalloc(bytes, "mm_early_identity_mapping_tbl", false);
 }
 
 
-static void mmu_freer(void* addr)
+static void mmu_early_im_free(void* addr)
 {
+#ifdef DEBUG
     char buf[200];
     stdint_to_ascii((STDINT_UNION) {.uint64 = (uintptr)addr}, STDINT_UINT64, buf, 200,
                     STDINT_BASE_REPR_HEX);
 
-    UART_puts(&UART2_DRIVER, buf);
-    UART_puts(&UART2_DRIVER, "\n\r");
-
-
-    return;
+    uart_puts(&UART2_DRIVER, buf);
+    uart_puts(&UART2_DRIVER, "\n\r");
+#else
+    PANIC("The early identity mapping allocations should not free any tables");
+    (void)addr;
+#endif
 }
 
 
-void mm_early_init()
+static void mm_reserve_device_and_kernel_mem()
 {
-    mm_info_init();
-
-    // init early kalloc. Used by the next initialization stages
-    early_kalloc_init();
-
-
     /* reserve memory for mmio */
     early_kalloc(MEM_GiB * 1, "mmio", true); // TODO: not hardcoded
 
@@ -57,10 +53,13 @@ void mm_early_init()
     /* reserve memory for the text + bss + rodata + data + el2:1 stacks of the kernel */
     ASSERT(mm_info_kernel_size() % MMU_GRANULARITY_4KB == 0);
     early_kalloc(mm_info_kernel_size(), "kernel_static", true);
+}
 
 
+static mmu_handle mm_early_identity_mapping()
+{
     mmu_handle h;
-    mmu_init(&h, MMU_GRANULARITY_4KB, mmu_allocator, mmu_freer);
+    mmu_init(&h, MMU_GRANULARITY_4KB, mmu_early_im_alloc, mmu_early_im_free);
 
 
     mmu_cfg device_cfg = mmu_cfg_new(1, MMU_AP_EL0_NONE_EL1_RW, 0, false, 1, 0, 0, 0);
@@ -70,17 +69,30 @@ void mm_early_init()
     mmu_map(h, MEM_GiB, MEM_GiB, 4 * MEM_GiB, mem_cfg, NULL);
 
     mmu_activate(h, true, true, false);
-    mmu_debug_dump(h);
+
+    return h;
+}
 
 
-    mm_init();
+void mm_early_init()
+{
+    mm_info_init();
+
+    // init early kalloc. Used by the next initialization stages
+    early_kalloc_init();
+
+
+    mm_reserve_device_and_kernel_mem();
+
+
+    mmu_handle identity_map_handle = mm_early_identity_mapping();
+
+#ifdef DEBUG
+    uart_puts(&UART2_DRIVER, "Identity mapping mmu: \n\r");
+    mmu_debug_dump(identity_map_handle);
+#endif
 }
 
 void mm_init()
 {
-    mmu_handle stress_test_h;
-    mmu_cfg mem_cfg = mmu_cfg_new(0, MMU_AP_EL0_NONE_EL1_RW, 0, false, 1, 0, 0, 0);
-
-    mmu_init(&stress_test_h, MMU_GRANULARITY_4KB, mmu_allocator, mmu_freer);
-    mmu_stress_test(stress_test_h, mem_cfg, 0, MEM_GiB);
 }
