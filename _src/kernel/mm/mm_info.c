@@ -3,7 +3,7 @@
 #include <frdm_imx8mp.h>
 #include <lib/mem.h>
 
-#include "boot/panic.h"
+#include "kernel/panic.h"
 #include "lib/math.h"
 
 const size_t MM_PAGE_BYTES = MMU_GRANULARITY_4KB;
@@ -21,22 +21,25 @@ static size_t mm_page_count_;
 
 static size_t mm_addr_space_;
 
+
+// TODO: get it from other non hardcoded source
+#define DDR_SIZE MEM_GiB * 4
+#define DDR_START 0x40000000UL
+
 /// all this definitions are mostly hardcoded for the imx8mp, the idea is that they should come from
 /// a dtb file or any other valid source that allows the kernel to dynamically initialize itself
 void mm_info_init()
 {
-    extern p_uintptr __ddr_size;
-    extern p_uintptr __ddr_start;
     extern p_uintptr
         __kernel_mem_start[]; // mem start, not the kernel itself (free memory for allocations etc)
 
     extern void _start();
 
 
-    mm_max_ddr_size_ = __ddr_size;
+    mm_max_ddr_size_ = DDR_SIZE;
     mm_ddr_size_ = FRDM_IMX8MP_MEM_SIZE;
 
-    mm_ddr_start_ = __ddr_start;
+    mm_ddr_start_ = DDR_START;
     mm_ddr_end_ = mm_ddr_start_ + mm_ddr_size_;
 
     mm_kernel_start_ = (p_uintptr)_start;

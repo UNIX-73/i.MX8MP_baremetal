@@ -74,7 +74,7 @@ void mmu_debug_dump_tbl_(mmu_handle* h, mmu_tbl tbl, mmu_tbl_rng ttbrx, mmu_tbl_
                 dbg_u64(pa);
                 dbg_puts("\n\r");
 
-                mmu_debug_dump_tbl_(h, tbl_from_td(pd, g), ttbrx, lvl + 1, va, indent + 1);
+                mmu_debug_dump_tbl_(h, tbl_from_td(h, pd, g), ttbrx, lvl + 1, va, indent + 1);
                 break;
             }
 
@@ -99,7 +99,8 @@ void mmu_debug_dump_tbl_(mmu_handle* h, mmu_tbl tbl, mmu_tbl_rng ttbrx, mmu_tbl_
 
 void mmu_debug_dump(mmu_handle* h, mmu_tbl_rng ttbrx)
 {
-    mmu_debug_dump_tbl_(h, ttbr0_from_handle(h), ttbrx, MMU_TBL_LV0, 0, 0);
+    mmu_debug_dump_tbl_(h, ttbrx == MMU_TBL_LO ? ttbr0_from_handle(h) : ttbr1_from_handle(h), ttbrx,
+                        MMU_TBL_LV0, 0, 0);
 }
 
 

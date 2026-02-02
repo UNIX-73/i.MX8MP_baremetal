@@ -1,4 +1,4 @@
-#include <boot/panic.h>
+#include <kernel/panic.h>
 #include <lib/malloc/xalloc.h>
 #include <lib/stdmacros.h>
 
@@ -38,8 +38,7 @@ static void free_by_idx_(xalloc_handle* handle, isize_t i)
     uint64 first_id = handle->_blocks_metadata[i].reg_id;
 #endif
 
-    for (size_t j = i; j < i + span; j++)
-    {
+    for (size_t j = i; j < i + span; j++) {
 #ifdef TEST
         if (first_id != handle->_blocks_metadata[j].reg_id)
             PANIC("xalloc_free");
@@ -64,21 +63,17 @@ static isize_t search_free_region_(xalloc_handle* handle, size_t block_n)
     size_t i = 0;
 
 i_loop:
-    while (i < handle->_block_n)
-    {
+    while (i < handle->_block_n) {
         // Empty block encountered
-        if (mdt[i].reg_id == EMPTY_BLOCK)
-        {
+        if (mdt[i].reg_id == EMPTY_BLOCK) {
             // No more space available
             if (i + block_n > handle->_block_n)
                 return NOT_FOUND;
 
             size_t j = 0;
 
-            while (j < block_n)
-            {
-                if (mdt[i + j].reg_id != EMPTY_BLOCK)
-                {
+            while (j < block_n) {
+                if (mdt[i + j].reg_id != EMPTY_BLOCK) {
 #ifdef TEST
                     if (mdt[i].span == 0)
                         PANIC("search_free_region: span of 0 found");
@@ -230,8 +225,7 @@ void* xalloc_alloc(xalloc_handle* handle, uint64* reg_id, size_t block_n)
 
     isize_t region_idx = search_free_region_(handle, block_n);
 
-    if (region_idx == NOT_FOUND || region_idx < 0)
-    {
+    if (region_idx == NOT_FOUND || region_idx < 0) {
         *reg_id = (uint64)-1;
         return NULL;
     }

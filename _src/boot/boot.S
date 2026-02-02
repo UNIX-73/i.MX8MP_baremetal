@@ -42,7 +42,6 @@ setup_system:
     bl _setup_stack_el1
     bl _el2_init_vector //  Set EL2 vector table
     bl _clean_bss
-    bl init_panic
 
     ldr x0, =__text_start
     ldr x1, =__kernel_mem_start

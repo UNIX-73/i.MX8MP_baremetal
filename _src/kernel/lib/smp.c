@@ -1,7 +1,7 @@
 #include <arm/cpu.h>
 #include <arm/tfa/smccc.h>
-#include <boot/panic.h>
 #include <kernel/lib/smp.h>
+#include <kernel/panic.h>
 
 #include "lib/stdint.h"
 

@@ -50,6 +50,8 @@ typedef struct {
     void* tbl0_;
     void* tbl1_;
 
+    isize_t physmap_offset; // the offset of the relocation
+
     mmu_alloc alloc_;
     mmu_free free_;
 
@@ -89,7 +91,7 @@ typedef struct {
 
 
 /// initializes the private structures needed for mmu control
-void mmu_init(mmu_handle* h, mmu_cfg cfg, mmu_alloc alloc, mmu_free free);
+void mmu_init(mmu_handle* h, mmu_cfg cfg, mmu_alloc alloc, mmu_free free, isize_t physmap_offset);
 
 /// activates the mmu with the previously initialized config
 void mmu_activate();
@@ -118,11 +120,14 @@ mmu_cfg mmu_get_cfg(mmu_handle* h);
 void mmu_reconfig_allocators(mmu_handle* h, mmu_alloc alloc, mmu_free free);
 
 
-bool mmu_map(mmu_handle* h, v_uintptr virt, p_uintptr phys, size_t size, mmu_pg_cfg cfg,
+bool mmu_map(mmu_handle* h, v_uintptr va, p_uintptr pa, size_t size, mmu_pg_cfg cfg,
              mmu_op_info* info);
 
-// bool mmu_p_unmap(mmu_handle h, p_uintptr phys, size_t size, mmu_op_info* info);
-bool mmu_unmap(mmu_handle* h, v_uintptr virt, size_t size, mmu_op_info* info);
+bool mmu_unmap(mmu_handle* h, v_uintptr va, size_t size, mmu_op_info* info);
+
+
+/// changes the physmap_offset. It determines the offset from the pa of the actual mmu tables
+void mmu_reloc(mmu_handle* h, isize_t physmap_offset);
 
 
 // debug

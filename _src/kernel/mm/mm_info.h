@@ -4,7 +4,6 @@
 #include <lib/stdint.h>
 
 
-#define KERNEL_BASE 0xFFFF'8000'0000'0000ULL
 
 void mm_info_init();
 

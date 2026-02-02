@@ -1,9 +1,9 @@
-#include <boot/panic.h>
 #include <drivers/uart/uart.h>
 #include <kernel/devices/drivers.h>
 #include <kernel/init.h>
 #include <kernel/irq/interrupts.h>
 #include <kernel/irq/irq.h>
+#include <kernel/panic.h>
 #include <lib/stdint.h>
 #include <lib/stdmacros.h>
 

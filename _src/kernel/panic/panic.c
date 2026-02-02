@@ -1,0 +1,158 @@
+#include "kernel/panic.h"
+
+#include <arm/mmu/mmu.h>
+#include <lib/lock/spinlock_irq.h>
+#include <lib/stdarg.h>
+#include <lib/stdmacros.h>
+#include <lib/string.h>
+
+#include "panic_exception/panic_exception_handlers.h"
+#include "panic_puts.h"
+
+
+typedef enum {
+    PANIC_UNRECOVERABLE = 0,
+    PANIC_RECOVERABLE = 1,
+} panic_recovery;
+
+
+static void default_info_print(panic_info* info)
+{
+    panic_puts("\n" ANSI_BG_RED "\n[PANIC]\n");
+
+    char* reason;
+    switch (info->reason) {
+        case PANIC_REASON_EXCEPTION:
+            reason = "exception";
+            break;
+        case PANIC_REASON_MANUAL_ABORT:
+            reason = "manual abort";
+            break;
+        default:
+            reason = "UNDEFINED PANIC REASON!\n";
+    }
+
+    panic_puts("reason:  %s\n", reason);
+
+    panic_puts("mmu:     %s\n", mmu_is_active() ? "enabled" : "disabled");
+
+    panic_puts("message: %s\n", info->message);
+
+
+    const char* enabled = "enabled";
+    const char* disabled = "disabled";
+#define ENABLED_STR(cond) cond ? enabled : disabled
+
+    panic_puts("\nexception status:\n"
+               "\tfiq:    %s\n"
+               "\tirq:    %s\n"
+               "\tserror: %s\n"
+               "\tdebug:  %s\n",
+
+               ENABLED_STR(info->exception_status.fiq),    //
+               ENABLED_STR(info->exception_status.irq),    //
+               ENABLED_STR(info->exception_status.serror), //
+               ENABLED_STR(info->exception_status.debug)   //
+    );
+}
+
+
+static void handle_exception_panic(panic_info* info)
+{
+    panic_exception_src src = info->info.exception.src;
+    panic_exception_type type = info->info.exception.type;
+
+
+    switch (type) {
+        case PANIC_EXCEPTION_TYPE_SYNC:
+            handle_sync_panic(src);
+            break;
+        case PANIC_EXCEPTION_TYPE_IRQ:
+            handle_irq_panic(src);
+            break;
+        case PANIC_EXCEPTION_TYPE_FIQ:
+            handle_fiq_panic(src);
+            break;
+        case PANIC_EXCEPTION_TYPE_SERROR:
+            handle_serror_panic(src);
+            break;
+    }
+}
+
+
+static void handle_manual_abort_panic(panic_info* info)
+{
+    /*
+        lang
+    */
+    const char* lang_str;
+    switch (info->info.manual_abort.lang) {
+        case PANIC_LANG_ASM:
+            lang_str = "asm";
+            break;
+        case PANIC_LANG_C:
+            lang_str = "c";
+            break;
+        case PANIC_LANG_RUST:
+            lang_str = "rust";
+            break;
+        default:
+            lang_str = "undefined";
+    }
+
+    panic_puts("language:%s\n", lang_str);
+
+    /*
+        file + line + col
+    */
+    panic_location location = info->info.manual_abort.location;
+
+    panic_puts("file:   %s\n", location.file);
+
+    if (location.line >= 0)
+        panic_puts("line:   %d\n", location.line);
+    if (location.col >= 0)
+        panic_puts("col:    %d\n", location.col);
+}
+
+
+static void handle_panic(panic_info* info, panic_recovery recovery)
+{
+    if (!info)
+        goto hang;
+
+    default_info_print(info);
+
+    switch (info->reason) {
+        case PANIC_REASON_UNDEFINED:
+            recovery = PANIC_UNRECOVERABLE;
+            break;
+        case PANIC_REASON_EXCEPTION:
+            panic_puts("\n[EXCEPTION INFO]\n");
+            handle_exception_panic(info);
+            break;
+        case PANIC_REASON_MANUAL_ABORT:
+            panic_puts("\n[ABORT INFO]\n");
+            handle_manual_abort_panic(info);
+            break;
+    }
+
+    panic_puts(ANSI_CLEAR);
+
+    if (recovery == PANIC_UNRECOVERABLE)
+        loop hang : asm volatile("wfe");
+}
+
+
+_Noreturn __attribute__((cold)) void panic(panic_info panic_info)
+{
+    handle_panic(&panic_info, PANIC_UNRECOVERABLE);
+
+    // https://stackoverflow.com/questions/3381544/how-to-hint-to-gcc-that-a-line-should-be-unreachable-at-compile-time
+    __builtin_unreachable();
+}
+
+void __attribute__((cold)) panicr(panic_info panic_info)
+{
+    handle_panic(&panic_info, PANIC_RECOVERABLE);
+}

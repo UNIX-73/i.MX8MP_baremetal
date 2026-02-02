@@ -1,6 +1,6 @@
-#include <boot/panic.h>
 #include <drivers/uart/uart.h>
 #include <drivers/uart/uart_raw.h>
+#include <kernel/panic.h>
 #include <lib/lock/spinlock.h>
 #include <lib/stdint.h>
 

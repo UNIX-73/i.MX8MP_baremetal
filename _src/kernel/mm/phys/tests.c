@@ -2,9 +2,9 @@
 
 #ifdef DEBUG
 
-#    include "boot/panic.h"
 #    include "drivers/uart/uart.h"
 #    include "kernel/devices/drivers.h"
+#    include "kernel/panic.h"
 #    include "page_allocator.h"
 
 #    define TEST_ASSERT(cond, msg) \

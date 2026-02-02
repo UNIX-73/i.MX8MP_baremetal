@@ -5,7 +5,7 @@
 
 #include "./early_kalloc.h"
 #include "arm/mmu/mmu.h"
-#include "boot/panic.h"
+#include "kernel/panic.h"
 #include "lib/mem.h"
 
 
@@ -51,7 +51,7 @@ void early_identity_mapping(mmu_handle* h)
         .lo_gran = MMU_GRANULARITY_4KB,
     };
 
-    mmu_init(h, cfg, im_alloc, im_free);
+    mmu_init(h, cfg, im_alloc, im_free,0);
 
 
     mmu_pg_cfg device_cfg = mmu_pg_cfg_new(1, MMU_AP_EL0_NONE_EL1_RW, 0, false, 1, 0, 0, 0);

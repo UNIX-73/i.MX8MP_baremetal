@@ -1,18 +1,17 @@
 #include "reloc.h"
 
+#include <lib/mem.h>
 #include <lib/stdbool.h>
+#include <lib/stdmacros.h>
 
-#include "../mm_info.h"
 #include "../phys/page_allocator.h"
 #include "arm/mmu/mmu.h"
-#include "boot/panic.h"
-#include "drivers/uart/uart.h"
-#include "kernel/devices/drivers.h"
-#include "lib/mem.h"
-#include "lib/stdint.h"
-#include "lib/stdmacros.h"
+#include "kernel/panic.h"
+
 
 extern _Noreturn void _jmp_to_with_offset(void* to, size_t offset);
+extern _Noreturn void _reloc_reconfigure_regs(void);
+
 
 // allocator freer for the early identity mapping tables
 static void test_free(void* addr)
@@ -34,17 +33,9 @@ static void* test_alloc(size_t bytes, size_t)
 }
 
 
-void test_entry()
-{
-    uart_puts(&UART2_DRIVER, "arrived to the top");
-}
-
-
 void mm_reloc_kernel(p_uintptr kernel_base, mmu_handle* h)
 {
     ASSERT(mmu_is_active());
-    // The current state of the mmu is on identity mapping mode
-
 
     mmu_reconfig_allocators(h, test_alloc, test_free);
 
@@ -54,9 +45,15 @@ void mm_reloc_kernel(p_uintptr kernel_base, mmu_handle* h)
     // device memory
     mmu_map(h, kernel_base, 0, MEM_GiB, device_cfg, NULL);
 
-    // kernel memory
+    // kernel memory TODO: watch if mapping all the ddr is neccesary or only the used memory
     mmu_map(h, kernel_base + MEM_GiB, MEM_GiB, 4 * MEM_GiB, mem_cfg, NULL);
 
 
-    _jmp_to_with_offset(test_entry, kernel_base);
+
+    
+
+
+
+
+    _jmp_to_with_offset(_reloc_reconfigure_regs, kernel_base);
 }

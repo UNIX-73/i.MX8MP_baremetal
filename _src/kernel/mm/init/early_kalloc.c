@@ -8,8 +8,8 @@
 #include "early_kalloc.h"
 
 #include <arm/mmu/mmu.h>
-#include <boot/panic.h>
 #include <frdm_imx8mp.h>
+#include <kernel/panic.h>
 #include <lib/lock/spinlock.h>
 #include <lib/stdint.h>
 
@@ -23,7 +23,7 @@ _Alignas(16) static spinlock_t early_kallock_lock_;
 
 
 _Alignas(16) static size_t memblock_struct_count_;
-_Alignas(16) static volatile memblock* next_memblock_;
+_Alignas(16) static memblock* next_memblock_;
 _Alignas(16) static memblock* memblocks_start_;
 
 _Alignas(16) static uintptr current_phys_;
@@ -59,6 +59,7 @@ static void UNLOCKED_early_kalloc_(void** addr, size_t bytes, const char* tag, b
     p_uintptr next_meta = (p_uintptr)(next_memblock_ - 1);
 
     ASSERT(next_phys <= next_meta, "early_kalloc has no more physical memory");
+    ASSERT(blocks != 0);
 
 
     *next_memblock_ = (memblock) {
@@ -98,7 +99,7 @@ p_uintptr early_kalloc(size_t bytes, const char* tag, bool permanent, bool devic
 static void UNLOCKED_finish_early_kalloc_stage_()
 {
     // make size for the memblocks structs themselves.
-    size_t meta_bytes = sizeof(memblock) * (memblock_struct_count_ + 1);
+    size_t meta_bytes = sizeof(memblock) * (memblock_struct_count_); // TODO: check if correct
 
     void* addr;
     UNLOCKED_early_kalloc_(&addr, meta_bytes, "early_kalloc", false, false);
@@ -146,7 +147,7 @@ void early_kfree(p_uintptr addr)
         current_phys_ -= next_memblock_->blocks * MEMBLOCK_SIZE;
         memblock_struct_count_--;
 
-        ASSERT(next_memblock_->addr = addr);
+        ASSERT(next_memblock_->addr == addr);
     }
 }
 #endif

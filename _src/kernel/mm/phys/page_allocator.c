@@ -5,7 +5,7 @@
 #include "../init/early_kalloc.h"
 #include "../mm_info.h"
 #include "arm/mmu/mmu.h"
-#include "boot/panic.h"
+#include "kernel/panic.h"
 #include "lib/align.h"
 #include "lib/lock/_lock_types.h"
 #include "lib/math.h"

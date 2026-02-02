@@ -1,20 +1,23 @@
 OUTPUT_FORMAT("elf64-littleaarch64")
 ENTRY(_start)
 
+
 __NUM_CORES             = 4;
 __EL2_STACK_SIZE        = 0x20000;  /*  1/8MiB   */ 
 __EL1_STACK_SIZE        = 0x100000; /*  1MiB     */
 __TFA_PROTECTED_SIZE    = 0x200000;
 
 
+KERNEL_VA_BASE = 0xffff800000000000;
+
+
 INCLUDE memory.ld
-INCLUDE symbols.ld
 
 
 SECTIONS {
-    . = ORIGIN(DDR);
+    . = KERNEL_VA_BASE + ORIGIN(DDR);
 
-    .text ORIGIN(DDR) + __TFA_PROTECTED_SIZE : ALIGN(64) {
+    .text ORIGIN(DDR) + __TFA_PROTECTED_SIZE: ALIGN(64) {
         __text_start = .;
         KEEP(*(.text.boot))
         *(.text*)

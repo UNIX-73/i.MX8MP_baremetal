@@ -5,7 +5,7 @@
 
 #ifdef TEST
 
-#    include <boot/panic.h>
+#    include <kernel/panic.h>
 
 static inline void time_check_mul_overflow(size_t a, size_t b, const char* fn)
 {

@@ -2,12 +2,17 @@
 #include <lib/math.h>
 
 #include "arm/mmu/mmu.h"
-#include "boot/panic.h"
-#include "lib/lock/_lock_types.h"
+#include "kernel/panic.h"
 #include "lib/mem.h"
 #include "lib/stdint.h"
 #include "mmu_pd.h"
 #include "mmu_types.h"
+
+
+static inline v_uintptr pa_to_va_(mmu_handle* h, p_uintptr pa)
+{
+    return pa + h->physmap_offset;
+}
 
 
 static inline size_t level_shift_(mmu_granularity g, mmu_tbl_level l)
@@ -44,7 +49,9 @@ static inline mmu_tbl ttbr0_from_handle(mmu_handle* h)
 {
     DEBUG_ASSERT(h->tbl0_ && ((p_uintptr)h->tbl0_ % tbl_alignment(h->cfg_.lo_gran) == 0));
 
-    return (mmu_tbl) {.pds = h->tbl0_};
+    v_uintptr va = pa_to_va_(h, (p_uintptr)h->tbl0_);
+
+    return (mmu_tbl) {.pds = (mmu_hw_pd*)va};
 }
 
 
@@ -52,21 +59,22 @@ static inline mmu_tbl ttbr1_from_handle(mmu_handle* h)
 {
     DEBUG_ASSERT(h->tbl1_ && ((p_uintptr)h->tbl1_ % tbl_alignment(h->cfg_.hi_gran) == 0));
 
-    return (mmu_tbl) {.pds = h->tbl1_};
+    v_uintptr va = pa_to_va_(h, (p_uintptr)h->tbl1_);
+
+    return (mmu_tbl) {.pds = (mmu_hw_pd*)va};
 }
 
-static inline mmu_tbl tbl_from_ptr(uintptr addr, mmu_granularity g)
-{
-    ASSERT(addr && addr % g == 0);
 
-    return (mmu_tbl) {.pds = (mmu_hw_pd*)addr};
-}
-
-static inline mmu_tbl tbl_from_td(mmu_hw_pd pd, mmu_granularity g)
+static inline mmu_tbl tbl_from_td(mmu_handle* h, mmu_hw_pd pd, mmu_granularity g)
 {
     ASSERT(pd_get_type(pd) == MMU_PD_TABLE);
 
-    return tbl_from_ptr(pd_get_output_address(pd, g), g);
+    p_uintptr pa = pd_get_output_address(pd, g);
+    v_uintptr va = pa_to_va_(h, pa);
+
+    DEBUG_ASSERT(pa && pa % g == 0);
+
+    return (mmu_tbl) {.pds = (mmu_hw_pd*)va};
 }
 
 

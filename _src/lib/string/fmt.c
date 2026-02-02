@@ -1,4 +1,4 @@
-#include <boot/panic.h>
+#include <kernel/panic.h>
 #include <lib/stdarg.h>
 #include <lib/stdbool.h>
 #include <lib/stdint.h>
@@ -227,6 +227,12 @@ void str_fmt_print(str_fmt_putc putc, const char* f, va_list ap)
             case 'p':
                 stdint_to_ascii((STDINT_UNION) {.uint64 = (uint64)va_arg(ap, void*)}, STDINT_UINT64,
                                 buf, sizeof(buf), STDINT_BASE_REPR_HEX);
+                puts_(putc, buf);
+                break;
+
+            case 'b':
+                stdint_to_ascii((STDINT_UNION) {.uint64 = (uint64)va_arg(ap, void*)}, STDINT_UINT64,
+                                buf, sizeof(buf), STDINT_BASE_REPR_BIN);
                 puts_(putc, buf);
                 break;
 

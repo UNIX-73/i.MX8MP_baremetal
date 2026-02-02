@@ -1,4 +1,4 @@
-#include <boot/panic.h>
+#include <kernel/panic.h>
 #include <lib/stdbool.h>
 #include <lib/stdint.h>
 #include <lib/string.h>

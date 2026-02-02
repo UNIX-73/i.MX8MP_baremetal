@@ -26,7 +26,7 @@ p_uintptr early_kalloc(size_t bytes, const char* tag, bool permanent, bool devic
 /// Function that should only be called in DEBUG mode. It can only free the last allocated memblocks.
 void early_kfree(p_uintptr addr);
 #else
-#    include "boot/panic.h"
+#    include "kernel/panic.h"
 #    define early_kfree(...)                                                                       \
         PANIC("early_kfree should be protected under DEBUG ifdefs and not be used in release "     \
               "versions. The main intent of this free fn is to allocate a test, test it and then " \

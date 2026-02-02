@@ -1,7 +1,7 @@
 #include "mmu_sysregs.h"
 
 #include "arm/mmu/mmu.h"
-#include "boot/panic.h"
+#include "kernel/panic.h"
 #include "lib/stdint.h"
 
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <boot/panic.h>
+#include <kernel/panic.h>
 #include <lib/mem.h>
 #include <lib/stdint.h>
 
@@ -194,26 +194,14 @@ static inline void pd_set_access_flag(mmu_hw_pd* pd, bool access_flag)
     pd->v |= ((uint64)access_flag << MMU_PD_AF_SHIFT);
 }
 
-static inline void pd_set_output_address(mmu_hw_pd* pd, uint64 output_address,
-                                         mmu_granularity granularity)
+static inline void pd_set_output_address(mmu_hw_pd* pd, uint64 output_address, mmu_granularity g)
 {
-    const uint64 pa_bit_n = output_address_bit_n_(granularity);
+    DEBUG_ASSERT(!(output_address >= (1ULL << output_address_bit_n_(g))),
+                 "pd_set_output_address: invalid output address, out of granularity");
+    DEBUG_ASSERT(output_address % g == 0,
+                 "pd_set_output_address: invalid output address, not aligned to granularity");
 
-    if (output_address >= (1ULL << pa_bit_n)) {
-#ifdef TEST
-        PANIC("pd_set_output_address: invalid output address, out of granularity");
-#endif
-        return;
-    }
-
-    if (output_address % granularity != 0) {
-#ifdef TEST
-        PANIC("pd_set_output_address: invalid output address, not aligned to granularity");
-#endif
-        return;
-    }
-
-    const uint64 mask = output_address_mask_(granularity);
+    const uint64 mask = output_address_mask_(g);
 
     pd->v &= ~mask;
     pd->v |= output_address & mask;

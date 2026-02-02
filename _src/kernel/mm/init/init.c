@@ -1,5 +1,5 @@
-#include <boot/panic.h>
 #include <frdm_imx8mp.h>
+#include <kernel/panic.h>
 
 #include "../mm_info.h"
 #include "../phys/page_allocator.h"
@@ -7,7 +7,7 @@
 #include "arm/mmu/mmu.h"
 #include "early_kalloc.h"
 #include "identity_mapping.h"
-#include "kernel/mm/mm.h"
+#include "kernel/mm.h"
 #include "lib/unit/mem.h"
 
 
