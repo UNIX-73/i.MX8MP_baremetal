@@ -2,35 +2,28 @@ OUTPUT_FORMAT("elf64-littleaarch64")
 ENTRY(_start)
 
 
-__NUM_CORES             = 4;
-__EL2_STACK_SIZE        = 0x20000;  /*  1/8MiB   */ 
-__EL1_STACK_SIZE        = 0x100000; /*  1MiB     */
-__TFA_PROTECTED_SIZE    = 0x200000;
-
-
-KERNEL_VA_BASE = 0xffff800000000000;
-
-
 INCLUDE memory.ld
 
+KERNEL_PA_BASE = ORIGIN(DDR) + __TFA_PROTECTED_SIZE;
+KERNEL_VA_BASE = KERNEL_PA_BASE + HI_VA_BASE;
 
 SECTIONS {
-    . = KERNEL_VA_BASE + ORIGIN(DDR);
+    . = KERNEL_VA_BASE;
 
-    .text ORIGIN(DDR) + __TFA_PROTECTED_SIZE: ALIGN(64) {
+    .text KERNEL_VA_BASE : ALIGN(64) {
         __text_start = .;
         KEEP(*(.text.boot))
         *(.text*)
         . = ALIGN(64);
         __text_end = .;
-    } > DDR
+    } > HI_VMEM AT > DDR_KERNEL
 
     .vectors : ALIGN(2048) {
         __vectors_start = .;
         KEEP(*(.vectors))
         . = ALIGN(64);
         __vectors_end = .;
-    } > DDR
+    } > HI_VMEM AT > DDR_KERNEL
 
     .rodata : ALIGN(16) {
         *(.rodata*)
@@ -56,12 +49,12 @@ SECTIONS {
         __kernel_init_stage2_end = .;
 
         . = ALIGN(16);
-    } > DDR
+    } > HI_VMEM AT > DDR_KERNEL
 
     .data : ALIGN(16) {
         *(.data*)
         . = ALIGN(16);
-    } > DDR
+    } > HI_VMEM AT > DDR_KERNEL
 
     .bss : ALIGN(64) {
         __bss_start = .;
@@ -69,7 +62,7 @@ SECTIONS {
         *(COMMON)
         . = ALIGN(64);
         __bss_end = .;
-    } > DDR
+    } > HI_VMEM AT > DDR_KERNEL
 
     .stacks (NOLOAD) : ALIGN(4096) {
         __stacks_el2_start = .;
@@ -79,12 +72,12 @@ SECTIONS {
         __stacks_el1_start = .;
         . += (__NUM_CORES * __EL1_STACK_SIZE);
         __stacks_el1_end = .;
-    } > DDR
+    } > HI_VMEM AT > DDR_KERNEL
 
     /* aligned to 4MiB pages, 1GiB size */
     .kernel_mem (NOLOAD) : ALIGN(0x1000 * 4) {
         __kernel_mem_start = .;
         . += 0x40000000;
         __kernel_mem_end = .;
-    } > DDR
+    } > HI_VMEM AT > DDR_KERNEL
 }

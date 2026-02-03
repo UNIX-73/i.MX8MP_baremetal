@@ -1,10 +1,12 @@
 #include <arm/exceptions/exceptions.h>
 #include <drivers/interrupts/gicv3/gicv3.h>
-#include <drivers/uart/uart.h>
 #include <kernel/devices/drivers.h>
 #include <kernel/init.h>
 #include <kernel/panic.h>
 #include <lib/stdint.h>
+
+#include "drivers/uart/uart.h"
+#include "kernel/io/term.h"
 
 extern kernel_initcall_t __kernel_init_stage0_start[];
 extern kernel_initcall_t __kernel_init_stage0_end[];
@@ -23,8 +25,18 @@ KERNEL_INITCALL(rust_kernel_initcalls_stage0, KERNEL_INITCALL_STAGE0);
 KERNEL_INITCALL(rust_kernel_initcalls_stage1, KERNEL_INITCALL_STAGE1);
 KERNEL_INITCALL(rust_kernel_initcalls_stage2, KERNEL_INITCALL_STAGE2);
 
+
+static term_out_result term_output(char c)
+{
+    // TODO: use full uart mode output
+    uart_putc_early(c);
+    return TERM_OUT_RES_OK;
+}
+
 void kernel_init(void)
 {
+    init_term_full();
+    term_add_output(term_output);
 
 
     // Stage 0 (pre irq initialization)
@@ -42,11 +54,9 @@ void kernel_init(void)
     GICV3_init_distributor(&GIC_DRIVER);
     GICV3_init_cpu(&GIC_DRIVER, ARM_get_cpu_affinity().aff0);
 
-    for (kernel_initcall_t* fn = __kernel_init_stage1_start; fn < __kernel_init_stage1_end; fn++) {
+    for (kernel_initcall_t* fn = __kernel_init_stage1_start; fn < __kernel_init_stage1_end; fn++)
         (*fn)();
-    }
 
-    for (kernel_initcall_t* fn = __kernel_init_stage2_start; fn < __kernel_init_stage2_end; fn++) {
+    for (kernel_initcall_t* fn = __kernel_init_stage2_start; fn < __kernel_init_stage2_end; fn++)
         (*fn)();
-    }
 }

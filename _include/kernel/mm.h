@@ -1,12 +1,14 @@
 #pragma once
 
-#include <arm/mmu/mmu.h>
-#include <lib/mem.h>
-#include <lib/stdbool.h>
-#include <lib/stdint.h>
-#include <lib/unit/mem.h>
+#ifndef __ASSEMBLER__
 
-#define KERNEL_BASE 0xFFFF'8000'0000'0000ULL
+
+#    include <arm/mmu/mmu.h>
+#    include <lib/mem.h>
+#    include <lib/stdbool.h>
+#    include <lib/stdint.h>
+#    include <lib/unit/mem.h>
+
 
 void mm_early_init();
 
@@ -17,5 +19,13 @@ void mm_init();
 
 bool mm_kernel_is_relocated();
 
+p_uintptr mm_kva_to_kpa(v_uintptr va);
+#    define mm_kva_to_kpa_ptr(va) (void*)mm_kva_to_kpa((v_uintptr)(va))
 
-v_uintptr mm_remap(p_uintptr pa);
+v_uintptr mm_kpa_to_kva(p_uintptr pa);
+#    define mm_kpa_to_kva_ptr(pa) (void*)mm_kpa_to_kva((p_uintptr)(pa))
+
+
+#endif
+
+#define KERNEL_BASE 0xFFFF800000000000

@@ -13,12 +13,12 @@
                 PANIC(msg);        \
         } while (0)
 
-#    define RUN_TEST(fn)                                    \
-        do {                                                \
-            uart_puts(&UART2_DRIVER, "[TEST] " #fn "\n\r"); \
-            fn();                                           \
-            page_allocator_validate();                      \
-            uart_puts(&UART2_DRIVER, "[ OK ] " #fn "\n\r"); \
+#    define RUN_TEST(fn)                       \
+        do {                                   \
+            term_prints("[TEST] " #fn "\n\r"); \
+            fn();                              \
+            page_allocator_validate();         \
+            term_prints("[ OK ] " #fn "\n\r"); \
         } while (0)
 
 

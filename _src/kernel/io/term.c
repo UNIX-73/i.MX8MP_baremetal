@@ -7,6 +7,7 @@
 #include <lib/string.h>
 
 #include "kernel/panic.h"
+#include "lib/lock/_lock_types.h"
 
 // TODO: needs handling in case of TERM_OUT_RES_NOT_TAKEN results
 
@@ -37,17 +38,30 @@ void init_term_early(term_out early_out)
 }
 
 
+/*
+    TODO:
+    This is a temporal solution before having kmalloc, it just is a static variable that saves one
+    output. When kmalloc is designed this must be removed
+*/
+static term_out full_output;
+
+
 void init_term_full()
 {
     spinlock_init(&lock);
 
     mode = TERM_FULL_MODE;
-
-    PANIC("TODO: implement it");
+    full_output = NULL;
 }
 
 
-void term_add_output(term_out out);
+void term_add_output(term_out out)
+{
+    irqlock_t flags = spin_lock_irqsave(&lock);
+    full_output = out;
+    spin_unlock_irqrestore(&lock, flags);
+}
+
 void term_remove_output(term_out out);
 
 void term_add_input(term_in in);
@@ -68,8 +82,10 @@ static inline term_out get_term_out()
 
             return early_output;
         case TERM_FULL_MODE:
-            // TODO: implement full mode
-            goto hang;
+            if (UNLIKELY(!full_output))
+                goto hang;
+
+            return full_output;
         default:
             goto hang;
     }
@@ -120,11 +136,11 @@ void term_printf(const char* s, ...)
     va_start(ap, s);
 
     irqlock_t flags = spin_lock_irqsave(&lock);
+
     fmt_i = 0;
-
-
     str_fmt_print(putfmt, s, ap);
-
+    fmt_buf[fmt_i] = '\0';
+    fmt_i = 0;
 
     term_out out = get_term_out();
 
@@ -133,7 +149,6 @@ void term_printf(const char* s, ...)
         out(*s++);
 
 
-    fmt_i = 0;
     spin_unlock_irqrestore(&lock, flags);
 
     va_end(ap);

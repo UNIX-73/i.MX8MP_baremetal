@@ -1,3 +1,5 @@
+#include <kernel/mm.h>
+
 .section .text
 
 .align 4
@@ -12,9 +14,11 @@ _setup_stack_el1:
 
     ldr x1, =__EL1_STACK_SIZE
     ldr x2, =__stacks_el1_end
+    mov x3, #KERNEL_BASE
 
     mul x0, x0, x1  // x0 = coreid * stack size
     sub x0, x2, x0  // x0 = stack end - coreid * stack size
+    sub x0, x0, x3
     
     msr SP_EL1, x0
     ret
@@ -42,6 +46,7 @@ _reset_stack_el1:
     sub x0, x2, x0  // x0 = stack end - coreid * stack size
     
     mov sp, x0
+    isb
     ret
 hang:
     wfe

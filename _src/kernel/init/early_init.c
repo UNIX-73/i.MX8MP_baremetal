@@ -2,7 +2,6 @@
 #include <drivers/uart/uart.h>
 
 #include "../devices/device_map.h"
-#include "kernel/devices/drivers.h"
 #include "kernel/init.h"
 #include "kernel/io/term.h"
 #include "kernel/mm.h"
@@ -10,16 +9,16 @@
 
 static term_out_result early_out(char c)
 {
-    uart_putc_early(&UART2_DRIVER, c);
+    uart_putc_early(c);
     return TERM_OUT_RES_OK;
 }
 
 
 void kernel_early_init(void)
 {
-    uart_early_init(&UART2_DRIVER, UART2_BASE);
+    uart_early_init(UART2_BASE);
     init_term_early(early_out);
 
 
-    mm_early_init();
+    mm_early_init(); // returns to the kernel entry
 }

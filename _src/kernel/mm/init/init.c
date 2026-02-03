@@ -7,6 +7,7 @@
 #include "arm/mmu/mmu.h"
 #include "early_kalloc.h"
 #include "identity_mapping.h"
+#include "kernel/io/term.h"
 #include "kernel/mm.h"
 #include "lib/unit/mem.h"
 
@@ -44,9 +45,9 @@ void mm_early_init()
     // init identity mapping
     early_identity_mapping(&mm_mmu_h);
 #ifdef DEBUG
-    uart_puts(&UART2_DRIVER, "Identity mapping mmu: \n\r");
+    term_prints("Identity mapping mmu: \n\r");
     mmu_debug_dump(&mm_mmu_h, MMU_TBL_LO);
-    uart_puts(&UART2_DRIVER, "\n\rPage allocator test: \n\r");
+    term_prints("\n\rPage allocator test: \n\r");
 #endif
 
 
@@ -61,8 +62,8 @@ void mm_early_init()
 #endif
 
 
-    // reloc kernel
-    mm_reloc_kernel(KERNEL_BASE, &mm_mmu_h);
+    // reloc kernel: returns to the kernel_entry() with the kernel relocated and the sp resetted
+    mm_reloc_kernel();
 }
 
 

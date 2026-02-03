@@ -33,7 +33,7 @@ _switch_to_el1:
     mov x0, #0
     msr CNTVOFF_EL2, x0
 
-    ldr x0, =_el1_entry
+    adr x0, _el1_entry
     msr ELR_EL2, x0
 
     dsb sy

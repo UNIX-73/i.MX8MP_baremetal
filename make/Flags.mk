@@ -8,7 +8,7 @@ MCPU        ?= cortex-a53+simd
 RS_TARGET	=  aarch64-unknown-none
 CSTD		:= gnu23 	# Project uses c23 standard attributes
 
-ASM_FLAGS   = $(DEFINES)
+ASM_FLAGS   = $(DEFINES) -I$(INCLUDE_DIR)
 #TODO: delete -mgeneral-regs-only when mmu is implemented
 C_FLAGS     = $(OPT_LEVEL) $(DEFINES) -std=$(CSTD) -mgeneral-regs-only -Wall -Wextra -Werror -ffreestanding -nostdlib -nostdinc -nostartfiles -x c -I$(INCLUDE_DIR) -march=$(MARCH) -mcpu=$(MCPU)
 LD_FLAGS    = -T linker.ld -Map $(MAP)

@@ -1,3 +1,5 @@
+#include <kernel/mm.h>
+
 .section .text
 .global _clean_bss
 .align 2
@@ -5,6 +7,10 @@
 _clean_bss:
     ldr     x0, =__bss_start
     ldr     x1, =__bss_end
+    mov     x3, #KERNEL_BASE
+
+    sub     x0, x0, x3
+    sub     x1, x1, x3
 
     movi    v0.16b, #0
     movi    v1.16b, #0

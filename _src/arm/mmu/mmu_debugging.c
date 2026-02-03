@@ -1,6 +1,5 @@
 #include "arm/mmu/mmu.h"
-#include "drivers/uart/uart.h"
-#include "kernel/devices/drivers.h"
+#include "kernel/io/term.h"
 #include "lib/stdmacros.h"
 #include "lib/string.h"
 #include "mmu_helpers.h"
@@ -12,7 +11,7 @@
 
 static void dbg_puts(const char* s)
 {
-    uart_puts_sync(&UART2_DRIVER, s);
+    term_prints(s);
 }
 
 static void dbg_indent(size_t n)
@@ -110,23 +109,23 @@ void mmu_stress_test(mmu_handle* h, mmu_tbl_rng ttbrx, mmu_pg_cfg cfg, v_uintptr
     mmu_op_info info;
     bool ok;
 
-    uart_puts_sync(&UART2_DRIVER, "\n\r=== MMU STRESS TEST BEGIN ===\n\r");
+    term_prints("\n\r=== MMU STRESS TEST BEGIN ===\n\r");
 
     /* ------------------------------------------------------------ */
     /* 1) Full 1:1 map of VA range                                  */
     /* ------------------------------------------------------------ */
-    uart_puts_sync(&UART2_DRIVER, "\n\r[TEST 1] Full 1:1 mapping of VA range\n\r");
+    term_prints("\n\r[TEST 1] Full 1:1 mapping of VA range\n\r");
 
     ok = mmu_map(h, va_start, 0, va_end - va_start, cfg, &info);
     ASSERT(ok);
 
-    uart_puts_sync(&UART2_DRIVER, "[TEST 1] Table dump\n\r");
+    term_prints("[TEST 1] Table dump\n\r");
     mmu_debug_dump(h, ttbrx);
 
     /* ------------------------------------------------------------ */
     /* 2) Unmap by halves (break large blocks)                      */
     /* ------------------------------------------------------------ */
-    uart_puts_sync(&UART2_DRIVER, "\n\r[TEST 2] Unmap by halves\n\r");
+    term_prints("\n\r[TEST 2] Unmap by halves\n\r");
 
     ok = mmu_unmap(h, va_start, (va_end - va_start) / 2, &info);
     ASSERT(ok);
@@ -134,12 +133,12 @@ void mmu_stress_test(mmu_handle* h, mmu_tbl_rng ttbrx, mmu_pg_cfg cfg, v_uintptr
     ok = mmu_unmap(h, va_start + (va_end - va_start) / 2, (va_end - va_start) / 2, &info);
     ASSERT(ok);
 
-    uart_puts_sync(&UART2_DRIVER, "[TEST 2] Done\n\r");
+    term_prints("[TEST 2] Done\n\r");
 
     /* ------------------------------------------------------------ */
     /* 3) Incremental map with decreasing sizes                     */
     /* ------------------------------------------------------------ */
-    uart_puts_sync(&UART2_DRIVER, "\n\r[TEST 3] Incremental mapping with decreasing sizes\n\r");
+    term_prints("\n\r[TEST 3] Incremental mapping with decreasing sizes\n\r");
 
     size_t sizes[] = {
         MEM_GiB * 1, MEM_MiB * 512, MEM_MiB * 128, MEM_MiB * 2, MEM_KiB * 64, MEM_KiB * 4,
@@ -149,7 +148,7 @@ void mmu_stress_test(mmu_handle* h, mmu_tbl_rng ttbrx, mmu_pg_cfg cfg, v_uintptr
     p_uintptr pa = 0;
 
     for (size_t s = 0; s < ARRAY_LEN(sizes); s++) {
-        uart_puts_sync(&UART2_DRIVER, "  - Switching to smaller block size\n\r");
+        term_prints("  - Switching to smaller block size\n\r");
 
         while (va + sizes[s] <= va_end) {
             ok = mmu_map(h, va, pa, sizes[s], cfg, &info);
@@ -160,39 +159,39 @@ void mmu_stress_test(mmu_handle* h, mmu_tbl_rng ttbrx, mmu_pg_cfg cfg, v_uintptr
         }
     }
 
-    uart_puts_sync(&UART2_DRIVER, "[TEST 3] Table dump\n\r");
+    term_prints("[TEST 3] Table dump\n\r");
     mmu_debug_dump(h, ttbrx);
 
     /* ------------------------------------------------------------ */
     /* 4) Alternating unmap (interleaved holes)                     */
     /* ------------------------------------------------------------ */
-    uart_puts_sync(&UART2_DRIVER, "\n\r[TEST 4] Alternating unmap (interleaved holes)\n\r");
+    term_prints("\n\r[TEST 4] Alternating unmap (interleaved holes)\n\r");
 
     for (v_uintptr v = va_start; v < va_end; v += MEM_MiB * 2) {
         ok = mmu_unmap(h, v, MEM_MiB * 1, &info);
         ASSERT(ok);
     }
 
-    uart_puts_sync(&UART2_DRIVER, "[TEST 4] Table dump\n\r");
+    term_prints("[TEST 4] Table dump\n\r");
     mmu_debug_dump(h, ttbrx);
 
     /* ------------------------------------------------------------ */
     /* 5) Remap holes with different PA                             */
     /* ------------------------------------------------------------ */
-    uart_puts_sync(&UART2_DRIVER, "\n\r[TEST 5] Remap holes with different PA\n\r");
+    term_prints("\n\r[TEST 5] Remap holes with different PA\n\r");
 
     for (v_uintptr v = va_start; v < va_end; v += MEM_MiB * 2) {
         ok = mmu_map(h, v, v + MEM_GiB, MEM_MiB * 1, cfg, &info);
         ASSERT(ok);
     }
 
-    uart_puts_sync(&UART2_DRIVER, "[TEST 5] Table dump\n\r");
+    term_prints("[TEST 5] Table dump\n\r");
     mmu_debug_dump(h, ttbrx);
 
     /* ------------------------------------------------------------ */
     /* 6) Fine-grained stress: 4 KiB pages                          */
     /* ------------------------------------------------------------ */
-    uart_puts_sync(&UART2_DRIVER, "\n\r[TEST 6] Fine-grained stress: 4 KiB pages\n\r");
+    term_prints("\n\r[TEST 6] Fine-grained stress: 4 KiB pages\n\r");
 
     for (v_uintptr v = va_start; v < va_end; v += MEM_KiB * 4) {
         ok = mmu_unmap(h, v, MEM_KiB * 4, &info);
@@ -202,19 +201,19 @@ void mmu_stress_test(mmu_handle* h, mmu_tbl_rng ttbrx, mmu_pg_cfg cfg, v_uintptr
         ASSERT(ok);
     }
 
-    uart_puts_sync(&UART2_DRIVER, "[TEST 6] Table dump\n\r");
+    term_prints("[TEST 6] Table dump\n\r");
     mmu_debug_dump(h, ttbrx);
 
     /* ------------------------------------------------------------ */
     /* 7) Full cleanup                                              */
     /* ------------------------------------------------------------ */
-    uart_puts_sync(&UART2_DRIVER, "\n\r[TEST 7] Full cleanup (unmap entire VA range)\n\r");
+    term_prints("\n\r[TEST 7] Full cleanup (unmap entire VA range)\n\r");
 
     ok = mmu_unmap(h, va_start, va_end - va_start, &info);
     ASSERT(ok);
 
-    uart_puts_sync(&UART2_DRIVER, "[TEST 7] Final table dump\n\r");
+    term_prints("[TEST 7] Final table dump\n\r");
     mmu_debug_dump(h, ttbrx);
 
-    uart_puts_sync(&UART2_DRIVER, "\n\r=== MMU STRESS TEST END ===\n\r");
+    term_prints("\n\r=== MMU STRESS TEST END ===\n\r");
 }

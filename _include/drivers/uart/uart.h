@@ -9,14 +9,8 @@
 #define UART_TX_BUF_SIZE 8192
 #define UART_RX_BUF_SIZE 1024
 
-typedef enum {
-    UART_MODE_EARLY = 0,
-    UART_MODE_FULL,
-} uart_mode;
-
 
 typedef struct {
-    uart_mode mode;
     p_uintptr early_base;
 
     bitfield32 irq_status;
@@ -38,16 +32,17 @@ typedef struct {
 } uart_state;
 
 
-uart_mode uart_get_mode(const driver_handle* h);
-
+/// waits until tx fifo is empty
+void uart_tx_empty_barrier(const driver_handle* h);
 
 /*
     Early init features
 */
-void uart_early_init(const driver_handle* h, p_uintptr base);
+// cannot pass the handler ptr as the linker will provide the virtual address
+void uart_early_init(p_uintptr base);
 
-void uart_putc_early(const driver_handle* h, const char c);
-void uart_puts_early(const driver_handle* h, const char* s);
+void uart_putc_early(const char c);
+void uart_puts_early(const char* s);
 
 
 /*
@@ -56,7 +51,7 @@ void uart_puts_early(const driver_handle* h, const char* s);
 void uart_reset(const driver_handle* h);
 
 // Pre IRQ initialization
-void UART_init_stage0(const driver_handle* h);
+void uart_init_stage0(const driver_handle* h);
 
 // Post IRQ initialization
 void uart_init_stage1(const driver_handle* h);

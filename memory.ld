@@ -1,6 +1,16 @@
 /*
     Generated with an llm based on the imx8mp trm
 */
+__NUM_CORES             = 4;
+__EL2_STACK_SIZE        = 0x20000;  /*  1/8MiB   */ 
+__EL1_STACK_SIZE        = 0x100000; /*  1MiB     */
+__TFA_PROTECTED_SIZE    = 0x200000;
+
+
+HI_VA_BASE = 0xffff800000000000;
+HI_VA_SIZE = 0x0000800000000000;
+
+
 
 MEMORY
 {
@@ -8,7 +18,15 @@ MEMORY
     /* DDR                        */
     /* ========================= */
 
-    /* DDR (All modules except M7) */
+
+    /* HIGH VIRTUAL ADDRESS SPACE */
+    HI_VMEM (rwx) :
+        ORIGIN = HI_VA_BASE,
+        LENGTH = HI_VA_SIZE
+
+
+
+    /* DDR (All modules except M7) */   
     DDR_HI (rwx) :
         ORIGIN = 0x100000000,
         LENGTH = 5120M
@@ -21,6 +39,11 @@ MEMORY
     DDR (rwx) :
         ORIGIN = 0x40000000,
         LENGTH = 5120M + 3072M
+
+
+    DDR_KERNEL (rwx) :
+        ORIGIN = ORIGIN(DDR) + __TFA_PROTECTED_SIZE,
+        LENGTH = LENGTH(DDR) - __TFA_PROTECTED_SIZE
 
 
     /* ========================= */

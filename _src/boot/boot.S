@@ -1,3 +1,5 @@
+#include <kernel/mm.h>
+
 .section .text.boot
 .global _start
 
@@ -15,9 +17,11 @@ _start:
 
     ldr x1, =__EL2_STACK_SIZE
     ldr x2, =__stacks_el2_end
+    mov x3, #KERNEL_BASE
 
     mul x0, x0, x1  // x0 = coreid * stack size
     sub x0, x2, x0  // x0 = stack end - coreid * stack size
+    sub x0, x0, x3  // x0 = virtual_stack_pos - KERNEL_BASE
     
     mov sp, x0
 
@@ -45,6 +49,11 @@ setup_system:
 
     ldr x0, =__text_start
     ldr x1, =__kernel_mem_start
+    mov x2, #KERNEL_BASE
+
+    sub x0, x0, x2
+    sub x1, x1, x2
+
     bl _cache_flush_range
 
     ldp x29, x30, [sp], #16

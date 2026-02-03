@@ -1,9 +1,8 @@
 #include <kernel/panic.h>
 #include <lib/memcpy.h>
 #include <lib/stdint.h>
+#include <lib/string.h>
 
-#include "kernel/devices/drivers.h"
-#include "lib/string.h"
 
 extern void* _memcpy64(void* dst, void* src, uint64 size);
 extern void* _memcpy32(void* dst, void* src, uint64 size);
@@ -53,7 +52,7 @@ void *memcpy(void *dst, void *src, uint64 size)
 
 #ifdef TEST
 
-#    include "drivers/uart/uart.h"
+#    include "kernel/io/term.h"
 #    include "lib/stdmacros.h"
 
 #    define MEMCPY_TEST_SIZE 1048576 * 4
@@ -79,7 +78,7 @@ void test_memcpy(size_t size_start)
 
         for (size_t j = 0; j < i; j++) {
             if (dst[(sizeof(dst) - 1 - i) + j] != src[(sizeof(src) - 1 - i) + j]) {
-                uart_puts(&UART2_DRIVER, "Something went wrong");
+                term_prints("Something went wrong");
 
                 loop
                 {
@@ -88,13 +87,13 @@ void test_memcpy(size_t size_start)
         }
 
         if (i % 10000 == 0) {
-            uart_puts(&UART2_DRIVER, "i: ");
-            uart_puts(&UART2_DRIVER, stdint_to_ascii((STDINT_UNION) {.int64 = i}, STDINT_UINT64,
-                                                     buf, 100, STDINT_BASE_REPR_DEC));
-            uart_puts(&UART2_DRIVER, " ok\n\r");
+            term_prints("i: ");
+            term_prints(stdint_to_ascii((STDINT_UNION) {.int64 = i}, STDINT_UINT64, buf, 100,
+                                        STDINT_BASE_REPR_DEC));
+            term_prints(" ok\n\r");
         }
     }
 
-    uart_puts(&UART2_DRIVER, "FINISHED without hang");
+    term_prints("FINISHED without hang");
 }
 #endif

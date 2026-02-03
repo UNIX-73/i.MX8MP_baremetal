@@ -489,59 +489,43 @@ p_uintptr page_allocator_testing_init()
     return (p_uintptr)s;
 }
 
-#    include "drivers/uart/uart.h"
-
-static void putc(char c)
-{
-    uart_putc_sync(&UART2_DRIVER, c);
-}
-
-static void puts(const char* s, ...)
-{
-    va_list ap;
-    va_start(ap, s);
-
-    str_fmt_print(putc, s, ap);
-
-    va_end(ap);
-}
 
 void page_allocator_debug_pages(bool full_print)
 {
-    puts("\n\r");
+    term_printf("\n\r");
 
     if (!s) {
-        puts("[page_alloc]\tstate = NULL\n\r");
+        term_printf("[page_alloc]\tstate = NULL\n\r");
         return;
     }
 
-    puts("==== PAGE ALLOCATOR STATE ====\n\r");
-    puts("N\t\t= %d\n\r", s->N);
-    puts("max_order\t= %d\n\r", s->max_order);
-    puts("free_list\t= %p\n\r", s->free_list);
-    puts("pages\t\t= %p\n\r", s->pages);
-    puts("\n\r");
+    term_printf("==== PAGE ALLOCATOR STATE ====\n\r");
+    term_printf("N\t\t= %d\n\r", s->N);
+    term_printf("max_order\t= %d\n\r", s->max_order);
+    term_printf("free_list\t= %p\n\r", s->free_list);
+    term_printf("pages\t\t= %p\n\r", s->pages);
+    term_printf("\n\r");
 
-    puts("-- FREE LISTS --\n\r");
+    term_printf("-- FREE LISTS --\n\r");
     for (size_t o = 0; o <= s->max_order; o++) {
-        puts("order %d: ", o);
+        term_printf("order %d: ", o);
 
         size_t cur = s->free_list[o];
         if (IS_NONE(cur)) {
-            puts("<empty>\n\r");
+            term_printf("<empty>\n\r");
             continue;
         }
 
         while (!IS_NONE(cur)) {
-            puts("%d ", cur);
+            term_printf("%d ", cur);
             cur = s->pages[cur].next;
         }
-        puts("\n\r");
+        term_printf("\n\r");
     }
 
-    puts("\n\r");
+    term_printf("\n\r");
 
-    puts("-- PAGE NODES --\n\r");
+    term_printf("-- PAGE NODES --\n\r");
 
     for (size_t i = 0; i < s->N;) {
         page_node* n = &s->pages[i];
@@ -555,31 +539,31 @@ void page_allocator_debug_pages(bool full_print)
             }
         }
 
-        puts("[node %d]\n\r", i);
-        puts("\tfree\t= %s\n\r", n->free ? "true" : "false");
-        puts("\torder\t= %d\n\r", n->order);
+        term_printf("[node %d]\n\r", i);
+        term_printf("\tfree\t= %s\n\r", n->free ? "true" : "false");
+        term_printf("\torder\t= %d\n\r", n->order);
 
         if (IS_NONE(n->next))
-            puts("\tnext\t= NONE\n\r");
+            term_printf("\tnext\t= NONE\n\r");
         else
-            puts("\tnext\t= %d\n\r", n->next);
+            term_printf("\tnext\t= %d\n\r", n->next);
 
         if (n->page.tag)
-            puts("\ttag\t= %s\n\r", n->page.tag);
+            term_printf("\ttag\t= %s\n\r", n->page.tag);
         else
-            puts("\ttag\t= NULL\n\r");
+            term_printf("\ttag\t= NULL\n\r");
 
-        puts("\tphys\t= %p\n\r", i * MM_PAGE_BYTES);
-        puts("\tdevice\t= %s\n\r", n->page.device_mem ? "y" : "n");
+        term_printf("\tphys\t= %p\n\r", i * MM_PAGE_BYTES);
+        term_printf("\tdevice\t= %s\n\r", n->page.device_mem ? "y" : "n");
 
 
         if (n->order > s->max_order)
-            puts("\t!! INVALID ORDER\n\r");
+            term_printf("\t!! INVALID ORDER\n\r");
 
         if (!n->free && !IS_NONE(n->next))
-            puts("\t!! USED BUT IN FREE LIST\n\r");
+            term_printf("\t!! USED BUT IN FREE LIST\n\r");
 
-        puts("\n\r");
+        term_printf("\n\r");
 
         if (!full_print && n->order <= s->max_order)
             i += (1UL << n->order);
@@ -587,7 +571,7 @@ void page_allocator_debug_pages(bool full_print)
             i++;
     }
 
-    puts("==== END PAGE ALLOCATOR STATE ====\n\r");
+    term_printf("==== END PAGE ALLOCATOR STATE ====\n\r");
 }
 
 
@@ -668,7 +652,7 @@ static inline bool is_head(size_t i)
 
 void page_allocator_debug()
 {
-    puts("==== PAGE ALLOCATOR CONTENT ====\n\r");
+    term_printf("==== PAGE ALLOCATOR CONTENT ====\n\r");
 
     for (size_t i = 0; i < s->N;) {
         if (!is_head(i)) {
@@ -708,18 +692,18 @@ void page_allocator_debug()
         }
 
         if (reserved)
-            puts("[USED]\torder=%d  \ttag=%s\tIDX %d..%d\t(%d pages, %d KiB)\n\r", o,
-                 data.tag ? data.tag : "<none>", start, start + total_pages - 1, total_pages,
-                 total_pages * 4);
+            term_printf("[USED]\torder=%d  \ttag=%s\tIDX %d..%d\t(%d pages, %d KiB)\n\r", o,
+                        data.tag ? data.tag : "<none>", start, start + total_pages - 1, total_pages,
+                        total_pages * 4);
         else
-            puts("[FREE]\torder=%d  \tIDX %d..%d\t(%d pages)\n\r", o, start,
-                 start + block_pages - 1, block_pages);
+            term_printf("[FREE]\torder=%d  \tIDX %d..%d\t(%d pages)\n\r", o, start,
+                        start + block_pages - 1, block_pages);
 
 
         i = j;
     }
 
-    puts("==== END PAGE ALLOCATOR DEBUG ====\n\r");
+    term_printf("==== END PAGE ALLOCATOR DEBUG ====\n\r");
 }
 
 #endif

@@ -4,16 +4,11 @@
 #include <lib/lock/spinlock.h>
 #include <lib/stdint.h>
 
+#include "drivers/uart/raw/uart_usr2.h"
 #include "lib/lock/irqlock.h"
 #include "lib/lock/spinlock_irq.h"
 #include "lib/mem.h"
 #include "lib/stdmacros.h"
-
-
-#define ASSERT_FULL_MODE()                                                                   \
-    DEBUG_ASSERT(uart_get_state_(h)->mode == UART_MODE_FULL,                                 \
-                 "uart_driver: attempted to use feature of the full initialization without " \
-                 "initizalizing it into full mode")
 
 
 // Rust fns (driver buffer control)
@@ -51,22 +46,29 @@ static inline bool UART_tx_fifo_full_(uintptr base)
 }
 
 
-uart_mode uart_get_mode(const driver_handle* h)
-{
-    uart_mode m = uart_get_state_(h)->mode;
-    
-    if (!(m == UART_MODE_EARLY || m == UART_MODE_FULL))
-        loop;
-
-    return m;
-}
-
-
 void uart_reset(const driver_handle* h)
 {
 #ifdef TEST
     uart_check_handle_(h);
 #endif
+
+    // flush tx fifo
+    loop
+    {
+        UartUsr2Value r = UART_USR2_read(h->base);
+
+        if (UART_USR2_TXFE_get(r) == 1) // tx fifo empty
+        {
+            for (size_t i = 0; i < 50000; i++)
+                asm volatile("nop");
+
+            break;
+        }
+
+        for (size_t i = 0; i < 5000; i++)
+            asm volatile("nop");
+    }
+
 
     UART_UCR2_write(h->base, (UartUcr2Value) {.val = 0});
 
@@ -99,8 +101,6 @@ void uart_reset(const driver_handle* h)
 
 bool uart_read(const driver_handle* h, uint8* data)
 {
-    ASSERT_FULL_MODE();
-
     bool new_data;
 
     irq_spinlocked(&uart_get_state_(h)->rx_lock)
@@ -406,8 +406,6 @@ void uart_handle_irq(const driver_handle* h)
 {
     irqlocked() // TODO: check if needed the lock
     {
-        ASSERT_FULL_MODE();
-
         bitfield32 source = uart_get_irq_sources(h);
 
         for (size_t i = UART_IRQ_SRC_START; i < UART_IRQ_SRC_COUNT; i++) {
@@ -424,14 +422,11 @@ void uart_handle_irq(const driver_handle* h)
     ------------
 */
 
-void UART_init_stage0(const driver_handle* h)
+void uart_init_stage0(const driver_handle* h)
 {
 #ifdef TEST
     uart_check_handle_(h);
 #endif
-    uart_get_state_(h)->mode = UART_MODE_FULL;
-
-
     uart_reset(h);
 
     // 17.2.12.1 7357
@@ -528,8 +523,6 @@ void uart_putc_sync(const driver_handle* h, const char c)
 {
     irq_spinlocked(&uart_get_state_(h)->tx_lock)
     {
-        ASSERT_FULL_MODE();
-
         UNLOCKED_putc_sync_(h, c);
     }
 }
@@ -541,8 +534,6 @@ void uart_puts_sync(const driver_handle* h, const char* s)
 
     irq_spinlocked(&uart_get_state_(h)->tx_lock)
     {
-        ASSERT_FULL_MODE();
-
         while (*s)
             UNLOCKED_putc_sync_(h, *s++);
     }
@@ -565,8 +556,6 @@ void uart_putc(const driver_handle* h, const char c)
 {
     irq_spinlocked(&uart_get_state_(h)->tx_lock)
     {
-        ASSERT_FULL_MODE();
-
         UNLOCKED_putc_(h, c);
     }
 }
@@ -578,8 +567,6 @@ void uart_puts(const driver_handle* h, const char* s)
 
     irq_spinlocked(&uart_get_state_(h)->tx_lock)
     {
-        ASSERT_FULL_MODE();
-
         while (*s)
             UNLOCKED_putc_(h, *s++);
     }
@@ -590,12 +577,10 @@ void uart_puts(const driver_handle* h, const char* s)
     Uart early
 */
 
-
-void uart_early_init(const driver_handle* h, p_uintptr base)
+static p_uintptr early_base;
+void uart_early_init(p_uintptr base)
 {
-    uart_state* s = uart_get_state_(h);
-    s->mode = UART_MODE_EARLY;
-    s->early_base = base;
+    early_base = base;
 
 
     // software reset
@@ -654,20 +639,18 @@ void uart_early_init(const driver_handle* h, p_uintptr base)
 }
 
 
-void uart_putc_early(const driver_handle* h, const char c)
+void uart_putc_early(const char c)
 {
-    uintptr base = uart_get_state_(h)->early_base;
-
-    while (UART_tx_fifo_full_(base))
+    while (UART_tx_fifo_full_(early_base))
         for (size_t i = 0; i < 5000; i++)
             asm volatile("nop");
 
-    UART_UTXD_write(base, c);
+    UART_UTXD_write(early_base, c);
 }
 
 
-void uart_puts_early(const driver_handle* h, const char* s)
+void uart_puts_early(const char* s)
 {
     while (*s)
-        uart_putc_early(h, *s++);
+        uart_putc_early(*s++);
 }

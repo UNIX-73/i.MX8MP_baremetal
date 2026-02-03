@@ -1,35 +1,42 @@
-#define KERNEL_BASE 0xFFFF800000000000
-
 .section .text
 .align 4
+
+
 
 .global _jmp_to_with_offset
 // _Noreturn void _jmp_to_with_offset(void* to, size_t offset);
 _jmp_to_with_offset:
-    add x0, x0, x1 // to += offset
+    add x0, x0, x1  // to += offset
     br  x0
 
 
-.global _reloc_reconfigure_regs
-_reloc_reconfigure_regs:
+.global _reloc_cfg_end
+_reloc_cfg_end:
     msr daifset, #0xF
     isb
 
-    bl _reset_stack_el1 // gets the pa of a resetted stack
 
-    mov x0, sp  //  (p_uintptr pa)
-    bl mm_remap //  return pa + KERNEL_BASE
-    mov sp, x0  //  sp = remap res
+    mov x0, sp      //  (p_uintptr pa)
+    bl _mm_kpa_to_kva    //  return pa + KERNEL_BASE
+    mov sp, x0      //  sp = remap res
 
 
     mrs x0, VBAR_EL1
-    bl mm_remap
+    bl _mm_kpa_to_kva
     msr VBAR_EL1, x0
 
-    msr daifclr, #0xF
-    isb
-
-    adr lr, kernel_entry // lr to kernel_entry remapped
+    adr lr, reloc_cfg_end // lr to kernel_entry remapped
 
     isb
     ret
+
+
+// returns to the start of kernel entry after fully resetting the sp
+// void _return_to_kernel_entry(size_t physmap_offset);
+.global _return_to_kernel_entry
+_return_to_kernel_entry:
+    bl _reset_stack_el1
+
+    adr lr, kernel_entry
+    ret
+

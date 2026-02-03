@@ -5,6 +5,8 @@
 #include <kernel/panic.h>
 #include <lib/stdint.h>
 
+#include "lib/mem.h"
+
 
 extern uintptr _get_pc(void);
 
@@ -20,9 +22,21 @@ bool mm_kernel_is_relocated()
 }
 
 
-v_uintptr mm_remap(p_uintptr pa)
+p_uintptr mm_kva_to_kpa(v_uintptr va)
 {
-    DEBUG_ASSERT(pa < KERNEL_BASE);
+    extern p_uintptr _mm_kva_to_kpa(v_uintptr pa);
 
-    return pa + KERNEL_BASE;
+    ASSERT(va >= KERNEL_BASE);
+
+    return _mm_kva_to_kpa(va);
+}
+
+
+v_uintptr mm_kpa_to_kva(p_uintptr pa)
+{
+    extern v_uintptr _mm_kpa_to_kva(p_uintptr pa);
+
+    ASSERT(pa < KERNEL_BASE);
+
+    return _mm_kpa_to_kva(pa);
 }

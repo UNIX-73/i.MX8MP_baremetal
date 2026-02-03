@@ -20,17 +20,12 @@ static void* im_alloc(size_t bytes, size_t alignment)
 
 static void im_free(void* addr)
 {
-#ifdef DEBUG
     char buf[200];
     stdint_to_ascii((STDINT_UNION) {.uint64 = (uintptr)addr}, STDINT_UINT64, buf, 200,
                     STDINT_BASE_REPR_HEX);
 
-    uart_puts(&UART2_DRIVER, buf);
-    uart_puts(&UART2_DRIVER, "\n\r");
-#else
+    term_printf("%s\n\r", buf);
     PANIC("The early identity mapping allocations should not free any tables");
-    (void)addr;
-#endif
 }
 
 
@@ -51,7 +46,7 @@ void early_identity_mapping(mmu_handle* h)
         .lo_gran = MMU_GRANULARITY_4KB,
     };
 
-    mmu_init(h, cfg, im_alloc, im_free,0);
+    mmu_init(h, cfg, im_alloc, im_free, 0);
 
 
     mmu_pg_cfg device_cfg = mmu_pg_cfg_new(1, MMU_AP_EL0_NONE_EL1_RW, 0, false, 1, 0, 0, 0);
