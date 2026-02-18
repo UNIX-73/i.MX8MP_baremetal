@@ -115,7 +115,6 @@ void mmu_activate();
 /// deactivates the mmu. Does not flush any cache, it is responsability of the user
 void mmu_deactivate();
 
-
 bool mmu_is_active();
 
 
@@ -149,6 +148,8 @@ bool mmu_map(mmu_handle* h, v_uintptr va, p_uintptr pa, size_t size, mmu_pg_cfg 
 bool mmu_unmap(mmu_handle* h, v_uintptr va, size_t size, mmu_op_info* info);
 
 bool mmu_peek(mmu_handle* h, v_uintptr va, size_t size, mmu_peek_cb cb, void* args);
+
+bool mmu_region_is_mapped(mmu_handle* h, v_uintptr va, size_t size);
 
 
 /// changes the physmap_offset. It determines the offset from the pa of the actual mmu tables

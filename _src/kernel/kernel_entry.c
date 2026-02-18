@@ -12,9 +12,8 @@
 #include "arm/cpu.h"
 #include "kernel/io/term.h"
 #include "kernel/mm.h"
-#include "lib/mem.h"
+#include "lib/unit/mem.h"
 #include "mm/mm_info.h"
-#include "mm/phys/page_allocator.h"
 #include "mm/virt/vmalloc.h"
 
 
@@ -33,34 +32,31 @@ _Noreturn void kernel_entry()
 
     __attribute((unused)) mm_ksections x = MM_KSECTIONS;
 
+#define N 4000 * 64
 
-    void* test[200];
-
-    vmalloc_debug_free();
+    void* test[N];
 
 
-    for (size_t i = 0; i < 200; i++) {
-        if (i < 100) {
-            raw_kmalloc_cfg c = RAW_KMALLOC_KMAP_CFG;
-            c.init_zeroed = true;
+    arm_exceptions_set_status((arm_exception_status) {false, false, false, true});
 
-            test[i] = raw_kmalloc(8, "test", &c);
-        }
-        else {
-            raw_kmalloc_cfg c = RAW_KMALLOC_DYNAMIC_CFG;
-            c.init_zeroed = true;
-
+    for (size_t i = 0; i < N; i++) {
+        if (i % 10000 == 0)
             term_printf("%d\n\r", i);
-            test[i] = raw_kmalloc(8 + i, "test", &c);
-        }
-    }
 
-    __attribute((unused)) vmalloc_va_info i = vmalloc_get_addr_info((void*)(~(uint64)0 - 0x4000));
+        raw_kmalloc_cfg c = RAW_KMALLOC_KMAP_CFG;
+        c.init_zeroed = false;
+
+
+        test[i] = raw_kmalloc(1, "test", &c);
+
+        if ((uint64)test[i] % MEM_MiB * 2 == 0)
+            term_printf(" va %p\n\r", test[i]);
+    }
 
     term_prints("->>>>>>>>>\n\r");
 
-    for (size_t i = 0; i < 200; i++) {
-        raw_kfree(test[i]);
+    for (size_t i = 0; i < N; i++) {
+        //   raw_kfree(test[i]);
     }
 
     vmalloc_debug_free();

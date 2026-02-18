@@ -5,7 +5,7 @@
 #include <lib/stdbitfield.h>
 #include <lib/stdint.h>
 
-#include "../../malloc/early_kalloc.h"
+#include "../../init/mem_regions/early_kalloc.h"
 #include "../../malloc/reserve_malloc.h"
 
 
@@ -119,10 +119,14 @@ static inline void container_free(vmalloc_container* first, vmalloc_container* t
 
 void vmalloc_init_containers()
 {
-    first_fva_container = mm_kpa_to_kva_ptr(early_kalloc(
-        sizeof(vmalloc_container), "vmalloc node container (fva first container)", true, false));
-    first_rva_container = mm_kpa_to_kva_ptr(early_kalloc(
-        sizeof(vmalloc_container), "vmalloc node container (rva first container)", true, false));
+    first_fva_container =
+        (vmalloc_container*)early_kalloc(
+            sizeof(vmalloc_container), "vmalloc node container (fva first container)", true, false)
+            .va;
+    first_rva_container =
+        (vmalloc_container*)early_kalloc(
+            sizeof(vmalloc_container), "vmalloc node container (rva first container)", true, false)
+            .va;
 
 
     *first_fva_container = (vmalloc_container) {0};

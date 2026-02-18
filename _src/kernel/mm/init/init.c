@@ -1,8 +1,9 @@
 #include <frdm_imx8mp.h>
+#include <kernel/io/term.h>
 #include <kernel/panic.h>
 #include <lib/mem.h>
 
-#include "../malloc/early_kalloc.h"
+#include "../init/mem_regions/early_kalloc.h"
 #include "../malloc/raw_kmalloc.h"
 #include "../malloc/reserve_malloc.h"
 #include "../mm_info.h"
@@ -12,27 +13,6 @@
 #include "arm/mmu/mmu.h"
 #include "identity_mapping.h"
 #include "kernel/mm.h"
-#include "lib/unit/mem.h"
-
-static void early_reserve_device_and_kernel_mem()
-{
-    // TODO: not hardcoded
-
-    /* reserve memory for mmio */
-    early_kalloc(MEM_GiB * 1, "mmio", true, true);
-
-
-    /* reserve memory for TF-A reserved zone */
-    size_t tf_a_bytes = mm_info_kernel_start() - mm_info_ddr_start();
-    ASSERT(tf_a_bytes % MMU_GRANULARITY_4KB == 0);
-    early_kalloc(tf_a_bytes, "tf_a_protected", true, false);
-
-
-    /* reserve memory for the text + bss + rodata + data + el2 + el1 stacks of the kernel */
-    size_t kernel_fixed_size = MM_KSECTIONS.heap.start - MM_KSECTIONS.text.start;
-    ASSERT(kernel_fixed_size % MMU_GRANULARITY_4KB == 0);
-    early_kalloc(kernel_fixed_size, "kernel_fixed", true, false);
-}
 
 
 static p_uintptr mmu_allocator_fn(size_t bytes, size_t align)
@@ -61,8 +41,6 @@ void mm_early_init()
 
     // init early kalloc
     early_kalloc_init();
-    early_reserve_device_and_kernel_mem();
-
 
     // init identity mapping
     early_identity_mapping();
@@ -86,21 +64,20 @@ void mm_early_init()
     reserve_malloc_init();
 
 
-    memblock* mblcks;
+    early_memreg* mregs;
     size_t n;
-    early_kalloc_get_memblocks(&mblcks, &n);
+    early_kalloc_get_memregs(&mregs, &n);
 
 
-    pv_ptr first_free_address = {
-        .pa = page_allocator_update_memblocks(mblcks, n),
-        .va = vmalloc_update_memblocks(mblcks, n),
+    pv_ptr last_free_region_start = {
+        .pa = page_allocator_update_memregs(mregs, n),
+        .va = vmalloc_update_memregs(mregs, n),
     };
+    ASSERT(ptrs_are_kmapped(last_free_region_start));
 
-    ASSERT(ptrs_are_kmapped(first_free_address));
 
-
-    mmu_reconfig_allocators(&mm_mmu_h, mm_kpa_to_kva_ptr(mmu_allocator_fn),
-                            mm_kpa_to_kva_ptr(mmu_free_fn));
+    mmu_reconfig_allocators(&mm_mmu_h, mm_as_kva_ptr((void*)mmu_allocator_fn),
+                            mm_as_kva_ptr((void*)mmu_free_fn));
 
 
     // reloc kernel: returns to the kernel_entry() with the kernel relocated and the sp resetted

@@ -1,9 +1,10 @@
 #include "page_allocator.h"
 
+#include <kernel/io/term.h>
 #include <lib/lock/spinlock_irq.h>
 #include <lib/string.h>
 
-#include "../malloc/early_kalloc.h"
+#include "../init/mem_regions/early_kalloc.h"
 #include "../mm_info.h"
 #include "kernel/mm.h"
 #include "kernel/panic.h"
@@ -15,9 +16,17 @@
 #include "lib/stdmacros.h"
 #include "page.h"
 
-#ifdef DEBUG
-#    include "tests.h"
-#endif
+
+#define PAGE_ALLOCATOR_DEBUG_MAX_ORDER 6
+
+void test_single_alloc_free(void);
+void test_split_to_zero(void);
+void test_many_small_allocs(void);
+void test_mixed_orders(void);
+void test_full_merge(void);
+void test_stress_pattern(void);
+
+void run_page_allocator_tests(void);
 
 
 #define NONE (~(size_t)0)
@@ -300,7 +309,8 @@ void page_allocator_init()
 
     size_t bytes = state_bytes + free_list_bytes + pages_bytes;
 
-    s = mm_kpa_to_kva_ptr(early_kalloc(bytes, "page_allocator", true, false));
+    p_uintptr s_pa = early_kalloc(bytes, "page_allocator", true, false).pa;
+    s = mm_kpa_to_kva_ptr(s_pa);
     p_uintptr free_list_addr = (p_uintptr)s + state_bytes;
     p_uintptr pages_addr = free_list_addr + free_list_bytes;
 
@@ -381,6 +391,7 @@ static void reserve_order0(size_t i, mm_page_data data)
         size_t buddy = base ^ (1UL << o);
 
         s->pages[buddy].order = o;
+        s->pages[buddy].page = data;
         s->pages[buddy].next = NONE;
         s->pages[buddy].free = true;
 
@@ -408,34 +419,31 @@ static void page_reserve_range(p_uintptr start, size_t pages, mm_page_data data)
 }
 
 
-p_uintptr page_allocator_update_memblocks(const memblock* mblcks, size_t n)
+p_uintptr page_allocator_update_memregs(const early_memreg* mregs, size_t n)
 {
-    p_uintptr addr = 0;
-
+    size_t last_free_region_idx = SIZE_MAX;
+    early_memreg memreg;
     for (size_t i = 0; i < n; i++) {
-        memblock mblck = mblcks[i];
+        memreg = mregs[i];
 
-        ASSERT(mblck.addr == addr);
+        if (!memreg.free) {
+            page_reserve_range(memreg.addr, memreg.pages,
+                               (mm_page_data) {
+                                   .tag = mm_as_kva_ptr(memreg.tag),
+                                   .device_mem = memreg.device_memory,
+                                   .permanent = memreg.permanent,
+                               });
 
-
-        const void* tag = ((uintptr)mblck.tag > KERNEL_BASE)
-                              ? (const void*)mblck.tag
-                              : (const void*)mm_kpa_to_kva_ptr(mblck.tag);
-
-
-        mm_page_data data = (mm_page_data) {
-            .tag = tag,
-            .device_mem = mblck.device_memory,
-            .permanent = mblck.permanent,
-        };
-
-
-        page_reserve_range(addr, mblck.blocks, data);
-
-        addr += mblck.blocks * KPAGE_SIZE;
+            page_allocator_debug();
+        }
+        else
+            last_free_region_idx =
+                last_free_region_idx == SIZE_MAX ? i : max(i, last_free_region_idx);
     }
 
-    return addr;
+    ASSERT(last_free_region_idx != SIZE_MAX);
+
+    return mregs[last_free_region_idx].addr;
 }
 
 
@@ -443,7 +451,6 @@ p_uintptr page_allocator_update_memblocks(const memblock* mblcks, size_t n)
     DEBUG
 */
 
-#ifdef DEBUG
 
 p_uintptr page_allocator_testing_init()
 {
@@ -456,7 +463,7 @@ p_uintptr page_allocator_testing_init()
 
     size_t bytes = state_bytes + free_list_bytes + pages_bytes;
 
-    s = (void*)early_kalloc(bytes, "page_allocator_testing", true, false);
+    s = (void*)early_kalloc(bytes, "page_allocator_testing", true, false).pa;
     p_uintptr free_list_addr = (p_uintptr)s + state_bytes;
     p_uintptr pages_addr = free_list_addr + free_list_bytes;
 
@@ -536,7 +543,7 @@ void page_allocator_debug_pages(bool full_print)
             }
         }
 
-        term_printf("[node %d]\n\r", i);
+        term_printf("[node %d (%p)]\n\r", i, mm_kpa_to_kva(i * KPAGE_SIZE));
         term_printf("\tfree\t= %s\n\r", n->free ? "true" : "false");
         term_printf("\torder\t= %d\n\r", n->order);
 
@@ -580,7 +587,7 @@ void page_allocator_validate()
         seen[i] = false;
     }
 
-    size_t free_pages = 0;
+    __attribute((unused)) size_t free_pages = 0;
 
     for (size_t o = 0; o <= s->max_order; o++) {
         size_t cur = s->free_list[o];
@@ -591,7 +598,7 @@ void page_allocator_validate()
             DEBUG_ASSERT(s->pages[cur].free);
             DEBUG_ASSERT(s->pages[cur].order == o);
 
-            size_t mask = (1UL << o) - 1;
+            __attribute((unused)) size_t mask = (1UL << o) - 1;
             DEBUG_ASSERT((cur & mask) == 0);
 
             DEBUG_ASSERT(!seen[cur]);
@@ -623,7 +630,7 @@ void page_allocator_validate()
             size_t oj = s->pages[j].order;
             size_t sizej = 1UL << oj;
 
-            bool overlap = !(i + size <= j || j + sizej <= i);
+            __attribute((unused)) bool overlap = !(i + size <= j || j + sizej <= i);
 
             DEBUG_ASSERT(!overlap);
         }
@@ -688,6 +695,8 @@ void page_allocator_debug()
             j += (1UL << next->order);
         }
 
+        term_printf("%p -> ", i * KPAGE_SIZE);
+
         if (reserved)
             term_printf("[USED]\torder=%d  \ttag=%s\tIDX %d..%d\t(%d pages, %d KiB)\n\r", o,
                         data.tag ? data.tag : "<none>", start, start + total_pages - 1, total_pages,
@@ -700,7 +709,6 @@ void page_allocator_debug()
         i = j;
     }
 
+
     term_printf("==== END PAGE ALLOCATOR DEBUG ====\n\r");
 }
-
-#endif

@@ -2,7 +2,7 @@
 #include <arm/mmu/mmu.h>
 #include <lib/stdint.h>
 
-#include "../malloc/early_kalloc.h"
+#include "../init/mem_regions/early_kalloc.h"
 #include "lib/mem.h"
 #include "page.h"
 
@@ -24,7 +24,7 @@ void page_allocator_init();
 
 /// allocates the early stage memblocks. Returns the start of the first free pa for debugging and
 /// checking
-p_uintptr page_allocator_update_memblocks(const memblock* mblcks, size_t n);
+p_uintptr page_allocator_update_memregs(const early_memreg* mregs, size_t n);
 
 
 #ifdef DEBUG

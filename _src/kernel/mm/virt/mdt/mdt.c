@@ -47,7 +47,8 @@ static inline void init_container(vmalloc_mdt_container* c, vmalloc_mdt_containe
 
 void vmalloc_pa_mdt_init()
 {
-    container_list = mm_kpa_to_kva_ptr(early_kalloc(KPAGE_SIZE, "vmalloc pa mdt", true, false));
+    container_list =
+        (vmalloc_mdt_container*)early_kalloc(KPAGE_SIZE, "vmalloc pa mdt", true, false).va;
 
     init_container(container_list, NULL);
 }
@@ -136,6 +137,7 @@ static bool mdt_is_valid(rva_node* n)
 
     start = vsign(n->start);
     end = vsign(n->start + n->size);
+    prev_end = end;
 
     if (!is_aligned(start, KPAGE_ALIGN))
         return false;

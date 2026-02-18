@@ -14,6 +14,7 @@
 #include "../phys/page.h"
 #include "../phys/page_allocator.h"
 #include "../virt/vmalloc.h"
+#include "kernel/io/term.h"
 #include "reserve_malloc.h"
 
 

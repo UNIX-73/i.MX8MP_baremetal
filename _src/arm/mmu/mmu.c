@@ -212,7 +212,7 @@ static bool UNLOCKED_map_(mmu_handle* h, v_uintptr va, p_uintptr pa, size_t size
         for (mmu_tbl_level l = MMU_TBL_LV0; l < target_lvl; l++) {
             i = table_index(va, g, l);
 
-            mmu_hw_dc dc = mmu_tbl_get_dc(tbl, i);
+            mmu_hw_dc dc = mmu_tbl_get_dc(tbl, i, g);
 
             // not valid
             if (!dc_get_valid(dc)) {
@@ -242,7 +242,7 @@ static bool UNLOCKED_map_(mmu_handle* h, v_uintptr va, p_uintptr pa, size_t size
         // build the block descriptor
         i = table_index(va, g, target_lvl);
 
-        mmu_hw_dc old = mmu_tbl_get_dc(tbl, i);
+        mmu_hw_dc old = mmu_tbl_get_dc(tbl, i, g);
 
         tbl.dcs[i] = bd_build(cfg, pa, g, target_lvl);
 
@@ -329,7 +329,7 @@ bool UNLOCKED_unmap_(mmu_handle* h, v_uintptr va, size_t size, mmu_op_info* info
         for (l = MMU_TBL_LV0; l < target_lvl; l++) {
             i = table_index(va, g, l);
 
-            mmu_hw_dc dc = mmu_tbl_get_dc(tbl, i);
+            mmu_hw_dc dc = mmu_tbl_get_dc(tbl, i, g);
 
             // not valid
             if (!dc_get_valid(dc)) {
@@ -360,7 +360,7 @@ bool UNLOCKED_unmap_(mmu_handle* h, v_uintptr va, size_t size, mmu_op_info* info
 
         // build the null block descriptor
         i = table_index(va, g, target_lvl);
-        mmu_hw_dc old = mmu_tbl_get_dc(tbl, i);
+        mmu_hw_dc old = mmu_tbl_get_dc(tbl, i, g);
 
         tbl.dcs[i] = NULL_PD;
 
@@ -449,7 +449,7 @@ bool mmu_peek(mmu_handle* h, v_uintptr va, size_t size, mmu_peek_cb cb, void* ar
         for (l = MMU_TBL_LV0; l <= max_level(g); l++) {
             i = table_index(va, g, l);
 
-            mmu_hw_dc dc = mmu_tbl_get_dc(tbl, i);
+            mmu_hw_dc dc = mmu_tbl_get_dc(tbl, i, g);
 
             // not valid
             if (!dc_get_valid(dc)) {
@@ -516,6 +516,59 @@ bool mmu_peek(mmu_handle* h, v_uintptr va, size_t size, mmu_peek_cb cb, void* ar
         if (sz > size)
             sz = size;
 
+
+        size -= sz;
+        va += sz;
+    }
+
+    return true;
+}
+
+
+bool mmu_region_is_mapped(mmu_handle* h, v_uintptr va, size_t size)
+{
+    size_t i;
+    mmu_granularity g;
+    mmu_tbl_level l;
+
+    while (size > 0) {
+        mmu_tbl tbl = get_first_tbl(h, va, &g);
+
+        for (l = MMU_TBL_LV0; l <= max_level(g); l++) {
+            i = table_index(va, g, l);
+
+            mmu_hw_dc dc = mmu_tbl_get_dc(tbl, i, g);
+
+            // not valid
+            if (!dc_get_valid(dc))
+                return false;
+
+            switch (dc_get_type(dc, g, l)) {
+                case MMU_DESCRIPTOR_TABLE:
+                    tbl = tbl_from_td(h, dc, g, l);
+                    continue;
+
+                case MMU_DESCRIPTOR_BLOCK:
+                    break;
+
+                case MMU_DESCRIPTOR_PAGE:
+                    DEBUG_ASSERT(l == max_level(g));
+                    break;
+
+                default:
+                    PANIC("mmu_region_is_mapped: err");
+            }
+
+            break;
+        }
+
+        size_t cover = dc_cover_bytes(g, l);
+        v_uintptr block_start = align_down(va, cover);
+        v_uintptr block_end = block_start + cover;
+
+        size_t sz = block_end - va;
+        if (sz > size)
+            sz = size;
 
         size -= sz;
         va += sz;

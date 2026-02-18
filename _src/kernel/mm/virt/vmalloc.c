@@ -82,23 +82,26 @@ void vmalloc_init()
 }
 
 
-v_uintptr vmalloc_update_memblocks(const memblock* mblcks, size_t n)
+v_uintptr vmalloc_update_memregs(const early_memreg* mregs, size_t n)
 {
     ASSERT(fva_kmap_list && fva_dynamic_list, "vmalloc: not initialized");
     ASSERT(fva_kmap_list->next == NULL && fva_dynamic_list->next == NULL,
            "vmalloc: not initialized");
 
     v_uintptr va = 0;
-    memblock mb;
+    early_memreg mb = (early_memreg) {0};
 
     for (size_t i = 0; i < n; i++) {
-        mb = mblcks[i];
+        mb = mregs[i];
 
-        va = pop_fva(KMAP_LIST, mb.blocks, mb.addr);
+        if (mb.free)
+            continue;
+
+        va = pop_fva(KMAP_LIST, mb.pages, mb.addr);
 
         ASSERT(ptrs_are_kmapped(pv_ptr_new(mb.addr, vsign(va))));
 
-        push_rva(KMAP_LIST, mb.blocks, va,
+        push_rva(KMAP_LIST, mb.pages, va,
                  mm_is_kva((uintptr)mb.tag) ? mb.tag : mm_kpa_to_kva_ptr(mb.tag),
                  (vmalloc_cfg) {
                      .kmap =
@@ -112,7 +115,14 @@ v_uintptr vmalloc_update_memblocks(const memblock* mblcks, size_t n)
                  });
     }
 
-    return vsign(va + (mb.blocks * KPAGE_SIZE));
+
+    // get last free start
+    fva_node* c = fva_kmap_list;
+    while (c && c->next) {
+        c = c->next;
+    }
+
+    return vsign(c->start);
 }
 
 
@@ -600,7 +610,7 @@ static void validate_vmalloc_token(vmalloc_token t)
 #    undef T
 
 #else
-#    define validate_vmalloc_token(...)
+#    define validate_vmalloc_token(t)
 #endif
 
 

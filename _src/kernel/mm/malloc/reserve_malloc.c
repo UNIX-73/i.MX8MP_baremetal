@@ -4,11 +4,13 @@
 #include <kernel/panic.h>
 #include <lib/mem.h>
 #include <lib/stdbitfield.h>
+#include <lib/stdint.h>
 #include <lib/string.h>
 
+#include "../init/mem_regions/early_kalloc.h"
+#include "../mm_info.h"
 #include "../virt/vmalloc.h"
-#include "early_kalloc.h"
-
+#include "arm/mmu/mmu.h"
 
 static const char* RESERVE_MALLOC_TAG = "reserved page";
 
@@ -30,12 +32,8 @@ void reserve_malloc_init()
     for (size_t i = 0; i < RESERVE_MALLOC_SIZE; i++) {
         ASSERT(!bitfield_get(reserved_pages, i));
 
-        p_uintptr pa = early_kalloc(KPAGE_SIZE, RESERVE_MALLOC_TAG, false, false);
-        v_uintptr va = mm_kpa_to_kva(pa); // works because all the memblocks are assured to be
-                                          // mapped with the kernel physmap offset
 
-
-        pv_ptr pv = pv_ptr_new(pa, va);
+        pv_ptr pv = early_kalloc(KPAGE_SIZE, RESERVE_MALLOC_TAG, false, false);
 
 
         ASSERT(pv.pa != 0 && ptrs_are_kmapped(pv));
@@ -54,14 +52,22 @@ pv_ptr reserve_malloc(const char* new_tag)
     for (size_t i = 0; i < RESERVE_MALLOC_SIZE; i++) {
         if (bitfield_get(reserved_pages, i)) {
             pv_ptr pmap = reserved_addr[i];
-            bitfield_clear(reserved_pages, i);
 
             DEBUG_ASSERT(ptrs_are_kmapped(pmap));
+            DEBUG_ASSERT(mmu_region_is_mapped(&mm_mmu_h, pmap.va, KPAGE_SIZE),
+                         "reserve_malloc: page was not mapped");
+
 
             if (new_tag) {
+#ifdef DEBUG
                 const char* old_tag = vmalloc_update_tag((void*)pmap.va, new_tag);
                 DEBUG_ASSERT(strcmp(old_tag, RESERVE_MALLOC_TAG));
+#else
+                vmalloc_update_tag((void*)pmap.va, new_tag);
+#endif
             }
+
+            bitfield_clear(reserved_pages, i);
 
             return pmap;
         }
@@ -95,7 +101,7 @@ void reserve_malloc_fill()
             p_uintptr pa = mm_kva_to_kpa(va);
             pv_ptr pv = pv_ptr_new(pa, va);
 
-            
+
             DEBUG_ASSERT(pv.pa != 0 && ptrs_are_kmapped(pv));
             reserved_addr[i] = pv;
 

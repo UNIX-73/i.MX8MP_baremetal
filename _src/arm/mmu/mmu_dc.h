@@ -15,9 +15,11 @@
 #define NULL_PD (mmu_hw_dc) {.v = 0}
 
 
-static inline mmu_hw_dc mmu_tbl_get_dc(mmu_tbl tbl, size_t i)
+static inline mmu_hw_dc mmu_tbl_get_dc(mmu_tbl tbl, size_t i, mmu_granularity g)
 {
+    (void)g;
     DEBUG_ASSERT(tbl.dcs, "null provided table");
+    DEBUG_ASSERT(i < (g / sizeof(mmu_hw_dc)), "idx out of tbl granularity");
 
     return tbl.dcs[i];
 }

@@ -1,14 +1,18 @@
 #pragma once
 
+#define KERNEL_ADDR_BITS 48
+#define KERNEL_BASE (~((1ULL << (KERNEL_ADDR_BITS - 1)) - 1))
+
 
 #ifndef __ASSEMBLER__
 #    include <arm/mmu/mmu.h>
+#    include <kernel/panic.h>
 #    include <lib/mem.h>
 #    include <lib/stdbool.h>
 #    include <lib/stdint.h>
 #    include <lib/unit/mem.h>
 
-#    define KERNEL_BASE 0xFFFF800000000000ULL
+
 #    define KPAGE_SIZE (MEM_KiB * 4ULL)
 #    define KPAGE_ALIGN KPAGE_SIZE
 
@@ -21,8 +25,8 @@ typedef enum {
 
 void mm_early_init();
 
-/// it expects to be provided the identity mapping handle. It will free it, and replace it by the
-/// kernel mmu handle after relocation
+/// it expects to be provided the identity mapping handle. It will free it, and replace it by
+/// the kernel mmu handle after relocation
 void mm_init();
 
 
@@ -31,10 +35,23 @@ void mm_dbg_print_mmu();
 
 bool mm_kernel_is_relocated();
 
-p_uintptr mm_kva_to_kpa(v_uintptr va);
+
+static inline p_uintptr mm_kva_to_kpa(v_uintptr va)
+{
+    DEBUG_ASSERT((va & ~KERNEL_BASE) == (va - KERNEL_BASE));
+
+    return va & ~KERNEL_BASE;
+}
+
 #    define mm_kva_to_kpa_ptr(va) (void*)mm_kva_to_kpa((v_uintptr)(va))
 
-v_uintptr mm_kpa_to_kva(p_uintptr pa);
+static inline v_uintptr mm_kpa_to_kva(p_uintptr pa)
+{
+    DEBUG_ASSERT(pa | KERNEL_BASE);
+
+    return pa | KERNEL_BASE;
+}
+
 #    define mm_kpa_to_kva_ptr(pa) (void*)mm_kpa_to_kva((p_uintptr)(pa))
 
 
@@ -48,21 +65,36 @@ static inline bool mm_is_kva_uintptr(uintptr a)
     return a >= KERNEL_BASE;
 }
 
+
+static inline v_uintptr mm_as_kva(uintptr ptr)
+{
+    return mm_is_kva_uintptr(ptr) ? ptr : mm_kpa_to_kva(ptr);
+}
+
+static inline p_uintptr mm_as_kpa(uintptr ptr)
+{
+    return mm_is_kva_uintptr(ptr) ? mm_kva_to_kpa(ptr) : ptr;
+}
+
+#    define mm_as_kva_ptr(ptr) ((typeof(ptr))mm_as_kva((uintptr)ptr))
+#    define mm_as_kpa_ptr(ptr) ((typeof(ptr))mm_as_kpa((uintptr)ptr))
+
+
 #    define mm_is_kva(a) _Generic((a), void*: mm_is_kva_ptr, uintptr: mm_is_kva_uintptr)(a)
 
 
 static inline bool ptrs_are_kmapped(pv_ptr pv)
 {
-    return mm_kpa_to_kva(pv.pa) == pv.va;
+    return (pv.pa | KERNEL_BASE) == pv.va;
 }
 
 typedef struct {
-    // if assign_phys == true, the kernel physmap offset is assured (va == pa + KERNEL_BASE), else
-    // it is not assured and the phys addr is dynamically assigned
+    // if assign_phys == true, the kernel physmap offset is assured (va == pa + KERNEL_BASE),
+    // else it is not assured and the phys addr is dynamically assigned
     bool fill_reserve;
     bool assign_pa;
-    bool kmap; // if the va must be with an offset of KERNEL_BASE, assing_pa must be true or it will
-               // panic
+    bool kmap; // if the va must be with an offset of KERNEL_BASE, assing_pa must be true or it
+               // will panic
     // if the reserve allocator should be filled after the allocation occurs.
     bool device_mem;
     bool permanent;
@@ -77,7 +109,4 @@ extern const raw_kmalloc_cfg RAW_KMALLOC_DYNAMIC_CFG;
 void* raw_kmalloc(size_t pages, const char* tag, const raw_kmalloc_cfg* cfg);
 void raw_kfree(void* ptr);
 
-
-#else
-#    define KERNEL_BASE 0xFFFF800000000000
 #endif

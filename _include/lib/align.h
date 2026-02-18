@@ -20,8 +20,8 @@ static inline uintptr align_down(uintptr x, size_t a)
     return x & ~(a - 1);
 }
 
-#define algin_up_ptr(x, a) ((void*)align_up((uintptr)x, a))
-#define algin_down_ptr(x, a) ((void*)align_down((uintptr)x, a))
+#define align_up_ptr(x, a) ((void*)align_up((uintptr)(x), a))
+#define align_down_ptr(x, a) ((void*)align_down((uintptr)(x), a))
 
 
 static inline bool is_aligned(uintptr x, size_t a)

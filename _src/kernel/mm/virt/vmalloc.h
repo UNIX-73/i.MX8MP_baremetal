@@ -3,11 +3,11 @@
 #include <lib/mem.h>
 #include <lib/stdint.h>
 
-#include "../malloc/early_kalloc.h"
+#include "../init/mem_regions/early_kalloc.h"
 
 
 void vmalloc_init();
-v_uintptr vmalloc_update_memblocks(const memblock* mblcks, size_t n);
+v_uintptr vmalloc_update_memregs(const early_memreg* mregs, size_t n);
 
 
 typedef struct {

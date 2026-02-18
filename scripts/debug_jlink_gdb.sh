@@ -16,19 +16,16 @@ JLinkGDBServer -if $IFACE -device $DEVICE -speed $SPEED &
 
 if [[ -e /dev/ttyACM0 ]]; then
     kitty --hold --title "ACM0" picocom -q -b 115200 /dev/ttyACM0 &
-#   kitty --hold --title "ACM0" screen /dev/ttyACM1 115200 &
 fi
 
 if [[ -e /dev/ttyCH343USB0 ]]; then
     kitty --hold --title "CH343USB0" picocom -q -b 115200 /dev/ttyCH343USB0 &
-#   kitty --hold --title "CH343USB0" screen /dev/ttyCH343USB1 115200 &
 fi
 
 kitty --title "GDB A53" \
     $GDB $ELF \
         -x /home/unab/files/master/tfm/imx8mp/project/scripts/config.gdb
 
-pkill screen
 pkill JLinkGDBServer
 
 exit

@@ -18,14 +18,12 @@ typedef struct {
     mm_ksection data;
     mm_ksection bss;
     mm_ksection stacks;
-    mm_ksection heap;
 } mm_ksections;
 
 
 void mm_info_init();
 
 
-size_t mm_info_max_ddr_size(void);
 size_t mm_info_ddr_size(void);
 
 uintptr mm_info_ddr_start(void);
